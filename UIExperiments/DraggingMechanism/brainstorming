@@ -1,0 +1,20 @@
+* video structure {
+    id
+    order
+    length
+    startTime
+    endTime
+    position
+}
+
+
+after it's dragged over the timeline
+a new object is created with following properties
+
+{
+    video reference
+    startTime
+    endTime
+    order
+}
+
