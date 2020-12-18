@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script>
+            window.onload = () => {
+                canvas = document.querySelector("canvas")
+                var ctx = canvas.getContext("2d");
+                pastX1 = 0
+                
+                
+
+                canvas.onmousemove = (event) => {
+                    
+                    ctx.clearRect(pastX1 - 2, 0, pastX1 + 2, 500);
+                    ctx.beginPath();
+                    ctx.moveTo(event.offsetX, 0);
+                    ctx.lineTo(event.offsetX, 500);
+                    ctx.lineWidth = 2;
+                    pastX1 = event.offsetX 
+                    ctx.stroke();
+                    
+                    
+                }
+            }
+            
+        </script>
+    </head>
+    <body>
+        <canvas width="300px" height="500px" style="margin-left: 500px; border: 1px solid black;">
+        </canvas>
+    </body>
+</html>

@@ -39,8 +39,14 @@ body{
 }
 
 .timeline {
-    flex: 1;
-    display: inline;
+    transform: translateY(-50%);
+    position: relative;
+    top: 50%;
+}
+
+#timeline-canvas {
+    top: 50%;
+    position: absolute;
 }
 
 /*            item stylesheet              */
@@ -54,6 +60,7 @@ body{
     height: 100px;
     min-width: 100px;
     animation: ease-in-out 2s;
+    background-color: white;
 }
 
 .timeline-item {
@@ -69,8 +76,8 @@ body{
 
 
 @keyframes fadein {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+    from { opacity: 0; transform: scale(0.5); }
+    to   { opacity: 1; transform: scale(1); }
 }
 
 /* Firefox < 16 */
@@ -95,6 +102,11 @@ body{
 @-o-keyframes fadein {
     from { opacity: 0; }
     to   { opacity: 1; }
+}
+
+@keyframes pickup {
+    from { }
+    to   { box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22); transform: scale(1.15); }
 }
 
 /* .container{

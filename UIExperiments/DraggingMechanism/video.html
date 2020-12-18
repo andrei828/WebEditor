@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Frames</title>
+	<script type="text/javascript">
+
+    var video;
+    var canvas;
+    var resources = []
+
+		window.onload = () => {
+			video = document.createElement("video");
+
+			canvas = document.getElementById("prevImgCanvas");
+			canvas.width = 3000;//window.innerWidth;
+			canvas.height = 2000;//window.innerHeight;
+
+			video.addEventListener('loadeddata', function() {
+        console.log("done")
+        playVideo();
+			  // reloadRandomFrame();
+			}, false);
+
+			// video.addEventListener('seeked', function() {
+			//   var context = canvas.getContext('2d');
+			//   context.drawImage(video, 0, 0, canvas.width, canvas.height);
+			// }, false);
+
+			var playSelectedFile = function(event) {
+                
+        console.log("files: ", this.files)
+
+        for (file of this.files) {
+          resources.push(URL.createObjectURL(file))
+        }
+      
+			  // var file = this.files[0];
+        // var fileURL = URL.createObjectURL(file);
+        // console.log(fileURL)
+        video.src = resources[Math.floor(Math.random() * resources.length)];
+        // canvas.width = video.width
+        // canvas.height = video.height
+        console.log(resources)
+			}
+
+			var input = document.querySelector('input');
+			input.addEventListener('change', playSelectedFile, false);
+
+			
+		}
+
+    function playVideo() {
+      console.log(resources)
+      context = canvas.getContext('2d');
+      console.log(video)
+      loop = () => {
+        console.log(context, canvas, video)
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        setTimeout(loop, 1000 / 30); // drawing at 30fps
+      }
+      loop();
+    }
+
+		function reloadRandomFrame() {
+		  if (!isNaN(video.duration)) {
+		    var rand = Math.round(Math.random() * video.duration * 1000) + 1;
+		    video.currentTime = rand / 1000;
+		  }
+		}
+
+
+	</script>
+</head>
+<body>
+	<input type="file" accept="video/*" multiple/>
+  <input type="submit" onClick="reloadRandomFrame()" value="load random frame" /><br/>
+  <button onClick="playVideo()">Play</button>
+	<canvas id="prevImgCanvas">Your browser does not support the HTML5 canvas tag.</canvas>
+</body>
+</html>
