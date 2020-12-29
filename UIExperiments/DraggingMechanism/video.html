@@ -12,8 +12,8 @@
 			video = document.createElement("video");
 
 			canvas = document.getElementById("prevImgCanvas");
-			canvas.width = 3000;//window.innerWidth;
-			canvas.height = 2000;//window.innerHeight;
+			canvas.width = 500;//window.innerWidth;
+			canvas.height = 200;//window.innerHeight;
 
 			video.addEventListener('loadeddata', function() {
         console.log("done")
@@ -33,7 +33,7 @@
         for (file of this.files) {
           resources.push(URL.createObjectURL(file))
         }
-      
+        console.log(this.src)
 			  // var file = this.files[0];
         // var fileURL = URL.createObjectURL(file);
         // console.log(fileURL)
@@ -52,9 +52,9 @@
     function playVideo() {
       console.log(resources)
       context = canvas.getContext('2d');
-      console.log(video)
-      loop = () => {
-        console.log(context, canvas, video)
+      video.play();
+      
+      loop = () => {  
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
         setTimeout(loop, 1000 / 30); // drawing at 30fps
       }
@@ -75,6 +75,7 @@
 	<input type="file" accept="video/*" multiple/>
   <input type="submit" onClick="reloadRandomFrame()" value="load random frame" /><br/>
   <button onClick="playVideo()">Play</button>
+  <img src="GrahamScan.mov#t=0.1" type="video/mp4" />
 	<canvas id="prevImgCanvas">Your browser does not support the HTML5 canvas tag.</canvas>
 </body>
 </html>
