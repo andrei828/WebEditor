@@ -41,7 +41,9 @@ window.onload = () => {
 function spacebarPlayEvent(event) {
 
   if (event.key == SPACEBAR) {
+    
     canvas = document.querySelector('.preview-player')
+    canvasWrapper = document.querySelector('.preview-player-wrapper')
     context = canvas.getContext('2d')
     console.log(window.timeline)
     if (window.timeline) {
@@ -53,19 +55,22 @@ function spacebarPlayEvent(event) {
 
 // TODO: change the parameters to only use the current node
 function playVideo(video, timelineNode) {
-  loop = () => {
+  loop = (videoStartCoordY) => {
     if (video.duration === video.currentTime && timelineNode) {
-      canvas.width = timelineNode.data.videoCore.videoWidth
-      canvas.height = timelineNode.data.videoCore.videoHeight
       playVideo(timelineNode.data.videoCore, timelineNode.next)
     } else {
-      context.drawImage(video, 0, 0, canvas.width, canvas.height)
-      setTimeout(loop, 1000 / 30) // drawing at 30fps
+      context.drawImage(video, 0, videoStartCoordY, canvas.width, videoStartCoordY + canvas.height)
+      setTimeout(()=> loop(videoStartCoordY), 1000 / 30) // drawing at 30fps
     }
   }
+  
   canvas.width = video.videoWidth
   canvas.height = video.videoHeight
-  loop()
+  console.log(canvasWrapper.offsetHeight, canvas.offsetHeight)
+  // TODO: find a formula to center the video based on w/h ratio
+  videoStartCoordY = (canvasWrapper.offsetHeight / 2)// - (canvas.offsetHeight)
+  
+  loop(videoStartCoordY)
   video.play()
 }
 
@@ -76,10 +81,19 @@ function playVideo(video, timelineNode) {
 function renderResourcesBlock() {
   
   for (id in resources) {
-    elem = document.createElement('div')
+    elem = document.createElement('video')
+    source = document.createElement('source')
+    source.src = resources[id].metadata.path
     elem.classList.add('item')
     elem.classList.add(`id-${id}`)
-    elem.append(resources[id].metadata.title)
+    console.log(resources[id].videoCore, elem)
+    // resources[id].videoCore.addEventListener('loadeddata', () => {
+    //   console.log("resource loaded")
+    //   getVideoThumbnail(resources[id].videoCore, elem)
+    // })
+    // getVideoThumbnail(resources[id].videoCore, elem)
+    // elem.append(resources[id].metadata.title)
+    elem.append(source)
     $('.resources-list').append(elem)
     $(`.id-${id}`).draggable(dragObjectLogic)
   }
@@ -97,9 +111,24 @@ function buildVideoResource(path, title) {
   return {
     videoCore: video,
     metadata: {
+      path: path,
       title: title
     }
   }
+}
+
+/**
+ * This draws the first
+ * frame from a video to a canvas 
+ * @param video video source in html element
+ * @param canvasContext canvas source in html element
+ */
+function getVideoThumbnail(video, canvas) {
+  // context.drawImage(video, 0, videoStartCoordY, canvas.width, videoStartCoordY + canvas.height)
+  let context = canvas.getContext('2d')
+  
+  console.log(canvas.width, canvas.height, video, canvas)
+  context.drawImage(video, 0, 0, canvas.width, canvas.height)
 }
 
 

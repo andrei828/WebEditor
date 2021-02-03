@@ -28,14 +28,13 @@ body{
 
 .preview-player-wrapper {
     border: 1px solid black;
-    background-color: #8076a3;
+    background-color: black;
     
     flex: 1;
 }
 
 .preview-player {
     width: 100%;
-    height: 100%;
 }
 
 
@@ -113,6 +112,10 @@ body{
 @keyframes pickup {
     from { }
     to   { box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22); transform: scale(1.15); }
+}
+
+video::-webkit-media-controls {
+    display: none;
 }
 
 /* .container{
