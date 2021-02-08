@@ -16,6 +16,8 @@ window.onload = () => {
   this.resources = {}
   this.resources[Math.random().toString(36).substr(2, 9)] = buildVideoResource('./GrahamScan.mov', 'Graham')
   this.resources[Math.random().toString(36).substr(2, 9)] = buildVideoResource('./PostItDemo.mp4', 'Post it')
+  this.resources[Math.random().toString(36).substr(2, 9)] = buildVideoResource('./bunny.mp4', 'Bunny 1')
+  this.resources[Math.random().toString(36).substr(2, 9)] = buildVideoResource('./bunny2.mp4', 'Bunny 2')
   
   document.body.onkeyup = spacebarPlayEvent
 

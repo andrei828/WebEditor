@@ -75,7 +75,7 @@ body{
     border-radius: 10px;
     display: inline-block;
     height: 100px;
-    min-width: 200px;
+    /* min-width: 200px; */
     animation: ease-in-out 2s;
 }
 
