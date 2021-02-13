@@ -1,10 +1,12 @@
 
 $(function() {
-
   canvas = document.querySelector("#timeline-canvas")
   var ctx = canvas.getContext('2d')
-  ctx.canvas.width  = window.innerWidth
-  ctx.canvas.height = window.innerHeight / 2
+
+  canvas.width = window.innerWidth
+  canvas.height = window.innerHeight / 2 - 40
+  
+
   pastX1 = 0
   isMouseAboveTimeline = false
 
@@ -19,6 +21,14 @@ $(function() {
     ctx.lineWidth = 1;
     pastX1 = event.clientX 
     ctx.stroke();
+    
+    /**
+     * Label for current video time
+     */
+    ctx.font = "10px";
+    if (window.currentVideoTime) {
+      ctx.fillText(`${window.currentVideoTime.toFixed(2)} seconds`, event.clientX + 20, 20)
+    }
   })
 
   playerCanvas = document.querySelector('.preview-player')
@@ -40,6 +50,6 @@ $(function() {
     playerContext.strokeStyle = '#808000';
     playerContext.stroke();
   })
- 
+
 });
 

@@ -154,11 +154,25 @@ const dragObjectLogic = {
     event.target.style.transform = 'scale(1)'
     
     if (2 * event.pageY > $(window).height()) {
+      
       event.target.classList.remove('item')
       event.target.classList.add('timeline-item')
       event.target.style.animation = 'fadein 0.5s'
       event.target.style.transition = '1s'
-      console.log(event.target.classList[0])
+      event.target.style.width = `${event.target.duration*10}px`
+      event.target.addEventListener('mousemove', (ctx) => {
+        console.log('video duration: ', ctx.target.duration)
+        console.log(ctx.offsetX * ctx.target.duration / ctx.target.clientWidth)
+        window.currentVideoTime = ctx.offsetX * ctx.target.duration / ctx.target.clientWidth
+        /*
+        ctx.target.clientWidth .... ctx.target.duration
+        ctx.offsetX            .... ?
+        ctx.offsetX * ctx.target.duration / ctx.target.clientWidth
+        */
+        // console.log((ctx.offsetX - ctx.target.offsetLeft) * 100 / ctx.target.duration)
+        // const currentTime = ctx.offsetX
+
+      })
       childrenNodesTimeline = $('.timeline').children()
 
       if (!childrenNodesTimeline.length) {
