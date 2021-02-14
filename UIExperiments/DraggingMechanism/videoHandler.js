@@ -14,23 +14,23 @@ class TimelineNode {
 window.onload = () => {
   
   this.resources = {}
-  this.resources[Math.random().toString(36).substr(2, 9)] = buildVideoResource('./GrahamScan.mov', 'Graham')
-  this.resources[Math.random().toString(36).substr(2, 9)] = buildVideoResource('./PostItDemo.mp4', 'Post it')
-  this.resources[Math.random().toString(36).substr(2, 9)] = buildVideoResource('./bunny.mp4', 'Bunny 1')
-  this.resources[Math.random().toString(36).substr(2, 9)] = buildVideoResource('./bunny2.mp4', 'Bunny 2')
+  this.resources[Math.random().toString(36).substr(2, 9)] = buildVideoResourceByPath('./GrahamScan.mov', 'Graham')
+  this.resources[Math.random().toString(36).substr(2, 9)] = buildVideoResourceByPath('./PostItDemo.mp4', 'Post it')
+  this.resources[Math.random().toString(36).substr(2, 9)] = buildVideoResourceByPath('./bunny.mp4', 'Bunny 1')
+  this.resources[Math.random().toString(36).substr(2, 9)] = buildVideoResourceByPath('./bunny2.mp4', 'Bunny 2')
   
   document.body.onkeyup = spacebarPlayEvent
 
-  let iterator = null;
-  for (id in this.resources) {
-    if (!this.timeline) {
-      this.timeline = new TimelineNode(resources[id])
-      iterator = this.timeline
-    } else {
-      iterator.next = new TimelineNode(resources[id])
-      iterator = iterator.next
-    }
-  }
+  // let iterator = null;
+  // for (id in this.resources) {
+  //   if (!this.timeline) {
+  //     this.timeline = new TimelineNode(resources[id])
+  //     iterator = this.timeline
+  //   } else {
+  //     iterator.next = new TimelineNode(resources[id])
+  //     iterator = iterator.next
+  //   }
+  // }
   renderResourcesBlock()
 }
 
@@ -105,8 +105,10 @@ function renderResourcesBlock() {
 /**
  * Method that returns an object with all
  * metadata necessary to use a video resource
+ * @param path to the video resource
+ * @param title of the video resource
  */
-function buildVideoResource(path, title) {
+function buildVideoResourceByPath(path, title) {
   video = document.createElement('video')
   video.src = path
   
@@ -114,6 +116,22 @@ function buildVideoResource(path, title) {
     videoCore: video,
     metadata: {
       path: path,
+      title: title
+    }
+  }
+}
+
+/**
+ * Method that returns an object with all
+ * metadata necessary to use a video resource
+ * @param element HTML video element
+ * @param title of the video resource
+ */
+function buildVideoResource(video, title) {
+  return {
+    videoCore: video,
+    metadata: {
+      path: video.currentSrc,
       title: title
     }
   }
@@ -152,9 +170,8 @@ const dragObjectLogic = {
   stop : function (event, helper) {
     event.target.style.boxShadow = 'none'
     event.target.style.transform = 'scale(1)'
-    
+    console.log(event)
     if (2 * event.pageY > $(window).height()) {
-      
       event.target.classList.remove('item')
       event.target.classList.add('timeline-item')
       event.target.style.animation = 'fadein 0.5s'
@@ -195,6 +212,21 @@ const dragObjectLogic = {
         event.target.style.transition = 'none'
 
       }
+      // TODO: optimize linked list creation (IMPORTANT!)
+      let iterator = null;
+      window.timeline = null;
+      childrenNodesTimeline = $('.timeline').children()
+      for (child of childrenNodesTimeline) {
+        resource = buildVideoResource(child, "***")
+        if (!window.timeline) {
+          window.timeline = new TimelineNode(resource)
+          iterator = window.timeline
+        } else {
+          iterator.next = new TimelineNode(resource)
+          iterator = iterator.next
+        }
+      }
+
     } else {
       event.target.style.transition = '0.5s'
     }
