@@ -11,6 +11,8 @@ class TimelineNode {
   }
 }
 
+
+
 window.onload = () => {
   
   this.resources = {}
@@ -20,6 +22,9 @@ window.onload = () => {
   this.resources[Math.random().toString(36).substr(2, 9)] = buildVideoResourceByPath('./bunny2.mp4', 'Bunny 2')
   
   document.body.onkeyup = spacebarPlayEvent
+
+  timelineCanvas = document.querySelector("#timeline-canvas")
+  timelineCanvasCtx = timelineCanvas.getContext('2d')
 
   // let iterator = null;
   // for (id in this.resources) {
@@ -62,6 +67,19 @@ function playVideo(video, timelineNode) {
       playVideo(timelineNode.data.videoCore, timelineNode.next)
     } else {
       context.drawImage(video, 0, videoStartCoordY, canvas.width, videoStartCoordY + canvas.height)
+
+      /**
+       * rendering the current time bar
+       */
+      window.currentPlaybackTime = video.offsetLeft + (video.currentTime * video.clientWidth / video.duration)
+      timelineCanvasCtx.clearRect(window.currentPlaybackTime - 2, 0, window.currentPlaybackTime + 2, timelineCanvas.height)
+      timelineCanvasCtx.beginPath()
+      timelineCanvasCtx.moveTo(window.currentPlaybackTime, 0)
+      timelineCanvasCtx.lineTo(window.currentPlaybackTime, timelineCanvas.height)
+      timelineCanvasCtx.lineWidth = 2;
+      timelineCanvasCtx.stroke();
+
+
       setTimeout(()=> loop(videoStartCoordY), 1000 / 30) // drawing at 30fps
     }
   }
@@ -178,8 +196,6 @@ const dragObjectLogic = {
       event.target.style.transition = '1s'
       event.target.style.width = `${event.target.duration*10}px`
       event.target.addEventListener('mousemove', (ctx) => {
-        console.log('video duration: ', ctx.target.duration)
-        console.log(ctx.offsetX * ctx.target.duration / ctx.target.clientWidth)
         window.currentVideoTime = ctx.offsetX * ctx.target.duration / ctx.target.clientWidth
         /*
         ctx.target.clientWidth .... ctx.target.duration

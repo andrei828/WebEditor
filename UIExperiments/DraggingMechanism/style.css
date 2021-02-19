@@ -75,7 +75,7 @@ body{
 
 .timeline-item {
     position: relative;
-    margin: 5px;
+    /* margin: 5px; */
     border: solid 1px #000;
     border-radius: 10px;
     display: inline-block;

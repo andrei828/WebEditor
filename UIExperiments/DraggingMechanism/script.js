@@ -14,7 +14,7 @@ $(function() {
   // $('.item').draggable(dragObjectLogic)
   
   $('.bottom-view').mousemove((event) => {
-    ctx.clearRect(pastX1 - 2, 0, pastX1 + 2, ctx.canvas.height);
+    ctx.clearRect(pastX1 - 2, 0, pastX1 + 2, canvas.height);
     ctx.beginPath();
     ctx.moveTo(event.clientX, 0);
     ctx.lineTo(event.clientX, ctx.canvas.height);
