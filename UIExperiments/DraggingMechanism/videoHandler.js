@@ -25,7 +25,8 @@ window.onload = () => {
 
   timelineCanvas = document.querySelector("#timeline-canvas")
   timelineCanvasCtx = timelineCanvas.getContext('2d')
-
+  window.references = {}
+  currentVideoSelectedForPlayback = null;
   // let iterator = null;
   // for (id in this.resources) {
   //   if (!this.timeline) {
@@ -52,9 +53,18 @@ function spacebarPlayEvent(event) {
     canvas = document.querySelector('.preview-player')
     canvasWrapper = document.querySelector('.preview-player-wrapper')
     context = canvas.getContext('2d')
-    console.log(window.timeline)
+    
     if (window.timeline) {
       playVideo(window.timeline.data.videoCore, window.timeline.next)
+      // TODO: replace top line with the logic below after its implemented
+      if (currentVideoSelectedForPlayback) {
+        playVideo(window.timeline.data.videoCore, window.timeline.next)
+      } else {
+        playVideo(
+          window.references[currentVideoSelectedForPlayback].videoCore, 
+          window.references[currentVideoSelectedForPlayback].next
+        )
+      }
     }
     
   }
@@ -72,7 +82,7 @@ function playVideo(video, timelineNode) {
        * rendering the current time bar
        */
       window.currentPlaybackTime = video.offsetLeft + (video.currentTime * video.clientWidth / video.duration)
-      timelineCanvasCtx.clearRect(window.currentPlaybackTime - 2, 0, window.currentPlaybackTime + 2, timelineCanvas.height)
+      timelineCanvasCtx.clearRect(window.currentPlaybackTime - 5, 0, window.currentPlaybackTime + 2, timelineCanvas.height)
       timelineCanvasCtx.beginPath()
       timelineCanvasCtx.moveTo(window.currentPlaybackTime, 0)
       timelineCanvasCtx.lineTo(window.currentPlaybackTime, timelineCanvas.height)
@@ -80,16 +90,18 @@ function playVideo(video, timelineNode) {
       timelineCanvasCtx.stroke();
 
 
-      setTimeout(()=> loop(videoStartCoordY), 1000 / 30) // drawing at 30fps
+      setTimeout(() => loop(videoStartCoordY), 1000 / 30) // drawing at 30fps
     }
   }
   
   canvas.width = video.videoWidth
   canvas.height = video.videoHeight
-  console.log(canvasWrapper.offsetHeight, canvas.offsetHeight)
-  // TODO: find a formula to center the video based on w/h ratio
-  videoStartCoordY = (canvasWrapper.offsetHeight / 2)// - (canvas.offsetHeight)
   
+  // console.log(canvasWrapper.offsetHeight, canvas.offsetHeight)
+  // TODO: find a formula to center the video based on w/h ratio
+  
+  videoStartCoordY = 0//(canvasWrapper.clientHeight / 2) - (canvas.clientHeight / 2)
+  console.log(canvasWrapper.clientHeight, canvasWrapper.clientWidth, canvas.clientWidth, canvas.clientHeight, videoStartCoordY)
   loop(videoStartCoordY)
   video.play()
 }
@@ -131,6 +143,7 @@ function buildVideoResourceByPath(path, title) {
   video.src = path
   
   return {
+    id: video.classList,
     videoCore: video,
     metadata: {
       path: path,
@@ -197,14 +210,12 @@ const dragObjectLogic = {
       event.target.style.width = `${event.target.duration*10}px`
       event.target.addEventListener('mousemove', (ctx) => {
         window.currentVideoTime = ctx.offsetX * ctx.target.duration / ctx.target.clientWidth
-        /*
-        ctx.target.clientWidth .... ctx.target.duration
-        ctx.offsetX            .... ?
-        ctx.offsetX * ctx.target.duration / ctx.target.clientWidth
-        */
-        // console.log((ctx.offsetX - ctx.target.offsetLeft) * 100 / ctx.target.duration)
-        // const currentTime = ctx.offsetX
-
+      })
+      event.target.addEventListener('mouseleave', (ctx) => {
+        window.currentVideoTime = null
+      })
+      event.target.addEventListener('click', (ctx) => {
+        // currentVideoSelectedForPlayback = ctx.
       })
       childrenNodesTimeline = $('.timeline').children()
 
@@ -241,6 +252,7 @@ const dragObjectLogic = {
           iterator.next = new TimelineNode(resource)
           iterator = iterator.next
         }
+        window.references[resource.id] = iterator
       }
 
     } else {

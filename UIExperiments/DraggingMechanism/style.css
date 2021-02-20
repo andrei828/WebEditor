@@ -1,7 +1,7 @@
 body{
     margin: 0px;
     height: 100%;
-    
+    font-family: Georgia, serif;
 }
 
 .edit-workspace {
@@ -30,6 +30,9 @@ body{
     border: 1px solid black;
     background-color: black;
     flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .preview-player {
@@ -45,6 +48,17 @@ body{
 .bottom-scrollable {
     height: 100%;
     overflow-x: scroll;
+}
+
+.tooltip-duration {
+    position: absolute;
+    /* width: 150px;
+    height: 50px; */
+    margin: 15px;
+    padding: 10px;
+    border-radius: 15px;
+    display: none;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
 }
 
 .timeline {

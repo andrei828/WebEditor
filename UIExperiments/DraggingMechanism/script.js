@@ -1,5 +1,7 @@
 
 $(function() {
+  tooltipDuration = document.querySelector('.tooltip-duration')
+  
   canvas = document.querySelector("#timeline-canvas")
   var ctx = canvas.getContext('2d')
 
@@ -27,7 +29,12 @@ $(function() {
      */
     ctx.font = "10px";
     if (window.currentVideoTime) {
-      ctx.fillText(`${window.currentVideoTime.toFixed(2)} seconds`, event.clientX + 20, 20)
+      // ctx.fillText(`${window.currentVideoTime.toFixed(2)} seconds`, event.clientX + 20, 20)
+      tooltipDuration.style.display = 'block'
+      tooltipDuration.style.left = `${pastX1 - 2}px`
+      tooltipDuration.innerText = `${window.currentVideoTime.toFixed(2)} seconds`
+    } else {
+      tooltipDuration.style.display = 'none'
     }
   })
 
