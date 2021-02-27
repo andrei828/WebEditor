@@ -25,7 +25,6 @@ window.onload = () => {
 
   timelineCanvas = document.querySelector("#timeline-canvas")
   timelineCanvasCtx = timelineCanvas.getContext('2d')
-  window.references = {}
   currentVideoSelectedForPlayback = null;
   // let iterator = null;
   // for (id in this.resources) {
@@ -60,6 +59,7 @@ function spacebarPlayEvent(event) {
       if (currentVideoSelectedForPlayback) {
         playVideo(window.timeline.data.videoCore, window.timeline.next)
       } else {
+        console.log("here")
         playVideo(
           window.references[currentVideoSelectedForPlayback].videoCore, 
           window.references[currentVideoSelectedForPlayback].next
@@ -215,7 +215,12 @@ const dragObjectLogic = {
         window.currentVideoTime = null
       })
       event.target.addEventListener('click', (ctx) => {
-        // currentVideoSelectedForPlayback = ctx.
+        ctx.target.classList.forEach(cls => {
+          if (cls.slice(0, 3) === 'id-') {
+            console.log(window.resources[cls.slice(3, cls.length)])
+            currentVideoSelectedForPlayback = window.resources[cls.slice(3, cls.length)]
+          }
+        })
       })
       childrenNodesTimeline = $('.timeline').children()
 
@@ -252,7 +257,6 @@ const dragObjectLogic = {
           iterator.next = new TimelineNode(resource)
           iterator = iterator.next
         }
-        window.references[resource.id] = iterator
       }
 
     } else {
