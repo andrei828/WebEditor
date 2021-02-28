@@ -35,10 +35,50 @@ body{
     align-items: center;
 }
 
+.preview-player-controls-wrapper {
+    position: absolute;
+    bottom: 55%;
+    display: none;
+}
+
+.preview-player-controls {
+    position: relative;
+    width: 100%;
+    backdrop-filter: blur(35px);
+    border-radius: 15px;
+    padding-left: 15px;
+    padding-right: 0px;
+}
+
+.preview-controll-button:hover {
+    cursor: pointer;
+}
+
+.preview-controll-button {
+    margin: 5px;
+    border: none;
+    background: none;
+}
+
+.preview-back {
+
+}
+
+.preview-play {
+
+}
+
+.preview-pause {
+    display: none;
+}
+
+.preview-forward {
+
+}
+
 .preview-player {
     width: 100%;
 }
-
 
 .bottom-view {
     background-color: #d3d3d3;

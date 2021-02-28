@@ -52,9 +52,11 @@ $(function() {
     }
   })
 
+  playerControls = document.querySelector('.preview-player-controls-wrapper')
   playerCanvas = document.querySelector('.preview-player')
   playerContext = playerCanvas.getContext('2d')
   $('.preview-player-wrapper').mouseover((event) => {
+    playerControls.style.display = 'block';
     console.log("Hello")
     playerContext.moveTo(0, 0);
     playerContext.lineTo(100, 100);
@@ -65,6 +67,7 @@ $(function() {
 
   $('.preview-player-wrapper').mouseleave((event) => {
     console.log("Hello")
+    playerControls.style.display = 'none';
     playerContext.moveTo(0, 0);
     playerContext.lineTo(100, 100);
     playerContext.lineWidth = 1;
