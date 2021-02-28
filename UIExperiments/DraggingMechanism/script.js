@@ -16,7 +16,21 @@ $(function() {
   // $('.item').draggable(dragObjectLogic)
   
   $('.bottom-view').mousemove((event) => {
-    ctx.clearRect(pastX1 - 2, 0, pastX1 + 2, canvas.height);
+    // TODO: remove this quick fix and make the two bars independent from one another
+    ctx.clearRect(pastX1 - 1, 0, pastX1 + 1, canvas.height);
+    if (window.currentPlaybackTime) {
+      ctx.clearRect(
+        window.currentPlaybackTime - 5, 0, 
+        window.currentPlaybackTime + 2, ctx.canvas.height
+      )
+      ctx.beginPath()
+      ctx.moveTo(window.currentPlaybackTime, 0)
+      ctx.lineTo(window.currentPlaybackTime, ctx.canvas.height)
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    
     ctx.beginPath();
     ctx.moveTo(event.clientX, 0);
     ctx.lineTo(event.clientX, ctx.canvas.height);

@@ -25,18 +25,21 @@ window.onload = () => {
 
   timelineCanvas = document.querySelector("#timeline-canvas")
   timelineCanvasCtx = timelineCanvas.getContext('2d')
-  currentVideoSelectedForPlayback = null;
-  // let iterator = null;
-  // for (id in this.resources) {
-  //   if (!this.timeline) {
-  //     this.timeline = new TimelineNode(resources[id])
-  //     iterator = this.timeline
-  //   } else {
-  //     iterator.next = new TimelineNode(resources[id])
-  //     iterator = iterator.next
-  //   }
-  // }
+  currentVideoSelectedForPlayback = null
+  window.currentlyPlaying = false;
+  window.references = {}
+  
+
   renderResourcesBlock()
+
+  /**
+   * trying to override the scrolling mechanism for the timeline
+   */
+  /*document.querySelector('.bottom-scrollable').addEventListener('wheel', function (event, delta) {
+    console.log(event)
+    this.scrollLeft += (delta * 30);
+    // event.preventDefault();
+  })*/
 }
 
 
@@ -49,46 +52,44 @@ function spacebarPlayEvent(event) {
 
   if (event.key == SPACEBAR) {
     
-    canvas = document.querySelector('.preview-player')
-    canvasWrapper = document.querySelector('.preview-player-wrapper')
-    context = canvas.getContext('2d')
-    
     if (window.timeline) {
-      playVideo(window.timeline.data.videoCore, window.timeline.next)
-      // TODO: replace top line with the logic below after its implemented
-      if (currentVideoSelectedForPlayback) {
-        playVideo(window.timeline.data.videoCore, window.timeline.next)
+      window.currentlyPlaying = !window.currentlyPlaying
+      
+      canvas = document.querySelector('.preview-player')
+      canvasWrapper = document.querySelector('.preview-player-wrapper')
+      context = canvas.getContext('2d')
+      
+      const video = currentVideoSelectedForPlayback ?? window.timeline
+      
+      if (window.currentlyPlaying) {
+        // TODO: replace top line with the logic below after its implemented        
+        playVideo(video.data.videoCore, video.next)
       } else {
-        console.log("here")
-        playVideo(
-          window.references[currentVideoSelectedForPlayback].videoCore, 
-          window.references[currentVideoSelectedForPlayback].next
-        )
+        video.data.videoCore.pause()
       }
     }
-    
   }
 }
 
 // TODO: change the parameters to only use the current node
 function playVideo(video, timelineNode) {
   loop = (videoStartCoordY) => {
+    if (!window.currentlyPlaying) {
+      return
+    }
+
     if (video.duration === video.currentTime && timelineNode) {
+      timelineNode.data.videoCore.currentTime = 0
       playVideo(timelineNode.data.videoCore, timelineNode.next)
     } else {
-      context.drawImage(video, 0, videoStartCoordY, canvas.width, videoStartCoordY + canvas.height)
-
-      /**
-       * rendering the current time bar
-       */
-      window.currentPlaybackTime = video.offsetLeft + (video.currentTime * video.clientWidth / video.duration)
-      timelineCanvasCtx.clearRect(window.currentPlaybackTime - 5, 0, window.currentPlaybackTime + 2, timelineCanvas.height)
-      timelineCanvasCtx.beginPath()
-      timelineCanvasCtx.moveTo(window.currentPlaybackTime, 0)
-      timelineCanvasCtx.lineTo(window.currentPlaybackTime, timelineCanvas.height)
-      timelineCanvasCtx.lineWidth = 2;
-      timelineCanvasCtx.stroke();
-
+      /* rendering the video on the preview canvas */
+      context.drawImage(
+        video, 0, videoStartCoordY, canvas.width, 
+        videoStartCoordY + canvas.height
+      )
+      
+      /* rendering the current time bar */
+      renderCurrentPlaybackBar(video)
 
       setTimeout(() => loop(videoStartCoordY), 1000 / 30) // drawing at 30fps
     }
@@ -99,11 +100,29 @@ function playVideo(video, timelineNode) {
   
   // console.log(canvasWrapper.offsetHeight, canvas.offsetHeight)
   // TODO: find a formula to center the video based on w/h ratio
-  
-  videoStartCoordY = 0//(canvasWrapper.clientHeight / 2) - (canvas.clientHeight / 2)
-  console.log(canvasWrapper.clientHeight, canvasWrapper.clientWidth, canvas.clientWidth, canvas.clientHeight, videoStartCoordY)
+  videoStartCoordY = 0
   loop(videoStartCoordY)
   video.play()
+}
+
+/**
+ * method for rendering the playback
+ * bar on the timeline canvas
+ * @param videoElement HTML element for the video
+ */
+function renderCurrentPlaybackBar(videoElement) {
+  timelineCanvasCtx.clearRect(
+    window.currentPlaybackTime - 5, 0, 
+    window.currentPlaybackTime + 2, timelineCanvas.height
+  )
+  window.currentPlaybackTime = videoElement.offsetLeft + 
+    (videoElement.currentTime * videoElement.clientWidth / videoElement.duration)
+
+  timelineCanvasCtx.beginPath()
+  timelineCanvasCtx.moveTo(window.currentPlaybackTime, 0)
+  timelineCanvasCtx.lineTo(window.currentPlaybackTime, timelineCanvas.height)
+  timelineCanvasCtx.lineWidth = 2;
+  timelineCanvasCtx.stroke();
 }
 
 /**
@@ -118,13 +137,6 @@ function renderResourcesBlock() {
     source.src = resources[id].metadata.path
     elem.classList.add('item')
     elem.classList.add(`id-${id}`)
-    console.log(resources[id].videoCore, elem)
-    // resources[id].videoCore.addEventListener('loadeddata', () => {
-    //   console.log("resource loaded")
-    //   getVideoThumbnail(resources[id].videoCore, elem)
-    // })
-    // getVideoThumbnail(resources[id].videoCore, elem)
-    // elem.append(resources[id].metadata.title)
     elem.append(source)
     $('.resources-list').append(elem)
     $(`.id-${id}`).draggable(dragObjectLogic)
@@ -177,8 +189,6 @@ function buildVideoResource(video, title) {
 function getVideoThumbnail(video, canvas) {
   // context.drawImage(video, 0, videoStartCoordY, canvas.width, videoStartCoordY + canvas.height)
   let context = canvas.getContext('2d')
-  
-  console.log(canvas.width, canvas.height, video, canvas)
   context.drawImage(video, 0, 0, canvas.width, canvas.height)
 }
 
@@ -201,7 +211,7 @@ const dragObjectLogic = {
   stop : function (event, helper) {
     event.target.style.boxShadow = 'none'
     event.target.style.transform = 'scale(1)'
-    console.log(event)
+    
     if (2 * event.pageY > $(window).height()) {
       event.target.classList.remove('item')
       event.target.classList.add('timeline-item')
@@ -215,12 +225,16 @@ const dragObjectLogic = {
         window.currentVideoTime = null
       })
       event.target.addEventListener('click', (ctx) => {
+        ctx.target.currentTime = ctx.offsetX * ctx.target.duration / ctx.target.clientWidth
+        window.currentlyPlaying = false
+        currentVideoSelectedForPlayback.data.videoCore.pause()
         ctx.target.classList.forEach(cls => {
           if (cls.slice(0, 3) === 'id-') {
-            console.log(window.resources[cls.slice(3, cls.length)])
-            currentVideoSelectedForPlayback = window.resources[cls.slice(3, cls.length)]
+            /* assigning the corresponding video to play */
+            currentVideoSelectedForPlayback = window.references[cls.slice(3, cls.length)]
           }
         })
+        renderCurrentPlaybackBar(ctx.target)
       })
       childrenNodesTimeline = $('.timeline').children()
 
@@ -244,6 +258,7 @@ const dragObjectLogic = {
         event.target.style.transition = 'none'
 
       }
+
       // TODO: optimize linked list creation (IMPORTANT!)
       let iterator = null;
       window.timeline = null;
@@ -257,6 +272,12 @@ const dragObjectLogic = {
           iterator.next = new TimelineNode(resource)
           iterator = iterator.next
         }
+        currentVideoSelectedForPlayback = window.timeline
+        iterator.data.videoCore.classList.forEach(cls => {
+          if (cls.slice(0, 3) === 'id-') {
+            window.references[cls.slice(3, cls.length)] = iterator
+          }
+        })
       }
 
     } else {
