@@ -57,22 +57,10 @@ $(function() {
   playerContext = playerCanvas.getContext('2d')
   $('.preview-player-wrapper').mouseover((event) => {
     playerControls.style.display = 'block';
-    console.log("Hello")
-    playerContext.moveTo(0, 0);
-    playerContext.lineTo(100, 100);
-    playerContext.lineWidth = 1;
-    playerContext.strokeStyle = '#808000';
-    playerContext.stroke();
   })
 
   $('.preview-player-wrapper').mouseleave((event) => {
-    console.log("Hello")
     playerControls.style.display = 'none';
-    playerContext.moveTo(0, 0);
-    playerContext.lineTo(100, 100);
-    playerContext.lineWidth = 1;
-    playerContext.strokeStyle = '#808000';
-    playerContext.stroke();
   })
 
 });

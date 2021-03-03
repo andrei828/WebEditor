@@ -33,7 +33,7 @@ window.onload = () => {
   renderResourcesBlock()
 
   /**
-   * trying to override the scrolling mechanism for the timeline
+   * Trying to override the scrolling mechanism for the timeline
    */
   /*document.querySelector('.bottom-scrollable').addEventListener('wheel', function (event, delta) {
     console.log(event)
@@ -71,42 +71,52 @@ function spacebarPlayEvent(event) {
   }
 }
 
+/**
+ * Draws the time bar in the timeline
+ * and updates the preview canvas 
+ * @param video HTML element
+ */
+function renderUIAfterFrameChange(video) {
+  /* rendering the current time bar */
+  renderCurrentPlaybackBar(video)
+
+  /* rendering the video on the preview canvas */
+  context.drawImage(
+    video, 0, 0, canvas.width, canvas.height
+  )
+}
+
 // TODO: change the parameters to only use the current node
 function playVideo(video, timelineNode) {
-  loop = (videoStartCoordY) => {
+  loop = () => {
     if (!window.currentlyPlaying) {
       return
     }
 
     if (video.duration === video.currentTime && timelineNode) {
+      /* starting next video from the beginning */
       timelineNode.data.videoCore.currentTime = 0
+
+      /* playing the next frame */
       playVideo(timelineNode.data.videoCore, timelineNode.next)
     } else {
-      /* rendering the video on the preview canvas */
-      context.drawImage(
-        video, 0, videoStartCoordY, canvas.width, 
-        videoStartCoordY + canvas.height
-      )
-      
-      /* rendering the current time bar */
-      renderCurrentPlaybackBar(video)
+      /* updating the UI */
+      renderUIAfterFrameChange(video)
 
-      setTimeout(() => loop(videoStartCoordY), 1000 / 30) // drawing at 30fps
+      /* drawing at 30fps */
+      setTimeout(loop, 1000 / 30) 
     }
   }
   
   canvas.width = video.videoWidth
   canvas.height = video.videoHeight
   
-  // console.log(canvasWrapper.offsetHeight, canvas.offsetHeight)
-  // TODO: find a formula to center the video based on w/h ratio
-  videoStartCoordY = 0
-  loop(videoStartCoordY)
+  loop()
   video.play()
 }
 
 /**
- * method for rendering the playback
+ * Method for rendering the playback
  * bar on the timeline canvas
  * @param videoElement HTML element for the video
  */
@@ -234,7 +244,8 @@ const dragObjectLogic = {
             currentVideoSelectedForPlayback = window.references[cls.slice(3, cls.length)]
           }
         })
-        renderCurrentPlaybackBar(ctx.target)
+        // renderCurrentPlaybackBar(ctx.target)
+        renderUIAfterFrameChange(ctx.target)
       })
       childrenNodesTimeline = $('.timeline').children()
 
