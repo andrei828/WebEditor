@@ -26,6 +26,10 @@ window.onload = () => {
   /* Listener for playback triggered by the spacebar */
   document.body.onkeyup = spacebarPlayEvent
 
+  timelinePlaceholder = document.createElement('div')
+  timelinePlaceholder.classList.add('timeline-item')
+  
+
   /* References to the timeline canvas */
   timelineCanvas = document.querySelector('#timeline-canvas')
   timelineCanvasCtx = timelineCanvas.getContext('2d')
@@ -124,6 +128,10 @@ function triggerPlayVideo() {
 function renderUIAfterFrameChange(video) {
   /* Rendering the current time bar */
   renderCurrentPlaybackBar(video)
+
+  /* Updating the canvas resolution */
+  canvas.width = video.videoWidth
+  canvas.height = video.videoHeight
 
   /* Rendering the video on the preview canvas */
   context.drawImage(
@@ -286,7 +294,10 @@ function setPlaybackControlState(value) {
 const dragObjectLogic = {
 
   start : function (event, helper){
-    event.target.style.zIndex = '500'
+    if (2 * event.pageY > $(window).height()) {
+      event.target.style.position = 'absolute'
+    }
+    event.target.style.zIndex = '150'
     event.target.style.animation = 'pickup 0.5s'
     event.target.style.boxShadow = '0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22'
     event.target.style.transform = 'scale(1.15)'
@@ -294,13 +305,39 @@ const dragObjectLogic = {
     
   },
 
-  /*
+  
   drag: function (event, helper) {
+    if (2 * event.pageY > $(window).height()) {
+      timelinePlaceholder.style.display = 'block'
+      childrenNodesTimeline = $('.timeline').children()
+      if (!childrenNodesTimeline.length) {
+        $('.timeline').prepend(timelinePlaceholder)
+      } else {
+
+        let refNode = null;
+        for (child of childrenNodesTimeline) {
+          if (child != event.target && child.offsetLeft + child.clientWidth / 2 > helper.offset.left) {
+            refNode = child
+            break;
+          }
+        }
+
+        if (refNode) {
+          $(timelinePlaceholder).insertBefore(child)
+        } else {
+          $('.timeline').append(timelinePlaceholder)
+        }
+        
+
+      }
+    }
   },
-  */
+  
 
   stop : function (event, helper) {
+    timelinePlaceholder.style.display = 'none'
     event.target.style.boxShadow = 'none'
+    event.target.style.position = 'relative'
     event.target.style.transform = 'scale(1)'
     
     if (2 * event.pageY > $(window).height()) {
@@ -317,8 +354,11 @@ const dragObjectLogic = {
       })
       event.target.addEventListener('click', (ctx) => {
         ctx.target.currentTime = ctx.offsetX * ctx.target.duration / ctx.target.clientWidth
-        setCurrentlyPlaying(false)
-        currentVideoSelectedForPlayback.data.videoCore.pause()
+      
+        if (window.currentlyPlaying) {
+          currentVideoSelectedForPlayback.data.videoCore.pause()
+          setCurrentlyPlaying(false)
+        }
         ctx.target.classList.forEach(cls => {
           if (cls.slice(0, 3) === 'id-') {
             /* Assigning the corresponding video to play */
@@ -336,7 +376,7 @@ const dragObjectLogic = {
 
         let refNode = null;
         for (child of childrenNodesTimeline) {
-          if (child.offsetLeft > helper.offset.left) {
+          if (child != event.target && child.offsetLeft + child.clientWidth / 2 > helper.offset.left) {
             refNode = child
             break;
           }

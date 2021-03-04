@@ -44,7 +44,12 @@ $(function() {
     if (window.currentVideoTime) {
       // ctx.fillText(`${window.currentVideoTime.toFixed(2)} seconds`, event.clientX + 20, 20)
       tooltipDuration.style.display = 'block'
-      tooltipDuration.style.left = `${pastX1 - 2}px`
+      if (pastX1 + 200 > window.innerWidth) {
+        tooltipDuration.style.left = `${pastX1 - 150}px`
+      } else {
+        tooltipDuration.style.left = `${pastX1 - 2}px`
+      }
+      
       tooltipDuration.innerText = `${window.currentVideoTime.toFixed(2)} seconds`
     } else {
       tooltipDuration.style.display = 'none'

@@ -123,7 +123,6 @@ body{
     display: inline-block;
     height: 100px;
     min-width: 100px;
-    animation: ease-in-out 2s;
     background-color: white;
 }
 
@@ -132,10 +131,12 @@ body{
     /* margin: 5px; */
     border: solid 1px #000;
     border-radius: 10px;
+    background-image: linear-gradient(45deg, #d9d9d9 16.67%, #000000 16.67%, #000000 33.33%, #fff 33.33%, #fff 50%, #d9d9d9 50%, #d9d9d9 66.67%, #000000 66.67%, #000000 83.33%, #fff 83.33%, #fff 100%);
     display: inline-block;
     height: 100px;
+    min-width: 100px;
     /* min-width: 200px; */
-    animation: ease-in-out 2s;
+    animation: popwidth 0.1s;
 }
 
 video {
@@ -184,6 +185,29 @@ video {
 
 /* Opera < 12.1 */
 @-o-keyframes appear {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes popwidth {
+    from { transform: scaleX(0.5); }
+    to   { transform: scaleX(1); }
+}
+
+/* Firefox < 16 */
+@-moz-keyframes popwidth {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Safari, Chrome and Opera > 12.1 */
+@-webkit-keyframes popwidth {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Opera < 12.1 */
+@-o-keyframes popwidth {
     from { opacity: 0; }
     to   { opacity: 1; }
 }
