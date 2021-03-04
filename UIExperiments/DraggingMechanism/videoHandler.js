@@ -1,5 +1,8 @@
 const SPACEBAR = ' '
 
+const NONE = 'none'
+const INLINE = 'inline'
+
 /**
  * Linked list used to store 
  * the videos in the timeline 
@@ -11,26 +14,59 @@ class TimelineNode {
   }
 }
 
-
-
 window.onload = () => {
   
   this.resources = {}
-  this.resources[Math.random().toString(36).substr(2, 9)] = buildVideoResourceByPath('./GrahamScan.mov', 'Graham')
-  this.resources[Math.random().toString(36).substr(2, 9)] = buildVideoResourceByPath('./PostItDemo.mp4', 'Post it')
-  this.resources[Math.random().toString(36).substr(2, 9)] = buildVideoResourceByPath('./bunny.mp4', 'Bunny 1')
-  this.resources[Math.random().toString(36).substr(2, 9)] = buildVideoResourceByPath('./bunny2.mp4', 'Bunny 2')
+  /* Currently hardcoding the default video items */
+  this.resources[getUniqueID()] = buildVideoResourceByPath('./GrahamScan.mov', 'Graham')
+  this.resources[getUniqueID()] = buildVideoResourceByPath('./PostItDemo.mp4', 'Post it')
+  this.resources[getUniqueID()] = buildVideoResourceByPath('./bunny.mp4', 'Bunny 1')
+  this.resources[getUniqueID()] = buildVideoResourceByPath('./bunny2.mp4', 'Bunny 2')
   
+  /* Listener for playback triggered by the spacebar */
   document.body.onkeyup = spacebarPlayEvent
 
-  timelineCanvas = document.querySelector("#timeline-canvas")
+  /* References to the timeline canvas */
+  timelineCanvas = document.querySelector('#timeline-canvas')
   timelineCanvasCtx = timelineCanvas.getContext('2d')
+
+  /* References to the video preview canvas */
+  canvasWrapper = document.querySelector('.preview-player-wrapper')
+  canvas = document.querySelector('.preview-player')
+  context = canvas.getContext('2d')
+
+  /* References to the playback controls */
+  backButton = document.querySelector('.preview-back')
+  playButton = document.querySelector('.preview-play')
+  pauseButton = document.querySelector('.preview-pause')
+  forwardButton = document.querySelector('.preview-forward')
+
+  /* In the beginning, no video is currently playing */
   currentVideoSelectedForPlayback = null
-  window.currentlyPlaying = false;
+  
+  /* Hash table with references to nodes in the linked 
+     list will elaborate after further implementations */
   window.references = {}
   
-
+  /* Rendering the video resources */
   renderResourcesBlock()
+
+  /* No video is playing by default */
+  setCurrentlyPlaying(false)
+
+  /* Playing and pausing will trigger the
+     same action as hitting the space bar*/
+  playButton.addEventListener('click', triggerPlayVideo)
+  pauseButton.addEventListener('click', triggerPlayVideo)
+
+
+  backButton.addEventListener('click', () => {
+    // TODO: go back 10 seconds...
+  })
+
+  forwardButton.addEventListener('click', () => {
+    // TODO: skip 10 seconds forward...
+  })
 
   /**
    * Trying to override the scrolling mechanism for the timeline
@@ -42,31 +78,40 @@ window.onload = () => {
   })*/
 }
 
-
+/**
+ * Generates a random string
+ * that acts as a unique ID
+ */
+function getUniqueID() {
+  return Math.random().toString(36).substr(2, 9)
+}
 /**
  * Method that handles the 
  * spacebar playback event
  * @param event context about the event
  */
 function spacebarPlayEvent(event) {
-
   if (event.key == SPACEBAR) {
+    triggerPlayVideo()
+  }
+}
+
+/**
+ * Logic that toggles the video
+ * playback based on the global variables.
+ */
+function triggerPlayVideo() {
+  if (window.timeline) {
+
+    setCurrentlyPlaying(!window.currentlyPlaying)
     
-    if (window.timeline) {
-      window.currentlyPlaying = !window.currentlyPlaying
-      
-      canvas = document.querySelector('.preview-player')
-      canvasWrapper = document.querySelector('.preview-player-wrapper')
-      context = canvas.getContext('2d')
-      
-      const video = currentVideoSelectedForPlayback ?? window.timeline
-      
-      if (window.currentlyPlaying) {
-        // TODO: replace top line with the logic below after its implemented        
-        playVideo(video.data.videoCore, video.next)
-      } else {
-        video.data.videoCore.pause()
-      }
+    const video = currentVideoSelectedForPlayback ?? window.timeline
+    
+    if (window.currentlyPlaying) {
+      // TODO: replace top line with the logic below after its implemented        
+      playVideo(video.data.videoCore, video.next)
+    } else {
+      video.data.videoCore.pause()
     }
   }
 }
@@ -77,10 +122,10 @@ function spacebarPlayEvent(event) {
  * @param video HTML element
  */
 function renderUIAfterFrameChange(video) {
-  /* rendering the current time bar */
+  /* Rendering the current time bar */
   renderCurrentPlaybackBar(video)
 
-  /* rendering the video on the preview canvas */
+  /* Rendering the video on the preview canvas */
   context.drawImage(
     video, 0, 0, canvas.width, canvas.height
   )
@@ -94,17 +139,17 @@ function playVideo(video, timelineNode) {
     }
 
     if (video.duration === video.currentTime && timelineNode) {
-      /* starting next video from the beginning */
+      /* Starting next video from the beginning */
       timelineNode.data.videoCore.currentTime = 0
 
-      /* playing the next frame */
+      /* Playing the next frame */
       playVideo(timelineNode.data.videoCore, timelineNode.next)
     } else {
-      /* updating the UI */
+      /* Updating the UI */
       renderUIAfterFrameChange(video)
 
-      /* drawing at 30fps */
-      setTimeout(loop, 1000 / 30) 
+      /* Drawing at 30fps (1000 / 30 = 33,3333..)*/
+      setTimeout(loop, 33.3333333) 
     }
   }
   
@@ -202,7 +247,42 @@ function getVideoThumbnail(video, canvas) {
   context.drawImage(video, 0, 0, canvas.width, canvas.height)
 }
 
+/**
+ * Sets the global variable currentlyPlaying 
+ * that decides the current state of the UI
+ * @param value boolean value
+ */
+function setCurrentlyPlaying(value) {
+  window.currentlyPlaying = value
 
+  /* Updating the controls from the preview canvas */
+  setPlaybackControlState(value)
+}
+
+/**
+ * Method decides whether the play button
+ * or pause button has to be displayed
+ * @param value boolean value
+ */
+function setPlaybackControlState(value) {
+  if (value) {
+    
+    /* video is playing */
+    playButton.style.display = NONE
+    pauseButton.style.display = INLINE
+  } else {
+    console.log(value)
+    /* video is paused */
+    playButton.style.display = INLINE
+    pauseButton.style.display = NONE
+  }
+}
+
+
+/**
+ * Object that has the logic responsible
+ * for dragging and dropping all video items
+ */
 const dragObjectLogic = {
 
   start : function (event, helper){
@@ -214,10 +294,11 @@ const dragObjectLogic = {
     
   },
 
-  // drag: function (event, helper) {
-      
-  // },
-  
+  /*
+  drag: function (event, helper) {
+  },
+  */
+
   stop : function (event, helper) {
     event.target.style.boxShadow = 'none'
     event.target.style.transform = 'scale(1)'
@@ -236,11 +317,11 @@ const dragObjectLogic = {
       })
       event.target.addEventListener('click', (ctx) => {
         ctx.target.currentTime = ctx.offsetX * ctx.target.duration / ctx.target.clientWidth
-        window.currentlyPlaying = false
+        setCurrentlyPlaying(false)
         currentVideoSelectedForPlayback.data.videoCore.pause()
         ctx.target.classList.forEach(cls => {
           if (cls.slice(0, 3) === 'id-') {
-            /* assigning the corresponding video to play */
+            /* Assigning the corresponding video to play */
             currentVideoSelectedForPlayback = window.references[cls.slice(3, cls.length)]
           }
         })

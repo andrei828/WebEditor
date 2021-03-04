@@ -2,7 +2,7 @@
 $(function() {
   tooltipDuration = document.querySelector('.tooltip-duration')
   
-  canvas = document.querySelector("#timeline-canvas")
+  var canvas = document.querySelector("#timeline-canvas")
   var ctx = canvas.getContext('2d')
 
   canvas.width = window.innerWidth
@@ -41,7 +41,6 @@ $(function() {
     /**
      * Label for current video time
      */
-    ctx.font = "10px";
     if (window.currentVideoTime) {
       // ctx.fillText(`${window.currentVideoTime.toFixed(2)} seconds`, event.clientX + 20, 20)
       tooltipDuration.style.display = 'block'
