@@ -137,6 +137,7 @@ body{
     min-width: 100px;
     /* min-width: 200px; */
     animation: popwidth 0.1s;
+    transition: popwidth 0.2s;
 }
 
 video {

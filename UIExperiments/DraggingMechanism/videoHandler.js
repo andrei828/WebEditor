@@ -295,8 +295,10 @@ const dragObjectLogic = {
 
   start : function (event, helper){
     if (2 * event.pageY > $(window).height()) {
-      event.target.style.position = 'absolute'
+      // event.target.style.position = 'absolute'
     }
+
+    timelinePlaceholder.style.width = `${event.target.duration*10}px`
     event.target.style.zIndex = '150'
     event.target.style.animation = 'pickup 0.5s'
     event.target.style.boxShadow = '0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22'
@@ -311,7 +313,9 @@ const dragObjectLogic = {
       timelinePlaceholder.style.display = 'block'
       childrenNodesTimeline = $('.timeline').children()
       if (!childrenNodesTimeline.length) {
-        $('.timeline').prepend(timelinePlaceholder)
+        if ($('.timeline').last()[0] !== timelinePlaceholder) {
+          $('.timeline').prepend(timelinePlaceholder)
+        }
       } else {
 
         let refNode = null;
@@ -323,9 +327,13 @@ const dragObjectLogic = {
         }
 
         if (refNode) {
-          $(timelinePlaceholder).insertBefore(child)
+          if ($(child).prev()[0] !== timelinePlaceholder) {
+            $(timelinePlaceholder).insertBefore(child)
+          }
         } else {
-          $('.timeline').append(timelinePlaceholder)
+          if (childrenNodesTimeline.last()[0] !== timelinePlaceholder) {
+            $('.timeline').append(timelinePlaceholder)
+          }
         }
         
 
@@ -341,6 +349,7 @@ const dragObjectLogic = {
     event.target.style.transform = 'scale(1)'
     
     if (2 * event.pageY > $(window).height()) {
+      $('.timeline').find(timelinePlaceholder).remove()
       event.target.classList.remove('item')
       event.target.classList.add('timeline-item')
       event.target.style.animation = 'fadein 0.5s'
@@ -396,20 +405,22 @@ const dragObjectLogic = {
       window.timeline = null;
       childrenNodesTimeline = $('.timeline').children()
       for (child of childrenNodesTimeline) {
-        resource = buildVideoResource(child, "***")
-        if (!window.timeline) {
-          window.timeline = new TimelineNode(resource)
-          iterator = window.timeline
-        } else {
-          iterator.next = new TimelineNode(resource)
-          iterator = iterator.next
-        }
-        currentVideoSelectedForPlayback = window.timeline
-        iterator.data.videoCore.classList.forEach(cls => {
-          if (cls.slice(0, 3) === 'id-') {
-            window.references[cls.slice(3, cls.length)] = iterator
+        if (child !== timelinePlaceholder) {
+          resource = buildVideoResource(child, "***")
+          if (!window.timeline) {
+            window.timeline = new TimelineNode(resource)
+            iterator = window.timeline
+          } else {
+            iterator.next = new TimelineNode(resource)
+            iterator = iterator.next
           }
-        })
+          currentVideoSelectedForPlayback = window.timeline
+          iterator.data.videoCore.classList.forEach(cls => {
+            if (cls.slice(0, 3) === 'id-') {
+              window.references[cls.slice(3, cls.length)] = iterator
+            }
+          })
+        }
       }
 
     } else {
