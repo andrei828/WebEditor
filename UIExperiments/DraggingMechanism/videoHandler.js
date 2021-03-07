@@ -29,7 +29,6 @@ window.onload = () => {
   timelinePlaceholder = document.createElement('div')
   timelinePlaceholder.classList.add('timeline-item')
   
-
   /* References to the timeline canvas */
   timelineCanvas = document.querySelector('#timeline-canvas')
   timelineCanvasCtx = timelineCanvas.getContext('2d')
@@ -150,6 +149,9 @@ function playVideo(video, timelineNode) {
       /* Starting next video from the beginning */
       timelineNode.data.videoCore.currentTime = 0
 
+      /* Updating the currentVideoSelectedForPlayback variable */
+      currentVideoSelectedForPlayback = timelineNode
+
       /* Playing the next frame */
       playVideo(timelineNode.data.videoCore, timelineNode.next)
     } else {
@@ -193,7 +195,6 @@ function renderCurrentPlaybackBar(videoElement) {
  * to the resources list
  */
 function renderResourcesBlock() {
-  
   for (id in resources) {
     elem = document.createElement('video')
     source = document.createElement('source')
@@ -263,6 +264,12 @@ function getVideoThumbnail(video, canvas) {
 function setCurrentlyPlaying(value) {
   window.currentlyPlaying = value
 
+  try {
+    currentVideoSelectedForPlayback.data.videoCore.pause()
+  } catch (error) {
+    /* No video is currently playing */
+  }
+
   /* Updating the controls from the preview canvas */
   setPlaybackControlState(value)
 }
@@ -279,7 +286,6 @@ function setPlaybackControlState(value) {
     playButton.style.display = NONE
     pauseButton.style.display = INLINE
   } else {
-    console.log(value)
     /* video is paused */
     playButton.style.display = INLINE
     pauseButton.style.display = NONE
@@ -295,16 +301,17 @@ const dragObjectLogic = {
 
   start : function (event, helper){
     if (2 * event.pageY > $(window).height()) {
-      // event.target.style.position = 'absolute'
+      document.querySelector('.dragging-item').style.top = `${helper.offset.top}px`
+      document.querySelector('.dragging-item').style.left = `${helper.offset.left}px`
+      $('.dragging-item').append(event.target)
     }
-
+    setCurrentlyPlaying(false)
     timelinePlaceholder.style.width = `${event.target.duration*10}px`
     event.target.style.zIndex = '150'
     event.target.style.animation = 'pickup 0.5s'
     event.target.style.boxShadow = '0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22'
     event.target.style.transform = 'scale(1.15)'
     event.target.style.transition = 'none'
-    
   },
 
   
@@ -335,8 +342,7 @@ const dragObjectLogic = {
             $('.timeline').append(timelinePlaceholder)
           }
         }
-        
-
+        // $(timelinePlaceholder).append(event.target)
       }
     }
   },
@@ -344,12 +350,13 @@ const dragObjectLogic = {
 
   stop : function (event, helper) {
     timelinePlaceholder.style.display = 'none'
+    event.target.style.position = 'relative'
     event.target.style.boxShadow = 'none'
     event.target.style.position = 'relative'
     event.target.style.transform = 'scale(1)'
     
     if (2 * event.pageY > $(window).height()) {
-      $('.timeline').find(timelinePlaceholder).remove()
+      $(timelinePlaceholder).replaceWith(event.target)
       event.target.classList.remove('item')
       event.target.classList.add('timeline-item')
       event.target.style.animation = 'fadein 0.5s'
@@ -364,10 +371,8 @@ const dragObjectLogic = {
       event.target.addEventListener('click', (ctx) => {
         ctx.target.currentTime = ctx.offsetX * ctx.target.duration / ctx.target.clientWidth
       
-        if (window.currentlyPlaying) {
-          currentVideoSelectedForPlayback.data.videoCore.pause()
-          setCurrentlyPlaying(false)
-        }
+        setCurrentlyPlaying(false)
+        
         ctx.target.classList.forEach(cls => {
           if (cls.slice(0, 3) === 'id-') {
             /* Assigning the corresponding video to play */
@@ -377,28 +382,8 @@ const dragObjectLogic = {
         // renderCurrentPlaybackBar(ctx.target)
         renderUIAfterFrameChange(ctx.target)
       })
+
       childrenNodesTimeline = $('.timeline').children()
-
-      if (!childrenNodesTimeline.length) {
-        $('.timeline').prepend(event.target)
-      } else {
-
-        let refNode = null;
-        for (child of childrenNodesTimeline) {
-          if (child != event.target && child.offsetLeft + child.clientWidth / 2 > helper.offset.left) {
-            refNode = child
-            break;
-          }
-        }
-
-        if (refNode) {
-          $(event.target).insertBefore(child)
-        } else {
-          $('.timeline').append(event.target)
-        }
-        event.target.style.transition = 'none'
-
-      }
 
       // TODO: optimize linked list creation (IMPORTANT!)
       let iterator = null;
@@ -414,7 +399,7 @@ const dragObjectLogic = {
             iterator.next = new TimelineNode(resource)
             iterator = iterator.next
           }
-          currentVideoSelectedForPlayback = window.timeline
+          
           iterator.data.videoCore.classList.forEach(cls => {
             if (cls.slice(0, 3) === 'id-') {
               window.references[cls.slice(3, cls.length)] = iterator
@@ -422,13 +407,16 @@ const dragObjectLogic = {
           })
         }
       }
-
+      
     } else {
       event.target.style.transition = '0.5s'
     }
 
     event.target.style.left = '0';
     event.target.style.top = '0';
+
+    currentVideoSelectedForPlayback = window.timeline
+    currentVideoSelectedForPlayback.data.videoCore.currentTime = 0
   }
 
 };
