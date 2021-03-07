@@ -382,6 +382,10 @@ const dragObjectLogic = {
         // renderCurrentPlaybackBar(ctx.target)
         renderUIAfterFrameChange(ctx.target)
       })
+      event.target.addEventListener('contextmenu', function(e) {
+        alert("You've tried to open context menu"); //here you draw your own menu
+        e.preventDefault();
+      }, false);
 
       childrenNodesTimeline = $('.timeline').children()
 
