@@ -112,7 +112,7 @@ function triggerPlayVideo() {
     
     if (window.currentlyPlaying) {
       // TODO: replace top line with the logic below after its implemented        
-      playVideo(video.data.videoCore, video.next)
+      playVideo(video)
     } else {
       video.data.videoCore.pause()
     }
@@ -139,7 +139,11 @@ function renderUIAfterFrameChange(video) {
 }
 
 // TODO: change the parameters to only use the current node
-function playVideo(video, timelineNode) {
+function playVideo(videoTimeline) {
+
+  const video = videoTimeline.data.videoCore
+  const timelineNode = videoTimeline.next
+
   loop = () => {
     if (!window.currentlyPlaying) {
       return
@@ -147,13 +151,13 @@ function playVideo(video, timelineNode) {
 
     if (video.duration === video.currentTime && timelineNode) {
       /* Starting next video from the beginning */
-      timelineNode.data.videoCore.currentTime = 0
+      timelineNode.data.videoCore.currentTime = timelineNode.data.metadata.startTime
 
       /* Updating the currentVideoSelectedForPlayback variable */
       currentVideoSelectedForPlayback = timelineNode
 
       /* Playing the next frame */
-      playVideo(timelineNode.data.videoCore, timelineNode.next)
+      playVideo(timelineNode)
     } else {
       /* Updating the UI */
       renderUIAfterFrameChange(video)
@@ -223,7 +227,9 @@ function buildVideoResourceByPath(path, title) {
     videoCore: video,
     metadata: {
       path: path,
-      title: title
+      title: title,
+      startTime: 0,
+      endTime: video.duration
     }
   }
 }
@@ -234,12 +240,14 @@ function buildVideoResourceByPath(path, title) {
  * @param element HTML video element
  * @param title of the video resource
  */
-function buildVideoResource(video, title) {
+function buildVideoResource(video, title, startTime = 0, endTime = video.duration) {
   return {
     videoCore: video,
     metadata: {
       path: video.currentSrc,
-      title: title
+      title: title,
+      startTime: startTime,
+      endTime: endTime
     }
   }
 }
