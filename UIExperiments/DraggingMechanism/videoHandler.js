@@ -142,6 +142,7 @@ function renderUIAfterFrameChange(video) {
 function playVideo(videoTimeline) {
 
   const video = videoTimeline.data.videoCore
+  const videoEndTime = videoTimeline.data.metadata.endTime
   const timelineNode = videoTimeline.next
 
   loop = () => {
@@ -149,7 +150,7 @@ function playVideo(videoTimeline) {
       return
     }
 
-    if (video.duration === video.currentTime && timelineNode) {
+    if (videoEndTime === video.currentTime && timelineNode) {
       /* Starting next video from the beginning */
       timelineNode.data.videoCore.currentTime = timelineNode.data.metadata.startTime
 
@@ -211,6 +212,43 @@ function renderResourcesBlock() {
   }
 }
 
+/**
+ * Renders an item
+ * on the timeline canvas
+ */
+function renderTimelineBlock(videoObject, id) {
+  // .target.classList.remove('item')
+  //     event.target.classList.add('timeline-item')
+  //     event.target.style.animation = 'fadein 0.5s'
+  //     event.target.style.transition = '1s'
+  //     event.target.style.width = `${event.target.duration*10}px`
+  elem = document.createElement('video')
+  source = document.createElement('source')
+  source.src = videoObject.data.metadata.path
+  source.style.width = `${videoObject.data.metadata.duration*10}px`
+  elem.classList.add('timeline-item')
+  elem.classList.add(`id-${id}`)
+  elem.append(source)
+  elem.currentTime = videoObject.data.metadata.startTime
+  elem.style.left = '0';
+  elem.style.top = '0';
+  $(elem).draggable(dragObjectLogic)
+  elem.addEventListener('mousemove', (ctx) => {
+    timelineMove(ctx)
+  })
+  elem.addEventListener('mouseleave', (ctx) => {
+    timelineLeave(ctx)
+  })
+  elem.addEventListener('click', (ctx) => {
+    timelineClick(ctx)
+  })
+  elem.addEventListener('contextmenu', function(ctx) {
+    timelineRightClick(ctx)
+  }, false);
+  
+  return elem
+}
+
 
 /**
  * Method that returns an object with all
@@ -229,7 +267,8 @@ function buildVideoResourceByPath(path, title) {
       path: path,
       title: title,
       startTime: 0,
-      endTime: video.duration
+      endTime: video.duration,
+      duration: video.duration
     }
   }
 }
@@ -241,13 +280,16 @@ function buildVideoResourceByPath(path, title) {
  * @param title of the video resource
  */
 function buildVideoResource(video, title, startTime = 0, endTime = video.duration) {
+  console.log(video, 'hehehe')
+  console.log(video.currentSrc, title)
   return {
     videoCore: video,
     metadata: {
       path: video.currentSrc,
       title: title,
       startTime: startTime,
-      endTime: endTime
+      endTime: endTime, 
+      duration: endTime - startTime
     }
   }
 }
@@ -300,6 +342,45 @@ function setPlaybackControlState(value) {
   }
 }
 
+function timelineMove(ctx) {
+  window.currentVideoTime = ctx.offsetX * ctx.target.duration / ctx.target.clientWidth
+}
+
+function timelineLeave(ctx) {
+  window.currentVideoTime = null
+}
+
+function timelineClick(ctx) {
+  ctx.target.currentTime = ctx.offsetX * ctx.target.duration / ctx.target.clientWidth
+      
+  setCurrentlyPlaying(false)
+  
+  ctx.target.classList.forEach(cls => {
+    if (cls.slice(0, 3) === 'id-') {
+      /* Assigning the corresponding video to play */
+      currentVideoSelectedForPlayback = window.references[cls.slice(3, cls.length)]
+    }
+  })
+  renderUIAfterFrameChange(ctx.target)
+}
+
+function timelineRightClick(ctx) {
+  ctx.preventDefault()
+  const id = getUniqueID()
+  const newStartTime = ctx.offsetX * ctx.target.duration / ctx.target.clientWidth;
+  const resource = new TimelineNode(buildVideoResource(ctx.target, "***", newStartTime))
+  const htmlElem = renderTimelineBlock(resource, id)
+  window.references[id] = resource
+  $(ctx.target).after(htmlElem)
+
+  ctx.target.classList.forEach(cls => {
+    if (cls.slice(0, 3) === 'id-') {
+      const previous = window.references[cls.slice(3, cls.length)]
+      resource.next = previous.next
+      previous.next = resource
+    }
+  })
+}
 
 /**
  * Object that has the logic responsible
@@ -350,7 +431,6 @@ const dragObjectLogic = {
             $('.timeline').append(timelinePlaceholder)
           }
         }
-        // $(timelinePlaceholder).append(event.target)
       }
     }
   },
@@ -360,7 +440,6 @@ const dragObjectLogic = {
     timelinePlaceholder.style.display = 'none'
     event.target.style.position = 'relative'
     event.target.style.boxShadow = 'none'
-    event.target.style.position = 'relative'
     event.target.style.transform = 'scale(1)'
     
     if (2 * event.pageY > $(window).height()) {
@@ -371,28 +450,16 @@ const dragObjectLogic = {
       event.target.style.transition = '1s'
       event.target.style.width = `${event.target.duration*10}px`
       event.target.addEventListener('mousemove', (ctx) => {
-        window.currentVideoTime = ctx.offsetX * ctx.target.duration / ctx.target.clientWidth
+        timelineMove(ctx)
       })
       event.target.addEventListener('mouseleave', (ctx) => {
-        window.currentVideoTime = null
+        timelineLeave(ctx)
       })
       event.target.addEventListener('click', (ctx) => {
-        ctx.target.currentTime = ctx.offsetX * ctx.target.duration / ctx.target.clientWidth
-      
-        setCurrentlyPlaying(false)
-        
-        ctx.target.classList.forEach(cls => {
-          if (cls.slice(0, 3) === 'id-') {
-            /* Assigning the corresponding video to play */
-            currentVideoSelectedForPlayback = window.references[cls.slice(3, cls.length)]
-          }
-        })
-        // renderCurrentPlaybackBar(ctx.target)
-        renderUIAfterFrameChange(ctx.target)
+        timelineClick(ctx)
       })
-      event.target.addEventListener('contextmenu', function(e) {
-        alert("You've tried to open context menu"); //here you draw your own menu
-        e.preventDefault();
+      event.target.addEventListener('contextmenu', function(ctx) {
+        timelineRightClick(ctx)
       }, false);
 
       childrenNodesTimeline = $('.timeline').children()
@@ -428,7 +495,7 @@ const dragObjectLogic = {
     event.target.style.top = '0';
 
     currentVideoSelectedForPlayback = window.timeline
-    currentVideoSelectedForPlayback.data.videoCore.currentTime = 0
+    currentVideoSelectedForPlayback.data.videoCore.currentTime = currentVideoSelectedForPlayback.data.metadata.startTime
   }
 
 };
