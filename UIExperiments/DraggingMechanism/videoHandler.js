@@ -205,10 +205,10 @@ function renderResourcesBlock() {
     source = document.createElement('source')
     source.src = resources[id].metadata.path
     elem.classList.add('item')
-    elem.classList.add(`id-${id}`)
+    elem.id = id
     elem.append(source)
     $('.resources-list').append(elem)
-    $(`.id-${id}`).draggable(dragObjectLogic)
+    $(elem).draggable(dragObjectLogic)
   }
 }
 
@@ -227,7 +227,7 @@ function renderTimelineBlock(videoObject, id) {
   source.src = videoObject.data.metadata.path
   source.style.width = `${videoObject.data.metadata.duration*10}px`
   elem.classList.add('timeline-item')
-  elem.classList.add(`id-${id}`)
+  elem.id = id
   elem.append(source)
   elem.currentTime = videoObject.data.metadata.startTime
   elem.style.left = '0';
@@ -354,13 +354,7 @@ function timelineClick(ctx) {
   ctx.target.currentTime = ctx.offsetX * ctx.target.duration / ctx.target.clientWidth
       
   setCurrentlyPlaying(false)
-  
-  ctx.target.classList.forEach(cls => {
-    if (cls.slice(0, 3) === 'id-') {
-      /* Assigning the corresponding video to play */
-      currentVideoSelectedForPlayback = window.references[cls.slice(3, cls.length)]
-    }
-  })
+  currentVideoSelectedForPlayback = window.references[ctx.target.id]
   renderUIAfterFrameChange(ctx.target)
 }
 
@@ -373,13 +367,9 @@ function timelineRightClick(ctx) {
   window.references[id] = resource
   $(ctx.target).after(htmlElem)
 
-  ctx.target.classList.forEach(cls => {
-    if (cls.slice(0, 3) === 'id-') {
-      const previous = window.references[cls.slice(3, cls.length)]
-      resource.next = previous.next
-      previous.next = resource
-    }
-  })
+  const previous = window.references[ctx.target.id]
+  resource.next = previous.next
+  previous.next = resource
 }
 
 /**
@@ -479,11 +469,7 @@ const dragObjectLogic = {
             iterator = iterator.next
           }
           
-          iterator.data.videoCore.classList.forEach(cls => {
-            if (cls.slice(0, 3) === 'id-') {
-              window.references[cls.slice(3, cls.length)] = iterator
-            }
-          })
+          window.references[iterator.data.videoCore.id] = iterator
         }
       }
       
