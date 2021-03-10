@@ -195,20 +195,12 @@ function renderCurrentPlaybackBar(videoNode) {
     window.currentPlaybackTime - 5, 0, 
     window.currentPlaybackTime + 2, timelineCanvas.height
   )
-  let currentTime;
-  // if (videoNode.data.videoCore.currentTime > videoNode.data.videoCore.startTime) {
-    currentTime = videoNode.data.videoCore.currentTime - videoNode.data.metadata.startTime
-  // } else {
-  //   currentTime = videoNode.data.videoCore.startTime
-  // }
-  console.log(currentTime, videoNode)
+  
+  let currentTime = videoNode.data.videoCore.currentTime - videoNode.data.metadata.startTime
+
   window.currentPlaybackTime = videoElement.offsetLeft + 
     (currentTime * videoElement.clientWidth / videoNode.data.metadata.duration)
   
-    // console.log("current time", videoElement.currentTime, "start", videoNode.data.metadata.startTime,
-  // "duration", videoNode.data.metadata.endTime)
-  // window.currentPlaybackTime = videoElement.offsetLeft + 
-  //   (videoElement.currentTime * videoElement.clientWidth / videoElement.duration)
 
   timelineCanvasCtx.beginPath()
   timelineCanvasCtx.moveTo(window.currentPlaybackTime, 0)
@@ -262,7 +254,7 @@ function renderTimelineBlock(videoObject, id) {
   elem.addEventListener('contextmenu', function(ctx) {
     timelineRightClick(ctx)
   }, false);
-  console.log('----', videoObject)
+
   return elem
 }
 
@@ -372,7 +364,7 @@ function timelineClick(ctx) {
   // ctx.target.currentTime = ctx.offsetX * ctx.target.duration / ctx.target.clientWidth
       
   setCurrentlyPlaying(false)
-  console.log(window.currentVideoTime)
+
   currentVideoSelectedForPlayback = window.references[ctx.target.id]
   renderUIAfterFrameChange(currentVideoSelectedForPlayback)
 }
@@ -397,17 +389,24 @@ function timelineRightClick(ctx) {
   $(ctx.target).after(firstHtmlElem)
   $(firstHtmlElem).after(htmlElem)
   
-  let previous = window.references[ctx.target.id].prev
   firstSplitItem.next = splitItem
-  splitItem.next = previous.
-  previous.next = firstSplitItem
+  splitItem.prev = firstSplitItem
+
+  let previous = window.references[ctx.target.id].prev
+  if (previous) {
+    splitItem.next = previous.next.next
+    previous.next = firstSplitItem
+    firstSplitItem.prev = previous
+  } else {
+    firstSplitItem.prev = null
+    window.timeline = firstSplitItem
+  }
+
   $(ctx.target).remove()
-  // splitItem.next = previous.next
-  // previous.next = splitItem
 
   currentVideoSelectedForPlayback = window.timeline
   currentVideoSelectedForPlayback.data.videoCore.currentTime = currentVideoSelectedForPlayback.data.metadata.startTime
-  console.log(window.timeline)
+  
 }
 
 /**
@@ -544,7 +543,6 @@ const dragObjectLogic = {
 
     currentVideoSelectedForPlayback = window.timeline
     currentVideoSelectedForPlayback.data.videoCore.currentTime = currentVideoSelectedForPlayback.data.metadata.startTime
-    // console.log(window.timeline)
   }
 
 };
