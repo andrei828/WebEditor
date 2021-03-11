@@ -289,14 +289,15 @@ function buildVideoResourceByPath(path, title) {
  * @param title of the video resource
  */
 function buildVideoResource(video, title, startTime = 0, endTime = 0) {
+  const duration = (window.references[video.id]) ? window.references[video.id].data.metadata.duration : video.duration
   return {
     videoCore: video,
     metadata: {
       path: video.currentSrc,
       title: title,
       startTime: startTime,
-      endTime: (endTime) ? endTime : video.duration, 
-      duration: (endTime) ? endTime - startTime : video.duration - startTime
+      endTime: (endTime) ? endTime : duration, 
+      duration: (endTime) ? endTime - startTime : duration - startTime
     }
   }
 }
@@ -375,8 +376,8 @@ function timelineRightClick(ctx) {
   const firstId = getUniqueID()
   const newStartTime = ctx.offsetX * window.references[ctx.target.id].data.metadata.duration / ctx.target.clientWidth
   // const newStartTime = ctx.offsetX * ctx.target.duration / ctx.target.clientWidth;
-  const splitItem = new TimelineNode(buildVideoResource(ctx.target, "***", newStartTime, window.references[ctx.target.id].data.metadata.endTime))
-  const firstSplitItem = new TimelineNode(buildVideoResource(ctx.target, "***", window.references[ctx.target.id].data.metadata.startTime, newStartTime))
+  const splitItem = new TimelineNode(buildVideoResource(ctx.target, "***", window.references[ctx.target.id].data.metadata.startTime + newStartTime, window.references[ctx.target.id].data.metadata.endTime))
+  const firstSplitItem = new TimelineNode(buildVideoResource(ctx.target, "***", window.references[ctx.target.id].data.metadata.startTime, window.references[ctx.target.id].data.metadata.endTime - newStartTime))
   const htmlElem = renderTimelineBlock(splitItem, id)
   const firstHtmlElem = renderTimelineBlock(firstSplitItem, firstId)
   firstSplitItem.data.videoCore = firstHtmlElem
