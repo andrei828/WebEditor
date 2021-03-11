@@ -377,13 +377,11 @@ function timelineRightClick(ctx) {
   const newStartTime = ctx.offsetX * window.references[ctx.target.id].data.metadata.duration / ctx.target.clientWidth
   // const newStartTime = ctx.offsetX * ctx.target.duration / ctx.target.clientWidth;
   const splitItem = new TimelineNode(buildVideoResource(ctx.target, "***", window.references[ctx.target.id].data.metadata.startTime + newStartTime, window.references[ctx.target.id].data.metadata.endTime))
-  const firstSplitItem = new TimelineNode(buildVideoResource(ctx.target, "***", window.references[ctx.target.id].data.metadata.startTime, window.references[ctx.target.id].data.metadata.endTime - newStartTime))
+  const firstSplitItem = new TimelineNode(buildVideoResource(ctx.target, "***", window.references[ctx.target.id].data.metadata.startTime, window.references[ctx.target.id].data.metadata.startTime + newStartTime))
   const htmlElem = renderTimelineBlock(splitItem, id)
   const firstHtmlElem = renderTimelineBlock(firstSplitItem, firstId)
   firstSplitItem.data.videoCore = firstHtmlElem
   splitItem.data.videoCore = htmlElem
-
-  
   
   window.references[id] = splitItem
   window.references[firstId] = firstSplitItem
