@@ -370,42 +370,74 @@ function timelineClick(ctx) {
   renderUIAfterFrameChange(currentVideoSelectedForPlayback)
 }
 
+
 function timelineRightClick(ctx) {
   ctx.preventDefault()
-  const id = getUniqueID()
-  const firstId = getUniqueID()
-  const newStartTime = ctx.offsetX * window.references[ctx.target.id].data.metadata.duration / ctx.target.clientWidth
-  // const newStartTime = ctx.offsetX * ctx.target.duration / ctx.target.clientWidth;
-  const splitItem = new TimelineNode(buildVideoResource(ctx.target, "***", window.references[ctx.target.id].data.metadata.startTime + newStartTime, window.references[ctx.target.id].data.metadata.endTime))
-  const firstSplitItem = new TimelineNode(buildVideoResource(ctx.target, "***", window.references[ctx.target.id].data.metadata.startTime, window.references[ctx.target.id].data.metadata.startTime + newStartTime))
-  const htmlElem = renderTimelineBlock(splitItem, id)
-  const firstHtmlElem = renderTimelineBlock(firstSplitItem, firstId)
-  firstSplitItem.data.videoCore = firstHtmlElem
-  splitItem.data.videoCore = htmlElem
-  
-  window.references[id] = splitItem
-  window.references[firstId] = firstSplitItem
-  $(ctx.target).after(firstHtmlElem)
-  $(firstHtmlElem).after(htmlElem)
-  
-  firstSplitItem.next = splitItem
-  splitItem.prev = firstSplitItem
 
-  let previous = window.references[ctx.target.id].prev
-  if (previous) {
-    splitItem.next = previous.next.next
-    previous.next = firstSplitItem
-    firstSplitItem.prev = previous
-  } else {
-    firstSplitItem.prev = null
-    window.timeline = firstSplitItem
+  /* Generating the unique ids for the elements */
+  const firstHalfId = getUniqueID()
+  const secondHalfId = getUniqueID()
+  
+  /* Accessing key members for rendering */
+  const targetNode = window.references[ctx.target.id]
+  const targetNodeEnd = targetNode.data.metadata.endTime
+  const targetNodeStart = targetNode.data.metadata.startTime
+  
+  /* Calculating the split moment relative to the current target */
+  const newStartTime = ctx.offsetX * 
+    targetNode.data.metadata.duration / ctx.target.clientWidth
+  
+  /* Generating the new TimelineNodes */
+  const splitTime = targetNodeStart + newStartTime
+  const firstHalfNode = new TimelineNode(
+    buildVideoResource(ctx.target, "***", targetNodeStart, splitTime)
+  )
+  const secondHalfNode = new TimelineNode(
+    buildVideoResource(ctx.target, "***", splitTime, targetNodeEnd)
+  )
+
+  /* Generating the new HTML elements */
+  const firstHalfElement = renderTimelineBlock(firstHalfNode, firstHalfId)
+  const secondHalfElement = renderTimelineBlock(secondHalfNode, secondHalfId)
+
+  /* Assigning the videoCore value to the new generated elements */
+  firstHalfNode.data.videoCore = firstHalfElement
+  secondHalfNode.data.videoCore = secondHalfElement
+
+  /* Updating the refereneces hashmap */
+  window.references[firstHalfId] = firstHalfNode
+  window.references[secondHalfId] = secondHalfNode
+
+  /* Appending the new elements to DOM */
+  $(ctx.target).after(firstHalfElement)
+  $(firstHalfElement).after(secondHalfElement)
+
+  /* Linking the new nodes to the timeline doubly linked list */
+  firstHalfNode.next = secondHalfNode
+  firstHalfNode.prev = targetNode.prev
+  secondHalfNode.prev = firstHalfNode
+  secondHalfNode.next = targetNode.next
+  
+  /* If there exists an element after the split */
+  if (targetNode.next) {
+    targetNode.next.prev = secondHalfNode
   }
 
-  $(ctx.target).remove()
+  /* If there exists an element before the split */
+  if (previous = targetNode.prev) {
+    previous.next = firstHalfNode
+  } else {
+    window.timeline = firstHalfNode
+  }
 
+  /* Removing the current target */
+  $(ctx.target).remove()
+  delete window.references[ctx.target.id]
+
+  /* Restarting the timeline playback */
   currentVideoSelectedForPlayback = window.timeline
-  currentVideoSelectedForPlayback.data.videoCore.currentTime = currentVideoSelectedForPlayback.data.metadata.startTime
-  
+  currentVideoSelectedForPlayback.data.videoCore.currentTime = 
+    currentVideoSelectedForPlayback.data.metadata.startTime
 }
 
 /**
