@@ -47,12 +47,18 @@ window.onload = () => {
 
   /* Context menu HTML element */
   contextMenu = document.querySelector('#context-menu')
-  splitVideoBtn = document.querySelector('#split-video')
   $(document).bind('click', function() { 
     $(contextMenu).hide()
-    
   })
+
+  splitVideoBtn = document.querySelector('#split-video')
   splitVideoBtn.addEventListener('click', () => splitVideo(window.rightClickCtx))
+
+  trimVideoBtn = document.querySelector('#trim-video')
+  trimVideoBtn.addEventListener('click', () => renderTrimBars(window.rightClickCtx))
+
+  trimDoneBtn = document.querySelector('#trim-modal-done')
+  trimDoneBtn.addEventListener('click', doneTrimming)
 
   /* In the beginning, no video is currently playing */
   currentVideoSelectedForPlayback = null
@@ -268,6 +274,58 @@ function renderTimelineBlock(videoObject, id) {
   return elem
 }
 
+function doneTrimming(ctx) {
+  modal = document.querySelector('#trim-modal')
+  modal.style.display = 'none'
+  modal.parentNode.replaceChild(modal.cloneNode(true), modal)
+  
+  trimDoneBtn = document.querySelector('#trim-modal-done')
+  trimDoneBtn.addEventListener('click', doneTrimming)
+}
+
+function renderTrimBars(ctx) {
+  modal = document.querySelector('#trim-modal')
+  modal.style.display = 'block'
+  modal.style.left = `${ctx.target.getBoundingClientRect().left}px`
+  modal.style.top = `${ctx.target.getBoundingClientRect().top}px`
+  modal.style.width = `${ctx.target.clientWidth}px`
+  const BORDER_SIZE = 10;
+  var panel = modal
+  let m_pos;
+  function resizeLeft(e) {
+    if (e.x >= ctx.target.getBoundingClientRect().left) {
+      var dx = m_pos - e.x
+      m_pos = e.x
+      panel.style.left = (parseInt(getComputedStyle(panel, '').left) - dx) + "px"
+      panel.style.width = (parseInt(getComputedStyle(panel, '').width) + dx) + "px"
+    }
+  }
+
+  function resizeRight(e) {
+    if (e.x <= ctx.target.getBoundingClientRect().right) {
+      var dx = m_pos - e.x
+      m_pos = e.x
+      panel.style.width = (parseInt(getComputedStyle(panel, '').width) - dx) + "px"
+    }
+  }
+
+  function mouseDown(e) {
+    if (e.offsetX < BORDER_SIZE) {
+      m_pos = e.x
+      document.addEventListener("mousemove", resizeLeft, false)
+    } else if (e.offsetX > parseInt(getComputedStyle(panel, '').width) - BORDER_SIZE) {
+      m_pos = e.x
+      document.addEventListener("mousemove", resizeRight, false)
+    }
+  }
+  
+  panel.addEventListener("mousedown", mouseDown, false);
+
+  document.addEventListener("mouseup", function() {
+    document.removeEventListener("mousemove", resizeLeft, false);
+    document.removeEventListener("mousemove", resizeRight, false);
+  }, false);
+}
 
 /**
  * Method that returns an object with all
@@ -550,7 +608,7 @@ const dragObjectLogic = {
       event.target.addEventListener('click', (ctx) => {
         timelineClick(ctx)
       })
-      event.target.addEventListener('contextmenu', function(ctx) {
+      event.target.addEventListener('contextmenu', (ctx) => {
         timelineClick(ctx)
         rightClickMenu(ctx)
       }, false);

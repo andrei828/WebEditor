@@ -2,6 +2,10 @@ body {
     margin: 0px;
     height: 100%;
     font-family: Georgia, serif;
+    -webkit-user-select: none;
+     -moz-user-select: -moz-none;
+      -ms-user-select: none;
+          user-select: none;
 }
 
 .edit-workspace {
@@ -137,16 +141,67 @@ body {
 
 .timeline-item {
     position: relative;
-    /* margin: 5px; */
     border: solid 1px #000;
     border-radius: 10px;
     background-image: linear-gradient(45deg, #d9d9d9 16.67%, #000000 16.67%, #000000 33.33%, #fff 33.33%, #fff 50%, #d9d9d9 50%, #d9d9d9 66.67%, #000000 66.67%, #000000 83.33%, #fff 83.33%, #fff 100%);
     display: inline-block;
     height: 100px;
     min-width: 100px;
-    /* min-width: 200px; */
     animation: popwidth 0.1s;
     transition: popwidth 0.2s;
+}
+
+#trim-modal {
+    width: 300px;
+    height: 100px;
+    border-radius: 10px;
+    backdrop-filter: blur(2px);
+    position: absolute;
+    display: none;
+}
+
+#trim-modal:after {
+    content: " ";
+    background-color: #ccc;
+    position: absolute;
+    right: 0;
+    width: 10px;
+    height: 100%;
+    cursor: ew-resize;
+    border-radius: 10px;
+}
+
+#trim-modal:before {
+    content: " ";
+    background-color: #ccc;
+    position: absolute;
+    left: 0;
+    width: 10px;
+    height: 100%;
+    cursor: ew-resize;
+    border-radius: 10px;
+}
+
+#trim-modal-start-time {
+    float: left;
+    transform: translate(-15px, -25px);
+}
+
+#trim-modal-end-time {
+    float: right;
+    transform: translate(15px, -25px);
+}
+
+#trim-modal-done {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 50px);
+    bottom: 0;
+    background-color: #fff;
+    padding-top: 5px;
+    padding-right: 10px;
+    padding-left: 10px;
+    padding-bottom: 5px;
 }
 
 #context-menu {
