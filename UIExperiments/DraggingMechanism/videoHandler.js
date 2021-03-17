@@ -45,6 +45,15 @@ window.onload = () => {
   pauseButton = document.querySelector('.preview-pause')
   forwardButton = document.querySelector('.preview-forward')
 
+  /* Context menu HTML element */
+  contextMenu = document.querySelector('#context-menu')
+  splitVideoBtn = document.querySelector('#split-video')
+  $(document).bind('click', function() { 
+    $(contextMenu).hide()
+    
+  })
+  splitVideoBtn.addEventListener('click', () => splitVideo(window.rightClickCtx))
+
   /* In the beginning, no video is currently playing */
   currentVideoSelectedForPlayback = null
   
@@ -252,7 +261,8 @@ function renderTimelineBlock(videoObject, id) {
     timelineClick(ctx)
   })
   elem.addEventListener('contextmenu', function(ctx) {
-    timelineRightClick(ctx)
+    timelineClick(ctx)
+    rightClickMenu(ctx)
   }, false);
 
   return elem
@@ -370,10 +380,24 @@ function timelineClick(ctx) {
   renderUIAfterFrameChange(currentVideoSelectedForPlayback)
 }
 
+/**
+ * Runs when trying to open the context menu
+ * @param ctx context for the right click menu
+ */
+function rightClickMenu(ctx) {
+  window.rightClickCtx = ctx
+  $(contextMenu).css({
+    'top': `${ctx.pageY - 15}px`, 
+    'left': `${ctx.pageX + 15}px`
+  }).show();
+  ctx.preventDefault();
+}
 
-function timelineRightClick(ctx) {
-  ctx.preventDefault()
-
+/**
+ * Splits the selected video with relative sizes
+ * @param ctx context for the right click menu
+ */
+function splitVideo(ctx) {
   /* Generating the unique ids for the elements */
   const firstHalfId = getUniqueID()
   const secondHalfId = getUniqueID()
@@ -527,7 +551,8 @@ const dragObjectLogic = {
         timelineClick(ctx)
       })
       event.target.addEventListener('contextmenu', function(ctx) {
-        timelineRightClick(ctx)
+        timelineClick(ctx)
+        rightClickMenu(ctx)
       }, false);
 
       childrenNodesTimeline = $('.timeline').children()

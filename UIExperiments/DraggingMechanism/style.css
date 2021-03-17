@@ -16,10 +16,13 @@ body {
     display: flex;
     flex: 1;
     width: 100%;
+    background: linear-gradient(0deg, rgba(179,191,184,1) 0%, rgba(255,255,255,1) 2%);
 }
 
 .resources-list {
-    border: 1px solid black;
+    padding-left: 10px;
+    padding-top: 10px;
+    border: 1px solid #d3d3d3;
     flex: 1.8;
     display: inline-block;
     position: relative;
@@ -45,6 +48,7 @@ body {
     position: relative;
     width: 100%;
     backdrop-filter: blur(35px);
+    background-blend-mode: multiply;
     border-radius: 15px;
     padding-left: 15px;
     padding-right: 0px;
@@ -81,7 +85,8 @@ body {
 }
 
 .bottom-view {
-    background-color: #d3d3d3;
+    /* background-color: #d3d3d3; */
+    background-color: #B3BFB8;
     flex: 1;
 }
 
@@ -144,9 +149,65 @@ body {
     transition: popwidth 0.2s;
 }
 
+#context-menu {
+	background-color:rgb(255, 255, 255);
+	box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+	width:100px;
+	display:none;
+	position: absolute;
+    animation: fadedown 0.2s;
+    transition: fadedown 0.2s;
+}
+#context-menu td button {
+    font-size: medium;
+    width: 95px;
+	padding:2px;
+    background: none;
+    border: none;
+	padding-left:5px;
+    text-align: left;
+}
+
+#context-menu td button:hover {
+    width: 95px;
+	padding:2px;
+    cursor: pointer;
+    background: #d3d3d3;
+    border: none;
+	padding-left:5px;
+    text-align: left;
+}
+
+#last-section {
+    border-bottom: 1px solid black;
+}
+
 video {
     object-fit: cover;
-  }
+}
+
+@keyframes fadedown {
+    from { opacity: 0; transform: scaleY(0.1); }
+    to   { opacity: 1; transform: scaleY(1); }
+}
+
+/* Firefox < 16 */
+@-moz-keyframes fadedown {
+    from { opacity: 0; transform: scaleY(0.1); }
+    to   { opacity: 1; transform: scaleY(1); }
+}
+
+/* Safari, Chrome and Opera > 12.1 */
+@-webkit-keyframes fadedown {
+    from { opacity: 0; transform: scaleY(0.1); }
+    to   { opacity: 1; transform: scaleY(1); }
+}
+
+/* Opera < 12.1 */
+@-o-keyframes fadedown {
+    from { opacity: 0; transform: scaleY(0.1); }
+    to   { opacity: 1; transform: scaleY(1); }
+}
 
 @keyframes fadein {
     from { opacity: 0; transform: scale(0.5); }
