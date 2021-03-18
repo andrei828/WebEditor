@@ -147,8 +147,16 @@ function renderUIAfterFrameChange(videoNode) {
   renderCurrentPlaybackBar(videoNode)
 
   /* Updating the canvas resolution */
-  canvas.width = video.videoWidth
-  canvas.height = video.videoHeight
+  alpha1 = canvas.width * video.videoHeight / canvas.height - video.videoWidth
+  alpha2 = video.videoWidth * canvas.height / canvas.width - video.videoHeight
+
+  if (alpha1 < alpha2) {
+    canvas.width = video.videoWidth + alpha1
+    canvas.height = video.videoHeight
+  } else {
+    canvas.width = video.videoWidth
+    canvas.height = video.videoHeight + alpha2
+  }
 
   /* Rendering the video on the preview canvas */
   context.drawImage(
@@ -190,9 +198,17 @@ function playVideo(videoTimeline) {
       setTimeout(loop, 33.3333333) 
     }
   }
-  
-  canvas.width = video.videoWidth
-  canvas.height = video.videoHeight
+
+  alpha1 = canvas.width * video.videoHeight / canvas.height - video.videoWidth
+  alpha2 = video.videoWidth * canvas.height / canvas.width - video.videoHeight
+
+  if (alpha1 < alpha2) {
+    canvas.width = video.videoWidth + alpha1
+    canvas.height = video.videoHeight
+  } else {
+    canvas.width = video.videoWidth
+    canvas.height = video.videoHeight + alpha2
+  }
   
   loop()
   video.play()
@@ -267,6 +283,7 @@ function renderTimelineBlock(videoObject, id) {
     timelineClick(ctx)
   })
   elem.addEventListener('contextmenu', function(ctx) {
+    $(contextMenu).hide()
     timelineClick(ctx)
     rightClickMenu(ctx)
   }, false);
@@ -277,14 +294,30 @@ function renderTimelineBlock(videoObject, id) {
 function doneTrimming(ctx) {
   modal = document.querySelector('#trim-modal')
   modal.style.display = 'none'
-  modal.parentNode.replaceChild(modal.cloneNode(true), modal)
   
+  startTimeModal = document.querySelector('#trim-modal-start-time')
+  endTimeModal = document.querySelector('#trim-modal-end-time')
+
+  window.references[window.currentlyTimming.id].data.metadata.startTime = Number(startTimeModal.innerText)
+  window.references[window.currentlyTimming.id].data.metadata.endTime = Number(endTimeModal.innerText)
+  window.references[window.currentlyTimming.id].data.metadata.duration = endTimeModal.innerText - startTimeModal.innerText
+  window.currentlyTimming.style.width = `${window.references[window.currentlyTimming.id].data.metadata.duration*10}px`
+ 
+
+  console.log(window.references[window.currentlyTimming.id])
+  modal.parentNode.replaceChild(modal.cloneNode(true), modal)
+  window.currentlyTimming = undefined
   trimDoneBtn = document.querySelector('#trim-modal-done')
   trimDoneBtn.addEventListener('click', doneTrimming)
 }
 
 function renderTrimBars(ctx) {
+  window.currentlyTimming = ctx.target
   modal = document.querySelector('#trim-modal')
+  startTimeModal = document.querySelector('#trim-modal-start-time')
+  endTimeModal = document.querySelector('#trim-modal-end-time')
+  startTimeModal.innerText = '0.00'
+  endTimeModal.innerText = window.references[ctx.target.id].data.metadata.duration.toFixed(2)
   modal.style.display = 'block'
   modal.style.left = `${ctx.target.getBoundingClientRect().left}px`
   modal.style.top = `${ctx.target.getBoundingClientRect().top}px`
@@ -293,19 +326,23 @@ function renderTrimBars(ctx) {
   var panel = modal
   let m_pos;
   function resizeLeft(e) {
-    if (e.x >= ctx.target.getBoundingClientRect().left) {
+    if (e.x >= ctx.target.getBoundingClientRect().left && e.x < (parseInt(getComputedStyle(panel, '').right)) - 10) {
       var dx = m_pos - e.x
       m_pos = e.x
       panel.style.left = (parseInt(getComputedStyle(panel, '').left) - dx) + "px"
       panel.style.width = (parseInt(getComputedStyle(panel, '').width) + dx) + "px"
+      startTimeModal.innerText =  
+      ((e.x - ctx.target.offsetLeft) * window.references[ctx.target.id].data.metadata.duration / ctx.target.clientWidth).toFixed(2)
     }
   }
 
   function resizeRight(e) {
-    if (e.x <= ctx.target.getBoundingClientRect().right) {
+    if (e.x <= ctx.target.getBoundingClientRect().right && e.x > (parseInt(getComputedStyle(panel, '').left))) {
       var dx = m_pos - e.x
       m_pos = e.x
       panel.style.width = (parseInt(getComputedStyle(panel, '').width) - dx) + "px"
+      endTimeModal.innerText = 
+      ((e.x - ctx.target.offsetLeft) * window.references[ctx.target.id].data.metadata.duration / ctx.target.clientWidth).toFixed(2)
     }
   }
 
@@ -609,6 +646,7 @@ const dragObjectLogic = {
         timelineClick(ctx)
       })
       event.target.addEventListener('contextmenu', (ctx) => {
+        $(contextMenu).hide()
         timelineClick(ctx)
         rightClickMenu(ctx)
       }, false);
