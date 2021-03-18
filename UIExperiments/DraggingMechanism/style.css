@@ -6,6 +6,8 @@ body {
     -moz-user-select: -moz-none;
     -ms-user-select: none;
     user-select: none;
+    color: white;
+    overflow: none !important;
 }
 
 .edit-workspace {
@@ -14,13 +16,26 @@ body {
     flex-flow: column;
 }
 
+.resources-top {
+    display: flex;
+    justify-content: space-between;
+}
+
+.resources-title {
+    font-size: 2em;
+    padding-top: 15px;
+}
+
+.upload-controls {
+    padding: 1em;
+}
 
 .top-view {
     /* position: absolute; */
     display: flex;
     flex: 1;
     width: 100%;
-    background: linear-gradient(0deg, rgba(179,191,184,1) 0%, rgba(255,255,255,1) 2%);
+    background: linear-gradient(0deg, rgba(179,191,184,1) 0%, #e4e4e4 2%);
 }
 
 .resources-list {
@@ -31,11 +46,12 @@ body {
     display: inline-block;
     position: relative;
     transition: all 0.2s;
+    color: #222222;
 }
 
 .preview-player-wrapper {
     border: 1px solid black;
-    background-color: black;
+    background-color: #222222;
     flex: 1.5;
     display: flex;
     justify-content: center;
@@ -44,8 +60,7 @@ body {
 
 .preview-player-controls-wrapper {
     position: absolute;
-    bottom: 55%;
-    display: none;
+    bottom: 51%;
 }
 
 .preview-player-controls {
@@ -59,8 +74,47 @@ body {
     animation: appear 0.4s;
 }
 
-.preview-controll-button:hover {
+.preview-input-title {
+    position: absolute;
+    top: 1.5%;
+    background: none;
+    border: none;
+    font-size: large;
+    text-align: center;
+    color: #e4e4e4;
+}
+
+.preview-input-title:focus {
+    outline-width: 0;
+    border: 0.5px solid #d3d3d3;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-radius: 5px;
+}
+
+.preview-time {
+    position: fixed;
+    bottom: 52%;
+    right: 3%;
+}
+
+
+svg:hover {
     cursor: pointer;
+}
+
+.preview-start-rendering {
+    padding-bottom: 5px;
+    padding-top: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background: none;
+    border: 1px solid #e4e4e4;
+    border-radius: 10px;
+    position: absolute;
+    top: 1.5%;
+    right: 1%;
+    color: #e4e4e4;
 }
 
 .preview-controll-button {
@@ -87,11 +141,12 @@ body {
 .preview-player {
     width: 90%;
     height: 80%;
+    background-color: #000000;
 }
 
 .bottom-view {
-    /* background-color: #d3d3d3; */
-    background-color: #B3BFB8;
+    background-color: #044343;
+    /* background-color: #B3BFB8; */
     flex: 1;
 }
 
@@ -150,6 +205,7 @@ body {
     min-width: 100px;
     animation: popwidth 0.1s;
     transition: popwidth 0.2s;
+    transition: 1s;
 }
 
 #trim-modal {

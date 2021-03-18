@@ -68,16 +68,16 @@ $(function() {
     }
   }
 
-  playerControls = document.querySelector('.preview-player-controls-wrapper')
-  playerCanvas = document.querySelector('.preview-player')
-  playerContext = playerCanvas.getContext('2d')
-  $('.preview-player-wrapper').mouseover((event) => {
-    playerControls.style.display = 'block';
-  })
+  // playerControls = document.querySelector('.preview-player-controls-wrapper')
+  // playerCanvas = document.querySelector('.preview-player')
+  // playerContext = playerCanvas.getContext('2d')
+  // $('.preview-player-wrapper').mouseover((event) => {
+  //   playerControls.style.display = 'block';
+  // })
 
-  $('.preview-player-wrapper').mouseleave((event) => {
-    playerControls.style.display = 'none';
-  })
+  // $('.preview-player-wrapper').mouseleave((event) => {
+  //   playerControls.style.display = 'none';
+  // })
 
 })
 

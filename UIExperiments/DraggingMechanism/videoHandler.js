@@ -23,7 +23,10 @@ window.onload = () => {
   this.resources[getUniqueID()] = buildVideoResourceByPath('./PostItDemo.mp4', 'Post it')
   this.resources[getUniqueID()] = buildVideoResourceByPath('./bunny.mp4', 'Bunny 1')
   this.resources[getUniqueID()] = buildVideoResourceByPath('./bunny2.mp4', 'Bunny 2')
-  
+  this.resources[getUniqueID()] = buildVideoResourceByPath('./GrahamScan.mov', 'Graham')
+  this.resources[getUniqueID()] = buildVideoResourceByPath('./PostItDemo.mp4', 'Post it')
+  this.resources[getUniqueID()] = buildVideoResourceByPath('./bunny.mp4', 'Bunny 1')
+  this.resources[getUniqueID()] = buildVideoResourceByPath('./bunny2.mp4', 'Bunny 2')
   /* Listener for playback triggered by the spacebar */
   document.body.onkeyup = spacebarPlayEvent
 
@@ -686,15 +689,16 @@ const dragObjectLogic = {
         }
       }
       
+    
+
+    currentVideoSelectedForPlayback = window.timeline
+    currentVideoSelectedForPlayback.data.videoCore.currentTime = currentVideoSelectedForPlayback.data.metadata.startTime
     } else {
       event.target.style.transition = '0.5s'
     }
 
     event.target.style.left = '0';
     event.target.style.top = '0';
-
-    currentVideoSelectedForPlayback = window.timeline
-    currentVideoSelectedForPlayback.data.videoCore.currentTime = currentVideoSelectedForPlayback.data.metadata.startTime
   }
 
 };

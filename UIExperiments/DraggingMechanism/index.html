@@ -15,6 +15,32 @@
     <section class="edit-workspace">
       <div class="top-view">
         <div class="resources-list">
+          <div class="resources-top">
+            <div class="resources-title">Resources</div>
+            <div class="upload-controls">
+              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-upload" width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" stroke="#222222" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" />
+                <polyline points="7 9 12 4 17 9" />
+                <line x1="12" y1="4" x2="12" y2="16" />
+              </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-share" width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" stroke="#222222" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <circle cx="6" cy="12" r="3" />
+                <circle cx="18" cy="6" r="3" />
+                <circle cx="18" cy="18" r="3" />
+                <line x1="8.7" y1="10.7" x2="15.3" y2="7.3" />
+                <line x1="8.7" y1="13.3" x2="15.3" y2="16.7" />
+              </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-info-circle" width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" stroke="#222222" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <circle cx="12" cy="12" r="9" />
+                <line x1="12" y1="8" x2="12.01" y2="8" />
+                <polyline points="11 12 12 12 12 16 13 16" />
+              </svg>
+              </div>
+          </div>
+          <br/>
           <!-- <div class="item 1">item 1</div>
           <div class="item 2">item 2</div>
           <div class="item 3">item 3</div>
@@ -27,7 +53,12 @@
         </div>
         <div class="preview-player-wrapper">
           <canvas class="preview-player"></canvas>
-          <div class="preview-player-controls-wrapper">
+          <input class="preview-input-title" value="MyFirstVideo.mp4">
+          <button class="preview-start-rendering">Done</button>
+          <div class="preview-time">
+            0:00/0:00
+          </div>
+          <div class="preview-player-controls-wrapper">            
             <div class="preview-player-controls">
               <!-- move back 10 seconds -->
               <button class="preview-controll-button preview-back">
