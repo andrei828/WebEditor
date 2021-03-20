@@ -145,12 +145,29 @@ svg:hover {
     .preview-player {
         height: 75% !important;
     }
+
+    .preview-input-title {
+        top: 2.5%;
+    }
+    
+    .preview-start-rendering {
+        top: 2.5%;
+    }
 }
 
 @media screen and (max-height: 900px) {
     .preview-player {
         height: 70% !important;
     }
+
+    .preview-input-title {
+        top: 2.5%;
+    }
+    
+    .preview-start-rendering {
+        top: 2.5%;
+    }
+
 }
 
 .preview-player {
