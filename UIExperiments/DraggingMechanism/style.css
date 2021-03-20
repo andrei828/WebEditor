@@ -1,13 +1,15 @@
 body {
     margin: 0px;
     height: 100%;
-    font-family: Georgia, serif;
+    
+    /* font-family: Georgia, serif; */
+    font-family: Arial, Helvetica, sans-serif;
     -webkit-user-select: none;
     -moz-user-select: -moz-none;
     -ms-user-select: none;
     user-select: none;
     color: white;
-    overflow: none !important;
+    overflow: hidden !important;
 }
 
 .edit-workspace {
@@ -23,6 +25,7 @@ body {
 
 .resources-title {
     font-size: 2em;
+    font-weight: bolder;
     padding-top: 15px;
 }
 
@@ -138,6 +141,18 @@ svg:hover {
 
 }
 
+@media screen and (min-height: 900px) and (max-height: 1080px) {
+    .preview-player {
+        height: 75% !important;
+    }
+}
+
+@media screen and (max-height: 900px) {
+    .preview-player {
+        height: 70% !important;
+    }
+}
+
 .preview-player {
     width: 90%;
     height: 80%;
@@ -152,7 +167,7 @@ svg:hover {
 
 .bottom-scrollable {
     height: 100%;
-    overflow-x: scroll;
+    overflow-x: none;
 }
 
 .tooltip-duration {
@@ -168,12 +183,14 @@ svg:hover {
 
 .dragging-item {
     position: absolute;
+    touch-action: none;
 }
 
 .timeline {
     transform: translateY(-50%);
     position: relative;
     top: 50%;
+    width: 100%;
     display: inline-flex;
 }
 
@@ -254,7 +271,7 @@ svg:hover {
     left: 50%;
     transform: translate(-50%, 50px);
     bottom: 0;
-    background-color: #fff;
+    background-color: rgb(0, 0, 0);
     padding-top: 5px;
     padding-right: 10px;
     padding-left: 10px;

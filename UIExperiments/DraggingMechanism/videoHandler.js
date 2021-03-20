@@ -23,10 +23,8 @@ window.onload = () => {
   this.resources[getUniqueID()] = buildVideoResourceByPath('./PostItDemo.mp4', 'Post it')
   this.resources[getUniqueID()] = buildVideoResourceByPath('./bunny.mp4', 'Bunny 1')
   this.resources[getUniqueID()] = buildVideoResourceByPath('./bunny2.mp4', 'Bunny 2')
-  this.resources[getUniqueID()] = buildVideoResourceByPath('./GrahamScan.mov', 'Graham')
-  this.resources[getUniqueID()] = buildVideoResourceByPath('./PostItDemo.mp4', 'Post it')
-  this.resources[getUniqueID()] = buildVideoResourceByPath('./bunny.mp4', 'Bunny 1')
-  this.resources[getUniqueID()] = buildVideoResourceByPath('./bunny2.mp4', 'Bunny 2')
+  this.resources[getUniqueID()] = buildVideoResourceByPath('./portait.mp4', 'Portait')
+
   /* Listener for playback triggered by the spacebar */
   document.body.onkeyup = spacebarPlayEvent
 
@@ -161,10 +159,33 @@ function renderUIAfterFrameChange(videoNode) {
     canvas.height = video.videoHeight + alpha2
   }
 
+  canvasRatio = canvas.width / canvas.height
+  videoRatio = video.videoWidth / video.videoHeight
+
+  // console.log(alpha1, Math.abs(alpha2))
+  // console.log(canvas.width, canvas.height, canvas.width / canvas.height)
+  // console.log(video.videoWidth, video.videoHeight, video.videoWidth / video.videoHeight)
+  // console.log((video.videoHeight - canvas.height) / 2)
+  // console.log('-------------')
+
+  if (videoNode.data.metadata.ratio == 'fit') {
+    context.drawImage(
+      video, canvas.width / 2 - videoRatio * canvas.height / 2, 0, videoRatio * canvas.height, canvas.height
+    ) 
+  } else if (videoNode.data.metadata.ratio == 'strech') {
+    context.drawImage(
+      video, 0, 0, canvas.width, canvas.height
+    )
+  }
+
+  // context.drawImage(
+  //   video, canvas.width / 2 - (canvas.width * videoRatio / canvasRatio) / 2, 0, canvas.width * videoRatio / canvasRatio, canvas.height
+  // )
+
   /* Rendering the video on the preview canvas */
-  context.drawImage(
-    video, 0, 0, canvas.width, canvas.height
-  )
+  // context.drawImage(
+  //   video, 0, 0, canvas.width, canvas.height
+  // )
 }
 
 // TODO: change the parameters to only use the current node
@@ -268,7 +289,10 @@ function renderTimelineBlock(videoObject, id) {
   elem = document.createElement('video')
   source = document.createElement('source')
   source.src = videoObject.data.metadata.path
-  elem.style.width = `${videoObject.data.metadata.duration*10}px`
+  // elem.style.width = `${videoObject.data.metadata.duration*10}px`
+  // HREF
+  // elem.style.flexGrow = videoObject.data.metadata.duration / window.timelineDuration
+  // elem.style.flexGrow = `${10}`
   elem.classList.add('timeline-item')
   elem.id = id
   elem.append(source)
@@ -300,12 +324,14 @@ function doneTrimming(ctx) {
   
   startTimeModal = document.querySelector('#trim-modal-start-time')
   endTimeModal = document.querySelector('#trim-modal-end-time')
-
+  // window.timelineDuration -= window.references[window.currentlyTimming.id].data.metadata.duration - Number(endTimeModal.innerText) + Number(startTimeModal.innerText)
   window.references[window.currentlyTimming.id].data.metadata.startTime = Number(startTimeModal.innerText)
   window.references[window.currentlyTimming.id].data.metadata.endTime = Number(endTimeModal.innerText)
-  window.references[window.currentlyTimming.id].data.metadata.duration = endTimeModal.innerText - startTimeModal.innerText
-  window.currentlyTimming.style.width = `${window.references[window.currentlyTimming.id].data.metadata.duration*10}px`
- 
+  window.references[window.currentlyTimming.id].data.metadata.duration = Number(endTimeModal.innerText) - Number(startTimeModal.innerText)
+  // window.currentlyTimming.style.width = `${window.references[window.currentlyTimming.id].data.metadata.duration*10}px`
+
+  renderPreviousTimelineDimensions()
+  // HREF
 
   console.log(window.references[window.currentlyTimming.id])
   modal.parentNode.replaceChild(modal.cloneNode(true), modal)
@@ -316,6 +342,7 @@ function doneTrimming(ctx) {
 
 function renderTrimBars(ctx) {
   window.currentlyTimming = ctx.target
+
   modal = document.querySelector('#trim-modal')
   startTimeModal = document.querySelector('#trim-modal-start-time')
   endTimeModal = document.querySelector('#trim-modal-end-time')
@@ -328,24 +355,42 @@ function renderTrimBars(ctx) {
   const BORDER_SIZE = 10;
   var panel = modal
   let m_pos;
-  function resizeLeft(e) {
-    if (e.x >= ctx.target.getBoundingClientRect().left && e.x < (parseInt(getComputedStyle(panel, '').right)) - 10) {
-      var dx = m_pos - e.x
-      m_pos = e.x
-      panel.style.left = (parseInt(getComputedStyle(panel, '').left) - dx) + "px"
-      panel.style.width = (parseInt(getComputedStyle(panel, '').width) + dx) + "px"
-      startTimeModal.innerText =  
-      ((e.x - ctx.target.offsetLeft) * window.references[ctx.target.id].data.metadata.duration / ctx.target.clientWidth).toFixed(2)
+
+  function resizeLeft(mouseEvent) {
+    var panelSizes = getComputedStyle(panel, '')
+    var targetSizes = ctx.target.getBoundingClientRect()
+
+      if (mouseEvent.x >= targetSizes.left && 
+          mouseEvent.x < parseInt(panelSizes.left) + (parseInt(panelSizes.width))) {
+
+        var dx = m_pos - mouseEvent.x
+        m_pos = mouseEvent.x
+        panel.style.left = `${parseInt(panelSizes.left) - dx}px`
+        panel.style.width = `${parseInt(panelSizes.width) + dx}px`
+
+        startTimeModal.innerText = (
+          (mouseEvent.x - ctx.target.offsetLeft) *
+          window.references[ctx.target.id].data.metadata.duration /
+          ctx.target.clientWidth
+        ).toFixed(2)
     }
   }
 
-  function resizeRight(e) {
-    if (e.x <= ctx.target.getBoundingClientRect().right && e.x > (parseInt(getComputedStyle(panel, '').left))) {
-      var dx = m_pos - e.x
-      m_pos = e.x
-      panel.style.width = (parseInt(getComputedStyle(panel, '').width) - dx) + "px"
-      endTimeModal.innerText = 
-      ((e.x - ctx.target.offsetLeft) * window.references[ctx.target.id].data.metadata.duration / ctx.target.clientWidth).toFixed(2)
+  function resizeRight(mouseEvent) {
+    let panelSizes = getComputedStyle(panel, '')
+    let targetSizes = ctx.target.getBoundingClientRect()
+    if (mouseEvent.x <= targetSizes.right && 
+        mouseEvent.x > (parseInt(panelSizes.left))) {
+      
+      const dx = m_pos - mouseEvent.x
+      m_pos = mouseEvent.x
+      panel.style.width = `${parseInt(panelSizes.width) - dx}px`
+      
+      endTimeModal.innerText = (
+        (mouseEvent.x - ctx.target.offsetLeft) * 
+        window.references[ctx.target.id].data.metadata.duration /
+        ctx.target.clientWidth
+      ).toFixed(2)
     }
   }
 
@@ -384,6 +429,7 @@ function buildVideoResourceByPath(path, title) {
       path: path,
       title: title,
       startTime: 0,
+      ratio: 'strech',
       endTime: video.duration,
       duration: video.duration
     }
@@ -403,11 +449,40 @@ function buildVideoResource(video, title, startTime = 0, endTime = 0) {
     metadata: {
       path: video.currentSrc,
       title: title,
+      ratio: 'strech',
       startTime: startTime,
       endTime: (endTime) ? endTime : duration, 
       duration: (endTime) ? endTime - startTime : duration - startTime
     }
   }
+}
+/* *************************************************************************************************************************************************************************************************************************** */
+function renderTimelineDimensions(currentItemDuration) {
+  let iterator = window.timeline    
+  if (!iterator) {
+    return 1
+  }
+
+  const currentDuration = window.timelineDuration + currentItemDuration
+  while (iterator) {
+    iterator.data.videoCore.style.flexGrow = iterator.data.metadata.duration / currentDuration
+    iterator = iterator.next
+  }
+  return currentItemDuration / currentDuration
+}
+
+function renderPreviousTimelineDimensions() {
+  let iterator = window.timeline    
+  if (!iterator) {
+   return
+  }
+
+  const currentDuration = window.timelineDuration
+  while (iterator) {
+    iterator.data.videoCore.style.flexGrow = iterator.data.metadata.duration / currentDuration
+    iterator = iterator.next
+  }
+
 }
 
 /**
@@ -521,7 +596,16 @@ function splitVideo(ctx) {
   /* Generating the new HTML elements */
   const firstHalfElement = renderTimelineBlock(firstHalfNode, firstHalfId)
   const secondHalfElement = renderTimelineBlock(secondHalfNode, secondHalfId)
-
+  
+  let totalFlexGrow = Number(ctx.target.style.flexGrow)
+  ratio = splitTime / targetNode.data.metadata.duration
+  firstHalfElement.style.flexGrow = totalFlexGrow * ratio
+  secondHalfElement.style.flexGrow = totalFlexGrow * (1 - ratio)
+  console.log(ctx.target.style.flexGrow)
+  console.log(firstHalfElement.style.flexGrow)
+  console.log(secondHalfElement.style.flexGrow)
+  console.log(Number(firstHalfElement.style.flexGrow) + Number(secondHalfElement.style.flexGrow))
+  // firstHalfElement
   /* Assigning the videoCore value to the new generated elements */
   firstHalfNode.data.videoCore = firstHalfElement
   secondHalfNode.data.videoCore = secondHalfElement
@@ -550,6 +634,7 @@ function splitVideo(ctx) {
     previous.next = firstHalfNode
   } else {
     window.timeline = firstHalfNode
+    window.timelineDuration = targetNode.data.metadata.duration
   }
 
   /* Removing the current target */
@@ -568,17 +653,29 @@ function splitVideo(ctx) {
  */
 const dragObjectLogic = {
 
+  scroll: false,
+  
   start : function (event, helper) {
     if (2 * event.pageY > $(window).height()) {
+      timelinePlaceholder.style.flexGrow = event.target.style.flexGrow
+      event.target.style.width = event.target.getBoundingClientRect().width
       document.querySelector('.dragging-item').style.top = `${helper.offset.top}px`
       document.querySelector('.dragging-item').style.left = `${helper.offset.left}px`
       $('.dragging-item').append(event.target)
     }
     setCurrentlyPlaying(false)
     if (window.references[event.target.id]) {
-      timelinePlaceholder.style.width = `${window.references[event.target.id].data.metadata.duration*10}px`
+      // timelinePlaceholder.style.width = `${window.references[event.target.id].data.metadata.duration*10}px`
+      // HREF
+      // timelinePlaceholder.style.flexGrow = `${10}`
+      // timelinePlaceholder.style.flexGrow = event.target.style.flexGrow
+      //renderTimelineDimensions(0)
+      // console.log(event.target.style.flexGrow)
+      // console.log('hereee')
     } else {
-      timelinePlaceholder.style.width = `${event.target.duration*10}px`
+      // timelinePlaceholder.style.width = `${event.target.duration*10}px`
+      timelinePlaceholder.style.flexGrow = renderTimelineDimensions(event.target.duration)
+      // timelinePlaceholder.style.flexGrow = `${10}`
     }
     // timelinePlaceholder.style.width = `${event.target.duration*10}px`
     event.target.style.zIndex = '150'
@@ -590,6 +687,7 @@ const dragObjectLogic = {
 
   
   drag: function (event, helper) {
+    
     if (2 * event.pageY > $(window).height()) {
       timelinePlaceholder.style.display = 'block'
       childrenNodesTimeline = $('.timeline').children()
@@ -632,11 +730,17 @@ const dragObjectLogic = {
       event.target.classList.remove('item')
       event.target.classList.add('timeline-item')
       event.target.style.animation = 'fadein 0.5s'
-      event.target.style.transition = '1s'
+      event.target.style.transition = '0.5s'
       if (window.references[event.target.id]) {
-        event.target.style.width = `${window.references[event.target.id].data.metadata.duration*10}px`
+        event.target.style.width = 'unset'
+        // event.target.style.width = `${window.references[event.target.id].data.metadata.duration*10}px`
+        // HREF
+        //event.target.style.flexGrow = timelinePlaceholder.style.flexGrow//window.timelineDuration / window.references[event.target.id].data.metadata.duration
+        // event.target.style.flexGrow = `${10}`
       } else {
-        event.target.style.width = `${event.target.duration*10}px`
+        // event.target.style.width = `${event.target.duration*10}px`
+        //event.target.style.flexGrow = timelinePlaceholder.style.flexGrow//window.timelineDuration / event.target.duration
+        // event.target.style.flexGrow = `${10}`
       }
       
       event.target.addEventListener('mousemove', (ctx) => {
@@ -659,10 +763,10 @@ const dragObjectLogic = {
       // TODO: optimize linked list creation (IMPORTANT!)
       let iterator = null;
       window.timeline = null;
+      window.timelineDuration = 0
       childrenNodesTimeline = $('.timeline').children()
       for (child of childrenNodesTimeline) {
         if (child !== timelinePlaceholder) {
-
           if (window.references[child.id]) {
             if (!window.timeline) {
               window.timeline = window.references[child.id]
@@ -684,21 +788,23 @@ const dragObjectLogic = {
             }
             window.references[iterator.data.videoCore.id] = iterator
           }
+          window.timelineDuration += iterator.data.metadata.duration
           /* Removing previous links if necessary */
           iterator.next = null
         }
       }
       
-    
-
-    currentVideoSelectedForPlayback = window.timeline
-    currentVideoSelectedForPlayback.data.videoCore.currentTime = currentVideoSelectedForPlayback.data.metadata.startTime
+      // event.target.style.width = event.target.getBoundingClientRect().width
+      currentVideoSelectedForPlayback = window.timeline
+      currentVideoSelectedForPlayback.data.videoCore.currentTime = currentVideoSelectedForPlayback.data.metadata.startTime
     } else {
-      event.target.style.transition = '0.5s'
+      event.target.style.transition = '0.5s'  
     }
 
-    event.target.style.left = '0';
-    event.target.style.top = '0';
+    renderPreviousTimelineDimensions()
+    event.target.style.left = '0'
+    event.target.style.top = '0'
+    
   }
 
 };
