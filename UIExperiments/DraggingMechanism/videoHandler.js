@@ -291,7 +291,7 @@ function renderTimelineBlock(videoObject, id) {
   source.src = videoObject.data.metadata.path
   // elem.style.width = `${videoObject.data.metadata.duration*10}px`
   // HREF
-  // elem.style.flexGrow = videoObject.data.metadata.duration / window.timelineDuration
+  elem.style.flexGrow = videoObject.data.metadata.duration / window.timelineDuration
   // elem.style.flexGrow = `${10}`
   elem.classList.add('timeline-item')
   elem.id = id
@@ -599,8 +599,10 @@ function splitVideo(ctx) {
   
   let totalFlexGrow = Number(ctx.target.style.flexGrow)
   ratio = splitTime / targetNode.data.metadata.duration
-  firstHalfElement.style.flexGrow = totalFlexGrow * ratio
-  secondHalfElement.style.flexGrow = totalFlexGrow * (1 - ratio)
+  // firstHalfElement.style.flexGrow = totalFlexGrow * firstHalfNode.data.metadata.duration / targetNode.data.metadata.duration 
+  // secondHalfElement.style.flexGrow = totalFlexGrow - Number(firstHalfElement.style.flexGrow)
+  // console.log(targetNode.data.metadata.duration, splitTime, (ratio * 100).toFixed(2) )
+console.log('---------')
   console.log(ctx.target.style.flexGrow)
   console.log(firstHalfElement.style.flexGrow)
   console.log(secondHalfElement.style.flexGrow)
