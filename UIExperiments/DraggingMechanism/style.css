@@ -61,14 +61,17 @@ body {
     align-items: center;
 }
 
-.preview-player-controls-wrapper {
+.preview-bottom-controls{
     position: absolute;
+    display: flex;
     bottom: 51%;
+    width: 45.4vw;
+    justify-content: space-around;
+    align-items: center;
 }
 
 .preview-player-controls {
     position: relative;
-    width: 100%;
     backdrop-filter: blur(35px);
     background-blend-mode: multiply;
     border-radius: 15px;
@@ -96,9 +99,8 @@ body {
 }
 
 .preview-time {
-    position: fixed;
-    bottom: 52%;
-    right: 3%;
+    width: 100px;
+    text-align: r;
 }
 
 
@@ -227,6 +229,7 @@ svg:hover {
     height: 100px;
     min-width: 100px;
     background-color: white;
+    cursor: pointer;
 }
 
 .timeline-item {
@@ -237,9 +240,8 @@ svg:hover {
     display: inline-block;
     height: 100px;
     min-width: 100px;
-    animation: popwidth 0.1s;
-    transition: popwidth 0.2s;
-    transition: 1s;
+    animation: popwidth 0.5s;
+    cursor: pointer;
 }
 
 #trim-modal {
@@ -450,3 +452,48 @@ video::-webkit-media-controls {
   .content1 , .content3 , .content5{
     background-color: #ff0;
   } */
+
+
+
+.btn {
+    display: flex;
+    background: #e4e4e4;
+    border: 1px solid #575d60;
+    font-size: xx-small;
+    line-height:normal;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.btn:focus {
+    outline: none;
+}
+
+.btn--toggle {
+    height: fit-content;
+    padding: 2px;
+    border-radius: 50px;
+    overflow: hidden;
+    letter-spacing: 0.5px;
+    color: #1a1a1a;
+}
+
+.toggle-elm {
+    padding: 8px 12px;
+    position: relative;
+    z-index: 1;
+}
+
+.toggle-active {
+    color: #e4e4e4;
+}
+
+  
+.toggling-layer {
+    position: absolute;
+    z-index: 0;
+    background: #1a1a1a;
+    border-radius: 50px;
+    transition: 0.3s;
+}
+  

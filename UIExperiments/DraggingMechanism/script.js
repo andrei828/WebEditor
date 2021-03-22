@@ -1,5 +1,7 @@
 
 $(function() {
+  buttonSwitchLogic()
+  
 	$(document).bind('click', function() {
 		$("#contextmenu").hide();
 	})
@@ -35,14 +37,17 @@ $(function() {
         window.currentPlaybackTime - 5, 0, 
         window.currentPlaybackTime + 2, ctx.canvas.height
       )
+      
       ctx.beginPath()
       ctx.moveTo(window.currentPlaybackTime, 0)
       ctx.lineTo(window.currentPlaybackTime, ctx.canvas.height)
       ctx.lineWidth = 2;
+      timelineCanvasCtx.strokeStyle = "#F48B29"
       ctx.stroke();
     }
   
     if (!window.rightClickCtx) {
+      ctx.strokeStyle = "#000000";
       ctx.beginPath();
       ctx.moveTo(event.clientX, 0);
       ctx.lineTo(event.clientX, ctx.canvas.height);
@@ -63,7 +68,7 @@ $(function() {
       }
       
       tooltipDuration.innerText = `${window.currentVideoTime.toFixed(2)} seconds`
-    } else if (!window.rightClickCtx) {
+    } else  {
       tooltipDuration.style.display = 'none'
     }
   }
@@ -82,3 +87,59 @@ $(function() {
 })
 
 
+
+
+function buttonSwitchLogic() {
+  function handleClass(node, className, action = "add") {
+    node.classList[action](className);
+  }
+  
+  function handleTogglingLayer(togglingLayer) {
+    const cords = this.getBoundingClientRect();
+    const { width, height } = cords;
+    const offsetFromLeft = this.offsetLeft;
+  
+    togglingLayer.style.width = width + "px";
+    togglingLayer.style.height = height + "px";
+    togglingLayer.style.left = offsetFromLeft + "px";
+  }
+  
+  const toggleButtons = document.querySelectorAll(".btn-toggle-js");
+  
+  toggleButtons.forEach((toggleBtn) => {
+    const toggleTriggeringElements = toggleBtn.querySelectorAll("span");
+    const togglingLayer = toggleBtn.querySelector(".toggling-layer");
+  
+    const initiallyActiveElm =
+      toggleBtn.querySelector(".toggle-active") || toggleTriggeringElements[0];
+  
+    toggleTriggeringElements.forEach((toggleTriggeringElement) => {
+      toggleTriggeringElement.addEventListener("click", function () {
+        handleAction(this);
+      });
+    });
+  
+    function handleAction(el) {
+      console.log(el)
+      toggleTriggeringElements.forEach((toggleTriggeringElement) =>
+        handleClass(toggleTriggeringElement, "toggle-active", "remove")
+      );
+  
+      handleClass(el, "toggle-active");
+      handleTogglingLayer.call(el, togglingLayer);
+  
+      // your different required action for the elements here
+  
+      if (el.dataset.actionType === "more") {
+        // action when clicking on more
+        console.log("more");
+      } else {
+        // action when clicking on less
+        console.log("less");
+      }
+    }
+  
+    //    when initially loading
+    handleAction(initiallyActiveElm);
+  });
+}

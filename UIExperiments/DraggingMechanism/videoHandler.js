@@ -24,6 +24,7 @@ window.onload = () => {
   this.resources[getUniqueID()] = buildVideoResourceByPath('./bunny.mp4', 'Bunny 1')
   this.resources[getUniqueID()] = buildVideoResourceByPath('./bunny2.mp4', 'Bunny 2')
   this.resources[getUniqueID()] = buildVideoResourceByPath('./portait.mp4', 'Portait')
+  this.resources[getUniqueID()] = buildVideoResourceByPath('./bunny10sec.mp4', 'Bunny10sec')
 
   /* Listener for playback triggered by the spacebar */
   document.body.onkeyup = spacebarPlayEvent
@@ -256,12 +257,12 @@ function renderCurrentPlaybackBar(videoNode) {
   window.currentPlaybackTime = videoElement.offsetLeft + 
     (currentTime * videoElement.clientWidth / videoNode.data.metadata.duration)
   
-
   timelineCanvasCtx.beginPath()
   timelineCanvasCtx.moveTo(window.currentPlaybackTime, 0)
   timelineCanvasCtx.lineTo(window.currentPlaybackTime, timelineCanvas.height)
-  timelineCanvasCtx.lineWidth = 2;
-  timelineCanvasCtx.stroke();
+  timelineCanvasCtx.lineWidth = 2
+  timelineCanvasCtx.strokeStyle = "#F48B29"
+  timelineCanvasCtx.stroke()
 }
 
 /**
@@ -311,6 +312,7 @@ function renderTimelineBlock(videoObject, id) {
   })
   elem.addEventListener('contextmenu', function(ctx) {
     $(contextMenu).hide()
+    window.rightClickCtx = null
     timelineClick(ctx)
     rightClickMenu(ctx)
   }, false);
@@ -597,16 +599,19 @@ function splitVideo(ctx) {
   const firstHalfElement = renderTimelineBlock(firstHalfNode, firstHalfId)
   const secondHalfElement = renderTimelineBlock(secondHalfNode, secondHalfId)
   
-  let totalFlexGrow = Number(ctx.target.style.flexGrow)
-  ratio = splitTime / targetNode.data.metadata.duration
+  // let totalFlexGrow = Number(ctx.target.style.flexGrow)
+  // ratio = (targetNode.data.metadata.duration - splitTime) / targetNode.data.metadata.duration
+  // let ratio = firstHalfNode.data.metadata.duration / secondHalfNode.data.metadata.duration
+  // firstHalfElement.style.flexGrow = totalFlexGrow / (1 + ratio)
+  // secondHalfElement.style.flexGrow = (ratio * Number(firstHalfElement.style.flexGrow))
   // firstHalfElement.style.flexGrow = totalFlexGrow * firstHalfNode.data.metadata.duration / targetNode.data.metadata.duration 
   // secondHalfElement.style.flexGrow = totalFlexGrow - Number(firstHalfElement.style.flexGrow)
   // console.log(targetNode.data.metadata.duration, splitTime, (ratio * 100).toFixed(2) )
-console.log('---------')
-  console.log(ctx.target.style.flexGrow)
-  console.log(firstHalfElement.style.flexGrow)
-  console.log(secondHalfElement.style.flexGrow)
-  console.log(Number(firstHalfElement.style.flexGrow) + Number(secondHalfElement.style.flexGrow))
+// console.log('---------')
+//   console.log(ctx.target.style.flexGrow, ratio, splitTime)
+//   console.log(firstHalfElement.style.flexGrow)
+//   console.log(secondHalfElement.style.flexGrow)
+//   console.log(ctx.target.style.flexGrow, "=", Number(firstHalfElement.style.flexGrow) + Number(secondHalfElement.style.flexGrow))
   // firstHalfElement
   /* Assigning the videoCore value to the new generated elements */
   firstHalfNode.data.videoCore = firstHalfElement
@@ -641,12 +646,15 @@ console.log('---------')
 
   /* Removing the current target */
   $(ctx.target).remove()
+  window.rightClickCtx = null
   delete window.references[ctx.target.id]
 
   /* Restarting the timeline playback */
   currentVideoSelectedForPlayback = window.timeline
   currentVideoSelectedForPlayback.data.videoCore.currentTime = 
     currentVideoSelectedForPlayback.data.metadata.startTime
+
+  renderCurrentPlaybackBar(currentVideoSelectedForPlayback)
 }
 
 /**

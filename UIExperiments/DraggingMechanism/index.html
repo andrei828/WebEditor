@@ -55,10 +55,12 @@
           <canvas class="preview-player"></canvas>
           <input class="preview-input-title" value="MyFirstVideo.mp4">
           <button class="preview-start-rendering">Done</button>
-          <div class="preview-time">
-            0:00/0:00
-          </div>
-          <div class="preview-player-controls-wrapper">            
+          <div class="preview-bottom-controls">
+            <button class="btn btn--toggle btn-toggle-js">
+              <span class="toggle-elm toggle-trigger-js" data-action-type="less">Fit</span>
+              <span class="toggle-elm toggle-trigger-js toggle-active" data-action-type="more">Strech</span>
+              <span class="toggling-layer"></span>
+            </button>          
             <div class="preview-player-controls">
               <!-- move back 10 seconds -->
               <button class="preview-controll-button preview-back">
@@ -75,9 +77,9 @@
               <!-- play the video -->
               <button class="preview-controll-button preview-play">
                 <svg xmlns="http://www.w3.org/2000/svg" 
-                     class="icon icon-tabler icon-tabler-player-play" 
-                     width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" 
-                     stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    class="icon icon-tabler icon-tabler-player-play" 
+                    width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" 
+                    stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
                   <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                   <path d="M7 4v16l13 -8z" />
                 </svg>
@@ -86,9 +88,9 @@
               <!-- pause the video -->
               <button class="preview-controll-button preview-pause">
                 <svg xmlns="http://www.w3.org/2000/svg" 
-                     class="icon icon-tabler icon-tabler-player-pause" 
-                     width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" 
-                     stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    class="icon icon-tabler icon-tabler-player-pause" 
+                    width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" 
+                    stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
                   <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                   <rect x="6" y="5" width="4" height="14" rx="1" />
                   <rect x="14" y="5" width="4" height="14" rx="1" />
@@ -98,14 +100,17 @@
               <!-- move forward 10 seconds -->
               <button class="preview-controll-button preview-forward">
                 <svg xmlns="http://www.w3.org/2000/svg" 
-                     class="icon icon-tabler icon-tabler-player-skip-forward" 
-                     width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" 
-                     stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    class="icon icon-tabler icon-tabler-player-skip-forward" 
+                    width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" 
+                    stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
                   <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                   <path d="M4 5v14l12 -7z" />
                   <line x1="20" y1="5" x2="20" y2="19" />
                 </svg>
               </button>
+            </div>
+            <div class="preview-time">
+              0:00/0:00
             </div>
           </div>
         </div>
