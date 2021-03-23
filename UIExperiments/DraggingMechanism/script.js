@@ -5,6 +5,10 @@ $(function() {
 	$(document).bind('click', function() {
 		$("#contextmenu").hide();
 	})
+
+  $(window).resize(function() {
+    buttonSwitchLogic()
+  });
   
   tooltipDuration = document.querySelector('.tooltip-duration')
   
@@ -120,7 +124,7 @@ function buttonSwitchLogic() {
     });
   
     function handleAction(el) {
-      console.log(el)
+      
       toggleTriggeringElements.forEach((toggleTriggeringElement) =>
         handleClass(toggleTriggeringElement, "toggle-active", "remove")
       );
@@ -129,17 +133,28 @@ function buttonSwitchLogic() {
       handleTogglingLayer.call(el, togglingLayer);
   
       // your different required action for the elements here
-  
-      if (el.dataset.actionType === "more") {
+      
+      if (el.dataset.actionType === "fit") {
         // action when clicking on more
-        console.log("more");
+        window.currentRatio = 'fit'
+        if (window.currentVideoSelectedForPlayback) {
+          window.currentVideoSelectedForPlayback.data.metadata.ratio = 'fit'
+          window.rerenderFrame(window.currentVideoSelectedForPlayback)
+        }
       } else {
         // action when clicking on less
-        console.log("less");
+        window.currentRatio = 'strech'
+        if (window.currentVideoSelectedForPlayback) {
+          window.currentVideoSelectedForPlayback.data.metadata.ratio = 'strech'
+          window.rerenderFrame(window.currentVideoSelectedForPlayback)
+        }
       }
+      
+    
     }
   
     //    when initially loading
-    handleAction(initiallyActiveElm);
+    setTimeout(() => handleAction(initiallyActiveElm), 50)
+    
   });
 }

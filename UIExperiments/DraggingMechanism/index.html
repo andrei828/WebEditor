@@ -57,8 +57,8 @@
           <button class="preview-start-rendering">Done</button>
           <div class="preview-bottom-controls">
             <button class="btn btn--toggle btn-toggle-js">
-              <span class="toggle-elm toggle-trigger-js" data-action-type="less">Fit</span>
-              <span class="toggle-elm toggle-trigger-js toggle-active" data-action-type="more">Strech</span>
+              <span class="toggle-elm toggle-trigger-js toogle-fit" data-action-type="fit">Fit</span>
+              <span class="toggle-elm toggle-trigger-js toogle-strech toggle-active" data-action-type="strech">Strech</span>
               <span class="toggling-layer"></span>
             </button>          
             <div class="preview-player-controls">
@@ -110,7 +110,7 @@
               </button>
             </div>
             <div class="preview-time">
-              0:00/0:00
+              <span id="current-video-duration">0:00</span>/<span id="full-video-duration">0:00</span>
             </div>
           </div>
         </div>
@@ -140,7 +140,7 @@
             <td><button id='split-video'>Split</button></td>
           </tr>
           <tr id="last-section">
-            <td><button>Copy</button></td>
+            <td><button id='fit-strech-video'>Copy</button></td>
           </tr>
           <tr>
             <td><button>Delete</button></td>

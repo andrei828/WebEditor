@@ -62,13 +62,18 @@ window.onload = () => {
   trimDoneBtn = document.querySelector('#trim-modal-done')
   trimDoneBtn.addEventListener('click', doneTrimming)
 
+  fitStrechBtn = document.querySelector('#fit-strech-video')
+  fitStrechBtn.addEventListener('click', () => changeRatio(window.rightClickCtx))
+
   /* In the beginning, no video is currently playing */
-  currentVideoSelectedForPlayback = null
+  window.currentVideoSelectedForPlayback = null
   
   /* Hash table with references to nodes in the linked 
      list will elaborate after further implementations */
   window.references = {}
   
+  window.rerenderFrame = renderUIAfterFrameChange
+
   /* Rendering the video resources */
   renderResourcesBlock()
 
@@ -88,6 +93,11 @@ window.onload = () => {
   forwardButton.addEventListener('click', () => {
     // TODO: skip 10 seconds forward...
   })
+
+  /* Video duration selectors */
+  finalVideoDurationLabel = document.querySelector('#full-video-duration')
+  currentVideoDurationLabel = document.querySelector('#current-video-duration')
+  
 
   /**
    * Trying to override the scrolling mechanism for the timeline
@@ -126,7 +136,7 @@ function triggerPlayVideo() {
 
     setCurrentlyPlaying(!window.currentlyPlaying)
     
-    const video = currentVideoSelectedForPlayback ?? window.timeline
+    const video = window.currentVideoSelectedForPlayback ?? window.timeline
     
     if (window.currentlyPlaying) {
       playVideo(video)
@@ -169,24 +179,23 @@ function renderUIAfterFrameChange(videoNode) {
   // console.log((video.videoHeight - canvas.height) / 2)
   // console.log('-------------')
 
+  currentVideoDurationLabel.innerText = formatTimeFromSeconds((videoNode.data.metadata.baseDuration + video.currentTime).toFixed(2))
+  
   if (videoNode.data.metadata.ratio == 'fit') {
+    if (window.currentRatio == 'strech') {
+      document.querySelector('.toogle-fit').click()
+    }
     context.drawImage(
       video, canvas.width / 2 - videoRatio * canvas.height / 2, 0, videoRatio * canvas.height, canvas.height
     ) 
   } else if (videoNode.data.metadata.ratio == 'strech') {
+    if (window.currentRatio === 'fit') {
+      document.querySelector('.toogle-strech').click()
+    }
     context.drawImage(
       video, 0, 0, canvas.width, canvas.height
     )
   }
-
-  // context.drawImage(
-  //   video, canvas.width / 2 - (canvas.width * videoRatio / canvasRatio) / 2, 0, canvas.width * videoRatio / canvasRatio, canvas.height
-  // )
-
-  /* Rendering the video on the preview canvas */
-  // context.drawImage(
-  //   video, 0, 0, canvas.width, canvas.height
-  // )
 }
 
 // TODO: change the parameters to only use the current node
@@ -206,11 +215,21 @@ function playVideo(videoTimeline) {
       video.pause()
 
       if (timelineNode) {
+
+        /* Setting the current switch value */
+        if (timelineNode.data.metadata.ratio == 'fit') {
+          window.currentRatio = 'fit'
+          document.querySelector('.toogle-fit').click()
+        } else if (timelineNode.data.metadata.ratio == 'strech') {
+          window.currentRatio = 'strech'
+          document.querySelector('.toogle-strech').click()
+        }
+
         /* Starting next video from the beginning */
         timelineNode.data.videoCore.currentTime = timelineNode.data.metadata.startTime
 
-        /* Updating the currentVideoSelectedForPlayback variable */
-        currentVideoSelectedForPlayback = timelineNode
+        /* Updating the window.currentVideoSelectedForPlayback variable */
+        window.currentVideoSelectedForPlayback = timelineNode
 
         /* Playing the next frame */
         playVideo(timelineNode)
@@ -326,7 +345,7 @@ function doneTrimming(ctx) {
   
   startTimeModal = document.querySelector('#trim-modal-start-time')
   endTimeModal = document.querySelector('#trim-modal-end-time')
-  // window.timelineDuration -= window.references[window.currentlyTimming.id].data.metadata.duration - Number(endTimeModal.innerText) + Number(startTimeModal.innerText)
+  window.timelineDuration -= window.references[window.currentlyTimming.id].data.metadata.duration - Number(endTimeModal.innerText) + Number(startTimeModal.innerText)
   window.references[window.currentlyTimming.id].data.metadata.startTime = Number(startTimeModal.innerText)
   window.references[window.currentlyTimming.id].data.metadata.endTime = Number(endTimeModal.innerText)
   window.references[window.currentlyTimming.id].data.metadata.duration = Number(endTimeModal.innerText) - Number(startTimeModal.innerText)
@@ -334,7 +353,7 @@ function doneTrimming(ctx) {
 
   renderPreviousTimelineDimensions()
   // HREF
-
+  finalVideoDurationLabel.innerText = formatTimeFromSeconds(window.timelineDuration.toFixed(2))
   console.log(window.references[window.currentlyTimming.id])
   modal.parentNode.replaceChild(modal.cloneNode(true), modal)
   window.currentlyTimming = undefined
@@ -414,13 +433,25 @@ function renderTrimBars(ctx) {
   }, false);
 }
 
+function changeRatio(ctx) {
+  if (window.references[ctx.target.id].data.metadata.ratio == 'fit') {
+    window.currentRatio = 'strech'
+    document.querySelector('.toogle-strech').click()
+    window.references[ctx.target.id].data.metadata.ratio = 'strech'
+  } else if (window.references[ctx.target.id].data.metadata.ratio == 'strech') {
+    window.currentRatio = 'fit'
+    document.querySelector('.toogle-fit').click()
+    window.references[ctx.target.id].data.metadata.ratio = 'fit'
+  }
+}
+
 /**
  * Method that returns an object with all
  * metadata necessary to use a video resource
  * @param path to the video resource
  * @param title of the video resource
  */
-function buildVideoResourceByPath(path, title) {
+function buildVideoResourceByPath(path, title, baseDuration = 0) {
   video = document.createElement('video')
   video.src = path
   
@@ -433,9 +464,19 @@ function buildVideoResourceByPath(path, title) {
       startTime: 0,
       ratio: 'strech',
       endTime: video.duration,
-      duration: video.duration
+      duration: video.duration,
+      baseDuration: baseDuration
     }
   }
+}
+
+/**
+ * Method that replaces the dot with ':'
+ * and converts the current time to string
+ * @param time double with two decimals
+ */
+function formatTimeFromSeconds(time) {
+  return String(time).replace('.', ':')
 }
 
 /**
@@ -444,7 +485,7 @@ function buildVideoResourceByPath(path, title) {
  * @param element HTML video element
  * @param title of the video resource
  */
-function buildVideoResource(video, title, startTime = 0, endTime = 0) {
+function buildVideoResource(video, title, baseDuration = 0, startTime = 0, endTime = 0) {
   const duration = (window.references[video.id]) ? window.references[video.id].data.metadata.duration : video.duration
   return {
     videoCore: video,
@@ -453,8 +494,9 @@ function buildVideoResource(video, title, startTime = 0, endTime = 0) {
       title: title,
       ratio: 'strech',
       startTime: startTime,
+      baseDuration: baseDuration,
       endTime: (endTime) ? endTime : duration, 
-      duration: (endTime) ? endTime - startTime : duration - startTime
+      duration: (endTime) ? endTime - startTime : duration - startTime,
     }
   }
 }
@@ -508,7 +550,7 @@ function setCurrentlyPlaying(value) {
   window.currentlyPlaying = value
 
   try {
-    currentVideoSelectedForPlayback.data.videoCore.pause()
+    window.currentVideoSelectedForPlayback.data.videoCore.pause()
   } catch (error) {
     /* No video is currently playing */
   }
@@ -551,8 +593,8 @@ function timelineClick(ctx) {
       
   setCurrentlyPlaying(false)
 
-  currentVideoSelectedForPlayback = window.references[ctx.target.id]
-  renderUIAfterFrameChange(currentVideoSelectedForPlayback)
+  window.currentVideoSelectedForPlayback = window.references[ctx.target.id]
+  renderUIAfterFrameChange(window.currentVideoSelectedForPlayback)
 }
 
 /**
@@ -561,6 +603,13 @@ function timelineClick(ctx) {
  */
 function rightClickMenu(ctx) {
   window.rightClickCtx = ctx
+  $(fitStrechBtn).text(
+    window
+      .references[ctx.target.id]
+      .data.metadata.ratio === 'fit' ? 
+      'Strech ratio' : 'Fit ratio'
+  )
+
   $(contextMenu).css({
     'top': `${ctx.pageY - 15}px`, 
     'left': `${ctx.pageX + 15}px`
@@ -589,31 +638,16 @@ function splitVideo(ctx) {
   /* Generating the new TimelineNodes */
   const splitTime = targetNodeStart + newStartTime
   const firstHalfNode = new TimelineNode(
-    buildVideoResource(ctx.target, "***", targetNodeStart, splitTime)
+    buildVideoResource(ctx.target, targetNode.prev.data.metadata.baseDuration + targetNode.prev.data.metadata.duration, "***", targetNodeStart, splitTime)
   )
   const secondHalfNode = new TimelineNode(
-    buildVideoResource(ctx.target, "***", splitTime, targetNodeEnd)
+    buildVideoResource(ctx.target, firstHalfNode.data.metadata.baseDuration + firstHalfNode.data.metadata.duration, "***", splitTime, targetNodeEnd)
   )
 
   /* Generating the new HTML elements */
   const firstHalfElement = renderTimelineBlock(firstHalfNode, firstHalfId)
   const secondHalfElement = renderTimelineBlock(secondHalfNode, secondHalfId)
   
-  // let totalFlexGrow = Number(ctx.target.style.flexGrow)
-  // ratio = (targetNode.data.metadata.duration - splitTime) / targetNode.data.metadata.duration
-  // let ratio = firstHalfNode.data.metadata.duration / secondHalfNode.data.metadata.duration
-  // firstHalfElement.style.flexGrow = totalFlexGrow / (1 + ratio)
-  // secondHalfElement.style.flexGrow = (ratio * Number(firstHalfElement.style.flexGrow))
-  // firstHalfElement.style.flexGrow = totalFlexGrow * firstHalfNode.data.metadata.duration / targetNode.data.metadata.duration 
-  // secondHalfElement.style.flexGrow = totalFlexGrow - Number(firstHalfElement.style.flexGrow)
-  // console.log(targetNode.data.metadata.duration, splitTime, (ratio * 100).toFixed(2) )
-// console.log('---------')
-//   console.log(ctx.target.style.flexGrow, ratio, splitTime)
-//   console.log(firstHalfElement.style.flexGrow)
-//   console.log(secondHalfElement.style.flexGrow)
-//   console.log(ctx.target.style.flexGrow, "=", Number(firstHalfElement.style.flexGrow) + Number(secondHalfElement.style.flexGrow))
-  // firstHalfElement
-  /* Assigning the videoCore value to the new generated elements */
   firstHalfNode.data.videoCore = firstHalfElement
   secondHalfNode.data.videoCore = secondHalfElement
 
@@ -650,11 +684,11 @@ function splitVideo(ctx) {
   delete window.references[ctx.target.id]
 
   /* Restarting the timeline playback */
-  currentVideoSelectedForPlayback = window.timeline
-  currentVideoSelectedForPlayback.data.videoCore.currentTime = 
-    currentVideoSelectedForPlayback.data.metadata.startTime
+  window.currentVideoSelectedForPlayback = window.timeline
+  window.currentVideoSelectedForPlayback.data.videoCore.currentTime = 
+    window.currentVideoSelectedForPlayback.data.metadata.startTime
 
-  renderCurrentPlaybackBar(currentVideoSelectedForPlayback)
+  renderCurrentPlaybackBar(window.currentVideoSelectedForPlayback)
 }
 
 /**
@@ -798,15 +832,19 @@ const dragObjectLogic = {
             }
             window.references[iterator.data.videoCore.id] = iterator
           }
+          if (iterator.prev) {
+            iterator.data.metadata.baseDuration = iterator.prev.data.metadata.baseDuration + iterator.prev.data.metadata.duration
+          }
+          
           window.timelineDuration += iterator.data.metadata.duration
           /* Removing previous links if necessary */
           iterator.next = null
         }
       }
-      
+      finalVideoDurationLabel.innerText = formatTimeFromSeconds(window.timelineDuration.toFixed(2))
       // event.target.style.width = event.target.getBoundingClientRect().width
-      currentVideoSelectedForPlayback = window.timeline
-      currentVideoSelectedForPlayback.data.videoCore.currentTime = currentVideoSelectedForPlayback.data.metadata.startTime
+      window.currentVideoSelectedForPlayback = window.timeline
+      window.currentVideoSelectedForPlayback.data.videoCore.currentTime = window.currentVideoSelectedForPlayback.data.metadata.startTime
     } else {
       event.target.style.transition = '0.5s'  
     }
