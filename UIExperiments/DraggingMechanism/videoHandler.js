@@ -26,8 +26,11 @@ window.onload = () => {
   this.resources[getUniqueID()] = buildVideoResourceByPath('./portait.mp4', 'Portait')
   this.resources[getUniqueID()] = buildVideoResourceByPath('./bunny10sec.mp4', 'Bunny10sec')
 
-  /* Listener for playback triggered by the spacebar */
-  document.body.onkeyup = spacebarPlayEvent
+  
+  document.body.onkeyup = keyUpEvent
+  document.body.onkeydown = keyDownEvent
+
+  window.currentMouseDownEvent = null;
 
   timelinePlaceholder = document.createElement('div')
   timelinePlaceholder.classList.add('timeline-item')
@@ -42,10 +45,14 @@ window.onload = () => {
   context = canvas.getContext('2d')
 
   /* References to the playback controls */
-  backButton = document.querySelector('.preview-back')
+  
   playButton = document.querySelector('.preview-play')
   pauseButton = document.querySelector('.preview-pause')
+  backwardButton = document.querySelector('.preview-back')
   forwardButton = document.querySelector('.preview-forward')
+
+  /* Setting the event listeners for backward and forward buttons */
+  backAndForwardButtonLogic(backwardButton, forwardButton)
 
   /* Context menu HTML element */
   contextMenu = document.querySelector('#context-menu')
@@ -85,49 +92,6 @@ window.onload = () => {
   playButton.addEventListener('click', triggerPlayVideo)
   pauseButton.addEventListener('click', triggerPlayVideo)
 
-
-  backButton.addEventListener('click', () => {
-    if (window.currentVideoSelectedForPlayback) {
-      setCurrentlyPlaying(false)
-      const currentNode = window.currentVideoSelectedForPlayback
-      const currentTime = currentNode.data.videoCore.currentTime
-      const currentVideoStart = currentNode.data.metadata.startTime
-
-      if (currentTime - currentVideoStart > 1) {
-        currentNode.data.videoCore.currentTime -= 1
-      } else if (currentNode.prev) {
-        const remainingTime = 1 - currentTime
-        window.currentVideoSelectedForPlayback = currentNode.prev
-        const prevEndTime = window.currentVideoSelectedForPlayback.data.metadata.endTime
-        window.currentVideoSelectedForPlayback.data.videoCore.currentTime = prevEndTime - remainingTime
-      } else {
-        window.currentVideoSelectedForPlayback.data.videoCore.currentTime = currentVideoStart
-      }
-      renderUIAfterFrameChange(window.currentVideoSelectedForPlayback)
-    }
-  })
-
-  forwardButton.addEventListener('click', () => {
-    if (window.currentVideoSelectedForPlayback) {
-      setCurrentlyPlaying(false)
-      const currentNode = window.currentVideoSelectedForPlayback
-      const currentTime = currentNode.data.videoCore.currentTime
-      const currentVideoEnd = currentNode.data.metadata.endTime
-
-      if (currentTime + 1 < currentVideoEnd) {
-        currentNode.data.videoCore.currentTime += 1
-      } else if (currentNode.next) {
-        const remainingTime = 1 - currentTime
-        window.currentVideoSelectedForPlayback = currentNode.next
-        const nextStartTime = window.currentVideoSelectedForPlayback.data.metadata.startTime
-        window.currentVideoSelectedForPlayback.data.videoCore.currentTime = nextStartTime + remainingTime
-      } else {
-        window.currentVideoSelectedForPlayback.data.videoCore.currentTime = currentVideoEnd
-      }
-      renderUIAfterFrameChange(window.currentVideoSelectedForPlayback)
-    }
-  })
-
   /* Video duration selectors */
   finalVideoDurationLabel = document.querySelector('#full-video-duration')
   currentVideoDurationLabel = document.querySelector('#current-video-duration')
@@ -152,12 +116,34 @@ function getUniqueID() {
 }
 /**
  * Method that handles the 
- * spacebar playback event
+ * all keyup event on body
  * @param event context about the event
  */
-function spacebarPlayEvent(event) {
-  if (event.key == SPACEBAR) {
+function keyUpEvent(event) {
+  
+  /* Listener for playback triggered by the spacebar */
+  if (event.key === SPACEBAR) {
     triggerPlayVideo()
+  /* Left or Right keyup events */
+  } else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+    clearTimeout(window.currentMouseDownEvent)
+  }
+}
+
+/**
+ * Method that handles the 
+ * all keydown event on body
+ * @param event context about the event
+ */
+function keyDownEvent(event) {
+  /* Left keydown event */
+  if (event.key === 'ArrowLeft') {
+    backButtonTrigger()
+    window.currentMouseDownEvent = setTimeout(() => backButtonTrigger(), 100)
+  /* Right keydown event */
+  } else if (event.key === 'ArrowRight') {
+    forwardButtonTrigger()
+    window.currentMouseDownEvent = setTimeout(() => forwardButtonTrigger(), 100)
   }
 }
 
@@ -319,6 +305,56 @@ function renderCurrentPlaybackBar(videoNode) {
 }
 
 /**
+ * Method that handles the back button
+ * event and moves the video 1 second
+ */
+function backButtonTrigger() {
+  if (window.currentVideoSelectedForPlayback) {
+    setCurrentlyPlaying(false)
+    const currentNode = window.currentVideoSelectedForPlayback
+    const currentTime = currentNode.data.videoCore.currentTime
+    const currentVideoStart = currentNode.data.metadata.startTime
+
+    if (currentTime - currentVideoStart > 1) {
+      currentNode.data.videoCore.currentTime -= 1
+    } else if (currentNode.prev) {
+      const remainingTime = 1 - currentTime
+      window.currentVideoSelectedForPlayback = currentNode.prev
+      const prevEndTime = window.currentVideoSelectedForPlayback.data.metadata.endTime
+      window.currentVideoSelectedForPlayback.data.videoCore.currentTime = prevEndTime - remainingTime
+    } else {
+      window.currentVideoSelectedForPlayback.data.videoCore.currentTime = currentVideoStart
+    }
+    renderUIAfterFrameChange(window.currentVideoSelectedForPlayback)
+  }
+}
+
+/**
+ * Method that handles the forward button
+ * event and moves the video ahead 1 second
+ */
+function forwardButtonTrigger() {
+  if (window.currentVideoSelectedForPlayback) {
+    setCurrentlyPlaying(false)
+    const currentNode = window.currentVideoSelectedForPlayback
+    const currentTime = currentNode.data.videoCore.currentTime
+    const currentVideoEnd = currentNode.data.metadata.endTime
+
+    if (currentTime + 1 < currentVideoEnd) {
+      currentNode.data.videoCore.currentTime += 1
+    } else if (currentNode.next) {
+      const remainingTime = 1 - currentTime
+      window.currentVideoSelectedForPlayback = currentNode.next
+      const nextStartTime = window.currentVideoSelectedForPlayback.data.metadata.startTime
+      window.currentVideoSelectedForPlayback.data.videoCore.currentTime = nextStartTime + remainingTime
+    } else {
+      window.currentVideoSelectedForPlayback.data.videoCore.currentTime = currentVideoEnd
+    }
+    renderUIAfterFrameChange(window.currentVideoSelectedForPlayback)
+  }
+}
+
+/**
  * Renders the items 
  * to the resources list
  */
@@ -371,6 +407,28 @@ function renderTimelineBlock(videoObject, id) {
   }, false);
 
   return elem
+}
+
+/**
+ * Method that handles the logic for 
+ * skipping forward and backward in the timeline
+ */
+function backAndForwardButtonLogic(backwardButton, forwardButton) {
+  let currentMouseDownEvent = null;
+  backwardButton.addEventListener('mousedown', () => {
+    backButtonTrigger()
+    currentMouseDownEvent = setInterval(() => backButtonTrigger(), 100)
+  })
+  backwardButton.addEventListener('mouseup', () => {
+    clearInterval(currentMouseDownEvent)
+  })
+  forwardButton.addEventListener('mousedown', () => {
+    forwardButtonTrigger()
+    currentMouseDownEvent = setInterval(() => forwardButtonTrigger(), 100)
+  })
+  forwardButton.addEventListener('mouseup', () => {
+    clearInterval(currentMouseDownEvent)
+  })
 }
 
 function doneTrimming(ctx) {
@@ -877,8 +935,10 @@ const dragObjectLogic = {
       }
       finalVideoDurationLabel.innerText = formatTimeFromSeconds(window.timelineDuration.toFixed(2))
       // event.target.style.width = event.target.getBoundingClientRect().width
+
       window.currentVideoSelectedForPlayback = window.timeline
       window.currentVideoSelectedForPlayback.data.videoCore.currentTime = window.currentVideoSelectedForPlayback.data.metadata.startTime
+      renderUIAfterFrameChange(window.currentVideoSelectedForPlayback)
     } else {
       event.target.style.transition = '0.5s'  
     }
