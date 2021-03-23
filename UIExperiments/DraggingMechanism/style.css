@@ -496,4 +496,14 @@ video::-webkit-media-controls {
     border-radius: 50px;
     transition: 0.3s;
 }
-  
+
+#timeline-playback-bar {
+    pointer-events: none;
+    position: absolute;
+    content: "hello";
+    background-color: #F48B29;
+    width: 2px;
+    height: 45vh;
+    bottom: 5vh;
+    left: 0;
+}

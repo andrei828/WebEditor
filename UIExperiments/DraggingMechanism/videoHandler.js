@@ -26,7 +26,6 @@ window.onload = () => {
   this.resources[getUniqueID()] = buildVideoResourceByPath('./portait.mp4', 'Portait')
   this.resources[getUniqueID()] = buildVideoResourceByPath('./bunny10sec.mp4', 'Bunny10sec')
 
-  
   document.body.onkeyup = keyUpEvent
   document.body.onkeydown = keyDownEvent
 
@@ -74,7 +73,9 @@ window.onload = () => {
 
   /* In the beginning, no video is currently playing */
   window.currentVideoSelectedForPlayback = null
-  
+
+  timelinePlaybackBar = document.querySelector('#timeline-playback-bar')
+
   /* Hash table with references to nodes in the linked 
      list will elaborate after further implementations */
   window.references = {}
@@ -198,7 +199,6 @@ function renderUIAfterFrameChange(videoNode) {
   // console.log(video.videoWidth, video.videoHeight, video.videoWidth / video.videoHeight)
   // console.log((video.videoHeight - canvas.height) / 2)
   // console.log('-------------')
-
   currentVideoDurationLabel.innerText = formatTimeFromSeconds((videoNode.data.metadata.baseDuration + video.currentTime).toFixed(2))
   
   if (videoNode.data.metadata.ratio == 'fit') {
@@ -286,22 +286,12 @@ function playVideo(videoTimeline) {
 function renderCurrentPlaybackBar(videoNode) {
   let videoElement = videoNode.data.videoCore
   
-  timelineCanvasCtx.clearRect(
-    window.currentPlaybackTime - 5, 0, 
-    window.currentPlaybackTime + 2, timelineCanvas.height
-  )
-  
   let currentTime = videoNode.data.videoCore.currentTime - videoNode.data.metadata.startTime
 
   window.currentPlaybackTime = videoElement.offsetLeft + 
     (currentTime * videoElement.clientWidth / videoNode.data.metadata.duration)
   
-  timelineCanvasCtx.beginPath()
-  timelineCanvasCtx.moveTo(window.currentPlaybackTime, 0)
-  timelineCanvasCtx.lineTo(window.currentPlaybackTime, timelineCanvas.height)
-  timelineCanvasCtx.lineWidth = 2
-  timelineCanvasCtx.strokeStyle = "#F48B29"
-  timelineCanvasCtx.stroke()
+  timelinePlaybackBar.style.left = `${window.currentPlaybackTime}px`
 }
 
 /**
@@ -568,7 +558,11 @@ function buildVideoResourceByPath(path, title, baseDuration = 0) {
  * @param time double with two decimals
  */
 function formatTimeFromSeconds(time) {
-  return String(time).replace('.', ':')
+  const totalSeconds = time | 0
+  const minutes = parseInt(totalSeconds / 60)
+  const seconds = totalSeconds % 60
+  const secondsString = (seconds < 10) ? `0${seconds}` : `${seconds}`
+  return `${minutes}:${secondsString}`
 }
 
 /**
@@ -730,10 +724,13 @@ function splitVideo(ctx) {
   /* Generating the new TimelineNodes */
   const splitTime = targetNodeStart + newStartTime
   const firstHalfNode = new TimelineNode(
-    buildVideoResource(ctx.target, targetNode.prev.data.metadata.baseDuration + targetNode.prev.data.metadata.duration, "***", targetNodeStart, splitTime)
+    buildVideoResource(
+      ctx.target, "***",
+      (targetNode.prev) ? targetNode.prev.data.metadata.baseDuration + targetNode.prev.data.metadata.duration : 0,
+       targetNodeStart, splitTime)
   )
   const secondHalfNode = new TimelineNode(
-    buildVideoResource(ctx.target, firstHalfNode.data.metadata.baseDuration + firstHalfNode.data.metadata.duration, "***", splitTime, targetNodeEnd)
+    buildVideoResource(ctx.target, "***", firstHalfNode.data.metadata.baseDuration + firstHalfNode.data.metadata.duration, splitTime, targetNodeEnd)
   )
 
   /* Generating the new HTML elements */
@@ -938,7 +935,8 @@ const dragObjectLogic = {
 
       window.currentVideoSelectedForPlayback = window.timeline
       window.currentVideoSelectedForPlayback.data.videoCore.currentTime = window.currentVideoSelectedForPlayback.data.metadata.startTime
-      renderUIAfterFrameChange(window.currentVideoSelectedForPlayback)
+      setTimeout(() => 
+        renderCurrentPlaybackBar(window.currentVideoSelectedForPlayback), 50)
     } else {
       event.target.style.transition = '0.5s'  
     }

@@ -28,6 +28,9 @@ $(function() {
   $('.bottom-view').mousemove((event) => {
     timelineRendering(event)
   })
+  $('.bottom-view').mouseleave((event) => {
+    ctx.clearRect(pastX1 - 1, 0, pastX1 + 1, canvas.height);
+  })
   $('.bottom-view').click((event) => {
     window.rightClickCtx = undefined 
     timelineRendering(event)
@@ -36,19 +39,6 @@ $(function() {
   function timelineRendering(event) {
     // TODO: remove this quick fix and make the two bars independent from one another
     ctx.clearRect(pastX1 - 1, 0, pastX1 + 1, canvas.height);
-    if (window.currentPlaybackTime) {
-      ctx.clearRect(
-        window.currentPlaybackTime - 5, 0, 
-        window.currentPlaybackTime + 2, ctx.canvas.height
-      )
-      
-      ctx.beginPath()
-      ctx.moveTo(window.currentPlaybackTime, 0)
-      ctx.lineTo(window.currentPlaybackTime, ctx.canvas.height)
-      ctx.lineWidth = 2;
-      timelineCanvasCtx.strokeStyle = "#F48B29"
-      ctx.stroke();
-    }
   
     if (!window.rightClickCtx) {
       ctx.strokeStyle = "#000000";
