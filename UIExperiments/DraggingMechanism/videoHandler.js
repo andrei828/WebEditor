@@ -87,11 +87,45 @@ window.onload = () => {
 
 
   backButton.addEventListener('click', () => {
-    // TODO: go back 10 seconds...
+    if (window.currentVideoSelectedForPlayback) {
+      setCurrentlyPlaying(false)
+      const currentNode = window.currentVideoSelectedForPlayback
+      const currentTime = currentNode.data.videoCore.currentTime
+      const currentVideoStart = currentNode.data.metadata.startTime
+
+      if (currentTime - currentVideoStart > 1) {
+        currentNode.data.videoCore.currentTime -= 1
+      } else if (currentNode.prev) {
+        const remainingTime = 1 - currentTime
+        window.currentVideoSelectedForPlayback = currentNode.prev
+        const prevEndTime = window.currentVideoSelectedForPlayback.data.metadata.endTime
+        window.currentVideoSelectedForPlayback.data.videoCore.currentTime = prevEndTime - remainingTime
+      } else {
+        window.currentVideoSelectedForPlayback.data.videoCore.currentTime = currentVideoStart
+      }
+      renderUIAfterFrameChange(window.currentVideoSelectedForPlayback)
+    }
   })
 
   forwardButton.addEventListener('click', () => {
-    // TODO: skip 10 seconds forward...
+    if (window.currentVideoSelectedForPlayback) {
+      setCurrentlyPlaying(false)
+      const currentNode = window.currentVideoSelectedForPlayback
+      const currentTime = currentNode.data.videoCore.currentTime
+      const currentVideoEnd = currentNode.data.metadata.endTime
+
+      if (currentTime + 1 < currentVideoEnd) {
+        currentNode.data.videoCore.currentTime += 1
+      } else if (currentNode.next) {
+        const remainingTime = 1 - currentTime
+        window.currentVideoSelectedForPlayback = currentNode.next
+        const nextStartTime = window.currentVideoSelectedForPlayback.data.metadata.startTime
+        window.currentVideoSelectedForPlayback.data.videoCore.currentTime = nextStartTime + remainingTime
+      } else {
+        window.currentVideoSelectedForPlayback.data.videoCore.currentTime = currentVideoEnd
+      }
+      renderUIAfterFrameChange(window.currentVideoSelectedForPlayback)
+    }
   })
 
   /* Video duration selectors */
