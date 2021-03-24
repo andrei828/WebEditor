@@ -19,12 +19,12 @@ window.onload = () => {
   
   this.resources = {}
   /* Currently hardcoding the default video items */
-  this.resources[getUniqueID()] = buildVideoResourceByPath('./GrahamScan.mov', 'Graham')
-  this.resources[getUniqueID()] = buildVideoResourceByPath('./PostItDemo.mp4', 'Post it')
-  this.resources[getUniqueID()] = buildVideoResourceByPath('./bunny.mp4', 'Bunny 1')
-  this.resources[getUniqueID()] = buildVideoResourceByPath('./bunny2.mp4', 'Bunny 2')
-  this.resources[getUniqueID()] = buildVideoResourceByPath('./portait.mp4', 'Portait')
-  this.resources[getUniqueID()] = buildVideoResourceByPath('./bunny10sec.mp4', 'Bunny10sec')
+  this.resources[getUniqueID()] = buildVideoResourceByPath('./GrahamScan.mov', 'GrahamScan.mov')
+  this.resources[getUniqueID()] = buildVideoResourceByPath('./PostItDemo.mp4', 'PostItDemo.mp4')
+  this.resources[getUniqueID()] = buildVideoResourceByPath('./bunny.mp4', 'bunny.mp4')
+  this.resources[getUniqueID()] = buildVideoResourceByPath('./bunny2.mp4', 'bunny2.mp4')
+  this.resources[getUniqueID()] = buildVideoResourceByPath('./portait.mp4', 'portait.mp4')
+  this.resources[getUniqueID()] = buildVideoResourceByPath('./bunny10sec.mp4', 'bunny10sec.mp4')
 
   document.body.onkeyup = keyUpEvent
   document.body.onkeydown = keyDownEvent
@@ -236,42 +236,9 @@ function renderTrimBars(ctx) {
   }, false);
 }
 
-function changeRatio(ctx) {
-  if (window.references[ctx.target.id].data.metadata.ratio == 'fit') {
-    window.currentRatio = 'strech'
-    document.querySelector('.toogle-strech').click()
-    window.references[ctx.target.id].data.metadata.ratio = 'strech'
-  } else if (window.references[ctx.target.id].data.metadata.ratio == 'strech') {
-    window.currentRatio = 'fit'
-    document.querySelector('.toogle-fit').click()
-    window.references[ctx.target.id].data.metadata.ratio = 'fit'
-  }
-}
 
-/**
- * Method that returns an object with all
- * metadata necessary to use a video resource
- * @param path to the video resource
- * @param title of the video resource
- */
-function buildVideoResourceByPath(path, title, baseDuration = 0) {
-  video = document.createElement('video')
-  video.src = path
-  
-  return {
-    id: video.classList,
-    videoCore: video,
-    metadata: {
-      path: path,
-      title: title,
-      startTime: 0,
-      ratio: 'strech',
-      endTime: video.duration,
-      duration: video.duration,
-      baseDuration: baseDuration
-    }
-  }
-}
+
+
 
 /**
  * Method that replaces the dot with ':'
@@ -286,27 +253,7 @@ function formatTimeFromSeconds(time) {
   return `${minutes}:${secondsString}`
 }
 
-/**
- * Method that returns an object with all
- * metadata necessary to use a video resource
- * @param element HTML video element
- * @param title of the video resource
- */
-function buildVideoResource(video, title, baseDuration = 0, startTime = 0, endTime = 0) {
-  const duration = (window.references[video.id]) ? window.references[video.id].data.metadata.duration : video.duration
-  return {
-    videoCore: video,
-    metadata: {
-      path: video.currentSrc,
-      title: title,
-      ratio: 'strech',
-      startTime: startTime,
-      baseDuration: baseDuration,
-      endTime: (endTime) ? endTime : duration, 
-      duration: (endTime) ? endTime - startTime : duration - startTime,
-    }
-  }
-}
+
 /* *************************************************************************************************************************************************************************************************************************** */
 function renderTimelineDimensions(currentItemDuration) {
   let iterator = window.timeline    
@@ -336,52 +283,11 @@ function renderPreviousTimelineDimensions() {
 
 }
 
-/**
- * This draws the first
- * frame from a video to a canvas 
- * @param video video source in html element
- * @param canvasContext canvas source in html element
- */
-function getVideoThumbnail(video, canvas) {
-  // context.drawImage(video, 0, videoStartCoordY, canvas.width, videoStartCoordY + canvas.height)
-  let context = canvas.getContext('2d')
-  context.drawImage(video, 0, 0, canvas.width, canvas.height)
-}
 
-/**
- * Sets the global variable currentlyPlaying 
- * that decides the current state of the UI
- * @param value boolean value
- */
-function setCurrentlyPlaying(value) {
-  window.currentlyPlaying = value
 
-  try {
-    window.currentVideoSelectedForPlayback.data.videoCore.pause()
-  } catch (error) {
-    /* No video is currently playing */
-  }
 
-  /* Updating the controls from the preview canvas */
-  setPlaybackControlState(value)
-}
 
-/**
- * Method decides whether the play button
- * or pause button has to be displayed
- * @param value boolean value
- */
-function setPlaybackControlState(value) {
-  if (value) {
-    /* video is playing */
-    playButton.style.display = NONE
-    pauseButton.style.display = INLINE
-  } else {
-    /* video is paused */
-    playButton.style.display = INLINE
-    pauseButton.style.display = NONE
-  }
-}
+
 
 function timelineMove(ctx) {
   
@@ -404,102 +310,6 @@ function timelineClick(ctx) {
   renderUIAfterFrameChange(window.currentVideoSelectedForPlayback)
 }
 
-/**
- * Runs when trying to open the context menu
- * @param ctx context for the right click menu
- */
-function rightClickMenu(ctx) {
-  window.rightClickCtx = ctx
-  $(fitStrechBtn).text(
-    window
-      .references[ctx.target.id]
-      .data.metadata.ratio === 'fit' ? 
-      'Strech ratio' : 'Fit ratio'
-  )
-
-  $(contextMenu).css({
-    'top': `${ctx.pageY - 15}px`, 
-    'left': `${ctx.pageX + 15}px`
-  }).show();
-  ctx.preventDefault();
-}
-
-/**
- * Splits the selected video with relative sizes
- * @param ctx context for the right click menu
- */
-function splitVideo(ctx) {
-  /* Generating the unique ids for the elements */
-  const firstHalfId = getUniqueID()
-  const secondHalfId = getUniqueID()
-  
-  /* Accessing key members for rendering */
-  const targetNode = window.references[ctx.target.id]
-  const targetNodeEnd = targetNode.data.metadata.endTime
-  const targetNodeStart = targetNode.data.metadata.startTime
-  
-  /* Calculating the split moment relative to the current target */
-  const newStartTime = ctx.offsetX * 
-    targetNode.data.metadata.duration / ctx.target.clientWidth
-  
-  /* Generating the new TimelineNodes */
-  const splitTime = targetNodeStart + newStartTime
-  const firstHalfNode = new TimelineNode(
-    buildVideoResource(
-      ctx.target, "***",
-      (targetNode.prev) ? targetNode.prev.data.metadata.baseDuration + targetNode.prev.data.metadata.duration : 0,
-       targetNodeStart, splitTime)
-  )
-  const secondHalfNode = new TimelineNode(
-    buildVideoResource(ctx.target, "***", firstHalfNode.data.metadata.baseDuration + firstHalfNode.data.metadata.duration, splitTime, targetNodeEnd)
-  )
-
-  /* Generating the new HTML elements */
-  const firstHalfElement = renderTimelineBlock(firstHalfNode, firstHalfId)
-  const secondHalfElement = renderTimelineBlock(secondHalfNode, secondHalfId)
-  
-  firstHalfNode.data.videoCore = firstHalfElement
-  secondHalfNode.data.videoCore = secondHalfElement
-
-  /* Updating the refereneces hashmap */
-  window.references[firstHalfId] = firstHalfNode
-  window.references[secondHalfId] = secondHalfNode
-
-  /* Appending the new elements to DOM */
-  $(ctx.target).after(firstHalfElement)
-  $(firstHalfElement).after(secondHalfElement)
-
-  /* Linking the new nodes to the timeline doubly linked list */
-  firstHalfNode.next = secondHalfNode
-  firstHalfNode.prev = targetNode.prev
-  secondHalfNode.prev = firstHalfNode
-  secondHalfNode.next = targetNode.next
-  
-  /* If there exists an element after the split */
-  if (targetNode.next) {
-    targetNode.next.prev = secondHalfNode
-  }
-
-  /* If there exists an element before the split */
-  if (previous = targetNode.prev) {
-    previous.next = firstHalfNode
-  } else {
-    window.timeline = firstHalfNode
-    window.timelineDuration = targetNode.data.metadata.duration
-  }
-
-  /* Removing the current target */
-  $(ctx.target).remove()
-  window.rightClickCtx = null
-  delete window.references[ctx.target.id]
-
-  /* Restarting the timeline playback */
-  window.currentVideoSelectedForPlayback = window.timeline
-  window.currentVideoSelectedForPlayback.data.videoCore.currentTime = 
-    window.currentVideoSelectedForPlayback.data.metadata.startTime
-
-  renderCurrentPlaybackBar(window.currentVideoSelectedForPlayback)
-}
 
 /**
  * Object that has the logic responsible
@@ -631,7 +441,7 @@ const dragObjectLogic = {
               iterator = iterator.next
             }
           } else {
-            resource = buildVideoResource(child, "***")
+            resource = buildVideoResource(child, window.resources[child.id] ? window.resources[child.id].metadata.title : "***")
             if (!window.timeline) {
               window.timeline = new TimelineNode(resource)
               iterator = window.timeline
