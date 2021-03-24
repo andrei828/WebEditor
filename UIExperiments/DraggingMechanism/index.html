@@ -1,13 +1,13 @@
 <html>
   <head>
+    <!-- <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.9.5/dist/ffmpeg.min.js"></script> -->
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
     
     <link rel="stylesheet" href="style.css">
-    <script>
-      window.onload = () => {
-      }
-    </script>
+    
+    <script src="helper.js"></script>
+    <!-- <script src="videoTranscode.js"></script> -->
     <script src="videoHandler.js"></script>
     <script src="script.js"></script>
   </head>
@@ -18,12 +18,15 @@
           <div class="resources-top">
             <div class="resources-title">Resources</div>
             <div class="upload-controls">
-              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-upload" width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" stroke="#222222" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" />
-                <polyline points="7 9 12 4 17 9" />
-                <line x1="12" y1="4" x2="12" y2="16" />
-              </svg>
+              <label>
+                <input type="file" id="uploader" style="display: none;" multiple />
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-upload" width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" stroke="#222222" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" />
+                  <polyline points="7 9 12 4 17 9" />
+                  <line x1="12" y1="4" x2="12" y2="16" />
+                </svg>
+              </label>
               <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-share" width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" stroke="#222222" fill="none" stroke-linecap="round" stroke-linejoin="round">
                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                 <circle cx="6" cy="12" r="3" />
@@ -54,7 +57,7 @@
         <div class="preview-player-wrapper">
           <canvas class="preview-player"></canvas>
           <input class="preview-input-title" value="MyFirstVideo.mp4">
-          <button class="preview-start-rendering">Done</button>
+          <button id="preview-start-rendering">Done</button>
           <div class="preview-bottom-controls">
             <button class="btn btn--toggle btn-toggle-js">
               <span class="toggle-elm toggle-trigger-js toogle-fit" data-action-type="fit">Fit</span>
@@ -148,6 +151,8 @@
         </table>
       </div>
       <div id="timeline-playback-bar"></div>
+      <p id="message" style="position: absolute;"></p>
+      <video id="output-video" style="position: absolute;"></video>
     </section>
 
     <!-- <div class="container">

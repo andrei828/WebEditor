@@ -1,5 +1,6 @@
 
 $(function() {
+  
   buttonSwitchLogic()
   
 	$(document).bind('click', function() {
