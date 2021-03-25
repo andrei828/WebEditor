@@ -1,6 +1,52 @@
 
 $(function() {
   
+  $('.dropdown').click(function () {
+        $(this).attr('tabindex', 1).focus();
+        $(this).toggleClass('active');
+        $(this).find('.dropdown-menu').slideToggle(300);
+    });
+    $('.dropdown').focusout(function () {
+        $(this).removeClass('active');
+        $(this).find('.dropdown-menu').slideUp(300);
+    });
+    $('.dropdown .dropdown-menu li').click(function () {
+        $(this).parents('.dropdown').find('span').text($(this).text());
+        $(this).parents('.dropdown').find('input').attr('value', $(this).attr('id'));
+    });
+/*End Dropdown Menu*/
+  
+
+  
+
+  $('.dropdown-menu li').click(function () {
+    const resolution = $(this).parents('.dropdown').find('input').val()
+    console.log(resolution)
+    if (resolution === '1920x1080') {
+      RATIO = 1.77
+      window.FFMPEG_RESOLUTION_WIDTH = 1920
+      window.FFMPEG_RESOLUTION_HEIGHT = 1080
+    } else if (resolution === '800x400') {
+      RATIO = 2
+      window.FFMPEG_RESOLUTION_WIDTH = 800
+      window.FFMPEG_RESOLUTION_HEIGHT = 400
+    } else if (resolution === '400x800') {
+      RATIO = 0.5
+      window.FFMPEG_RESOLUTION_WIDTH = 400
+      window.FFMPEG_RESOLUTION_HEIGHT = 800
+    }
+
+    const canvas = document.querySelector('.preview-player')
+    const currentHeight = canvas.getBoundingClientRect().height
+    const maxHeight = document
+      .querySelector('.preview-player-wrapper')
+      .getBoundingClientRect()
+      .height
+
+    if (maxHeight * 0.7)  
+    canvas.style.width = canvas.getBoundingClientRect().height * window.RATIO
+  }); 
+
   buttonSwitchLogic()
   
 	$(document).bind('click', function() {
@@ -9,6 +55,8 @@ $(function() {
 
   $(window).resize(function() {
     buttonSwitchLogic()
+    const canvas =document.querySelector('.preview-player')
+    canvas.style.width = canvas.getBoundingClientRect().height * RATIO
   });
   
   tooltipDuration = document.querySelector('.tooltip-duration')

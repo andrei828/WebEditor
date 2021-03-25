@@ -519,12 +519,16 @@ function setCurrentlyPlaying(value) {
   const splitTime = targetNodeStart + newStartTime
   const firstHalfNode = new TimelineNode(
     buildVideoResource(
-      ctx.target, "***",
-      (targetNode.prev) ? targetNode.prev.data.metadata.baseDuration + targetNode.prev.data.metadata.duration : 0,
-       targetNodeStart, splitTime)
+      ctx.target, window.references[ctx.target.id].data.metadata.title,
+      (targetNode.prev) ? 
+        targetNode.prev.data.metadata.baseDuration + targetNode.prev.data.metadata.duration : 
+        0,
+      targetNodeStart, splitTime)
   )
   const secondHalfNode = new TimelineNode(
-    buildVideoResource(ctx.target, "***", firstHalfNode.data.metadata.baseDuration + firstHalfNode.data.metadata.duration, splitTime, targetNodeEnd)
+    buildVideoResource(ctx.target, window.references[ctx.target.id].data.metadata.title,
+      firstHalfNode.data.metadata.baseDuration + firstHalfNode.data.metadata.duration, 
+      splitTime, targetNodeEnd)
   )
 
   /* Generating the new HTML elements */

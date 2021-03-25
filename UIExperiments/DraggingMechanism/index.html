@@ -56,8 +56,26 @@
         </div>
         <div class="preview-player-wrapper">
           <canvas class="preview-player"></canvas>
-          <input class="preview-input-title" value="MyFirstVideo.mp4">
-          <button id="preview-start-rendering">Done</button>
+
+          <div class="preview-top-controls">
+            <div class="container">
+              <div class="dropdown">
+                <div class="select">
+                  <span>800x400</span>
+                </div>
+                <input type="hidden" name="gender">
+                <ul class="dropdown-menu">
+                  <li id="1920x1080">1920x1080</li>
+                  <li id="800x400">800x400</li>
+                  <li id="400x800">400x800</li>
+                  <li id="Custom">Custom</li>
+                </ul>
+              </div>
+            </div>
+            <input class="preview-input-title" value="MyFirstVideo.mp4">
+            <button id="preview-start-rendering">Done</button>
+          </div>
+
           <div class="preview-bottom-controls">
             <button class="btn btn--toggle btn-toggle-js">
               <span class="toggle-elm toggle-trigger-js toogle-fit" data-action-type="fit">Fit</span>

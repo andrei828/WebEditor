@@ -70,6 +70,15 @@ body {
     align-items: center;
 }
 
+.preview-top-controls{
+    position: absolute;
+    display: flex;
+    top: 2%;
+    width: 45.4vw;
+    justify-content: space-around;
+    align-items: center;
+}
+
 .preview-player-controls {
     position: relative;
     backdrop-filter: blur(35px);
@@ -81,7 +90,7 @@ body {
 }
 
 .preview-input-title {
-    position: absolute;
+    position: relative;
     top: 1.5%;
     background: none;
     border: none;
@@ -116,7 +125,7 @@ svg:hover {
     background: none;
     border: 1px solid #e4e4e4;
     border-radius: 10px;
-    position: absolute;
+    position: relative;
     top: 1.5%;
     right: 1%;
     color: #e4e4e4;
@@ -174,7 +183,7 @@ svg:hover {
 
 .preview-player {
     width: 90%;
-    height: 80%;
+    height: 70%;
     background-color: #000000;
 }
 
@@ -506,4 +515,91 @@ video::-webkit-media-controls {
     height: 45vh;
     bottom: 5vh;
     left: 0;
+}
+
+
+/*span.msg,
+span.choose {
+  color: #555;
+  padding: 5px 0 10px;
+  display: inherit
+}*/
+.container {
+ /* width: 500px;
+  margin: 50px auto 0;
+  text-align: center*/
+}
+
+/*Styling Selectbox*/
+.dropdown {
+    border-radius: 10px !important;
+    width: 85px;
+    display: inline-block;
+    border-radius: 2px;
+    border: 1px solid white;
+    transition: all .5s ease;
+    position: relative;
+    font-size: small;
+    color: white;
+    text-align: center;
+    outline: none;
+}
+.dropdown .select {
+    cursor: pointer;
+    display: block;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.dropdown .select > i {
+    font-size: 13px;
+    color: #888;
+    cursor: pointer;
+    transition: all .3s ease-in-out;
+    float: right;
+    line-height: 20px;
+    border-radius: 15px;
+}
+.dropdown:hover {
+
+}
+.dropdown:active {
+    /*background-color: #f8f8f8*/
+}
+.dropdown.active:hover,
+.dropdown.active {
+    border: none;
+}
+.dropdown.active .select > i {
+    transform: rotate(-90deg)
+}
+.dropdown .dropdown-menu {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    margin-top: 1px;
+    border-radius: 10px;
+    overflow: hidden;
+    display: none;
+    border: 1px solid white;
+    max-height: 144px;
+    overflow-y: auto;
+    z-index: 9
+}
+.dropdown .dropdown-menu li {
+    padding: 10px;
+    transition: all .2s ease-in-out;
+    cursor: pointer
+} 
+.dropdown .dropdown-menu {
+    padding: 0;
+    list-style: none;
+    backdrop-filter: blur(35px);
+}
+.dropdown .dropdown-menu li:hover {
+
+}
+.dropdown .dropdown-menu li:active {
+
 }

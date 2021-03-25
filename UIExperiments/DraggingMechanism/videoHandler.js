@@ -16,6 +16,8 @@ class TimelineNode {
 }
 
 window.onload = () => {
+
+  RATIO = 0.5 // 4:3=1.33 1:2=0.5
   
   this.resources = {}
   /* Currently hardcoding the default video items */
@@ -44,7 +46,6 @@ window.onload = () => {
   context = canvas.getContext('2d')
 
   /* References to the playback controls */
-  
   playButton = document.querySelector('.preview-play')
   pauseButton = document.querySelector('.preview-pause')
   backwardButton = document.querySelector('.preview-back')
