@@ -17,7 +17,9 @@ class TimelineNode {
 
 window.onload = () => {
 
-  RATIO = 0.5 // 4:3=1.33 1:2=0.5
+  RATIO = 1.77 // 4:3=1.33 1:2=0.5
+  window.FFMPEG_RESOLUTION_WIDTH = 1920
+  window.FFMPEG_RESOLUTION_HEIGHT = 1080
   
   this.resources = {}
   /* Currently hardcoding the default video items */
