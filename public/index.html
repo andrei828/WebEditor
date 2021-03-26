@@ -1,0 +1,193 @@
+<html>
+  <head>
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.9.7/dist/ffmpeg.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
+    
+    <link rel="stylesheet" href="styles/style.css">
+    
+    <script src="scripts/helper.js"></script>
+    <script src="scripts/videoTranscode.js"></script>
+    <script src="scripts/videoHandler.js"></script>
+    <script src="scripts/script.js"></script>
+  </head>
+  <body>
+    <section class="edit-workspace">
+      <div class="top-view">
+        <div class="resources-list">
+          <div class="resources-top">
+            <div class="resources-title">Resources</div>
+            <div class="upload-controls">
+              <label>
+                <input type="file" id="uploader" style="display: none;" multiple />
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-upload" width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" stroke="#222222" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" />
+                  <polyline points="7 9 12 4 17 9" />
+                  <line x1="12" y1="4" x2="12" y2="16" />
+                </svg>
+              </label>
+              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-share" width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" stroke="#222222" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <circle cx="6" cy="12" r="3" />
+                <circle cx="18" cy="6" r="3" />
+                <circle cx="18" cy="18" r="3" />
+                <line x1="8.7" y1="10.7" x2="15.3" y2="7.3" />
+                <line x1="8.7" y1="13.3" x2="15.3" y2="16.7" />
+              </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-info-circle" width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" stroke="#222222" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <circle cx="12" cy="12" r="9" />
+                <line x1="12" y1="8" x2="12.01" y2="8" />
+                <polyline points="11 12 12 12 12 16 13 16" />
+              </svg>
+              </div>
+          </div>
+          <br/>
+          <!-- <div class="item 1">item 1</div>
+          <div class="item 2">item 2</div>
+          <div class="item 3">item 3</div>
+          <div class="item 4">item 4</div>
+          <div class="item 5">item 5</div>
+          <div class="item 6">item 6</div>
+          <div class="item 7">item 7</div>
+          <div class="item 8">item 8</div>
+          <div class="item 9">item 9</div> -->
+        </div>
+        <div class="preview-player-wrapper">
+          <canvas class="preview-player"></canvas>
+
+          <div class="preview-top-controls">
+            <div class="container">
+              <div class="dropdown">
+                <div class="select">
+                  <span>1920x1080</span>
+                </div>
+                <input type="hidden" name="gender">
+                <ul class="dropdown-menu">
+                  <li id="1920x1080">1920x1080</li>
+                  <li id="800x400">800x400</li>
+                  <li id="400x800">400x800</li>
+                  <li id="Custom">Custom</li>
+                </ul>
+              </div>
+            </div>
+            <input class="preview-input-title" value="MyFirstVideo.mp4">
+            <button id="preview-start-rendering">Done</button>
+          </div>
+
+          <div class="preview-bottom-controls">
+            <button class="btn btn--toggle btn-toggle-js">
+              <span class="toggle-elm toggle-trigger-js toogle-fit" data-action-type="fit">Fit</span>
+              <span class="toggle-elm toggle-trigger-js toogle-strech toggle-active" data-action-type="strech">Strech</span>
+              <span class="toggling-layer"></span>
+            </button>          
+            <div class="preview-player-controls">
+              <!-- move back 10 seconds -->
+              <button class="preview-controll-button preview-back">
+                <svg xmlns="http://www.w3.org/2000/svg" 
+                    class="icon icon-tabler icon-tabler-player-skip-back" 
+                    width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" 
+                    stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <path d="M20 5v14l-12 -7z" />
+                  <line x1="4" y1="5" x2="4" y2="19" />
+                </svg>
+              </button>
+
+              <!-- play the video -->
+              <button class="preview-controll-button preview-play">
+                <svg xmlns="http://www.w3.org/2000/svg" 
+                    class="icon icon-tabler icon-tabler-player-play" 
+                    width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" 
+                    stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <path d="M7 4v16l13 -8z" />
+                </svg>
+              </button>
+
+              <!-- pause the video -->
+              <button class="preview-controll-button preview-pause">
+                <svg xmlns="http://www.w3.org/2000/svg" 
+                    class="icon icon-tabler icon-tabler-player-pause" 
+                    width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" 
+                    stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <rect x="6" y="5" width="4" height="14" rx="1" />
+                  <rect x="14" y="5" width="4" height="14" rx="1" />
+                </svg>
+              </button>
+
+              <!-- move forward 10 seconds -->
+              <button class="preview-controll-button preview-forward">
+                <svg xmlns="http://www.w3.org/2000/svg" 
+                    class="icon icon-tabler icon-tabler-player-skip-forward" 
+                    width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" 
+                    stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <path d="M4 5v14l12 -7z" />
+                  <line x1="20" y1="5" x2="20" y2="19" />
+                </svg>
+              </button>
+            </div>
+            <div class="preview-time">
+              <span id="current-video-duration">0:00</span>/<span id="full-video-duration">0:00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bottom-view">
+        <div class=tooltip-duration></div>
+        <div class="bottom-scrollable">
+          <canvas id="timeline-canvas"></canvas>
+          <div class="timeline">
+            
+          </div>
+          
+        </div>
+      </div>
+      <div class="dragging-item"></div>
+      <div id="trim-modal">
+        <div id="trim-modal-start-time">0:00</div>
+        <div id="trim-modal-end-time">5:00</div>
+        <div id="trim-modal-done">Done</div>
+      </div>
+      <div id="context-menu">
+        <table>
+          <tr>
+            <td><button id='trim-video'>Trim</button></td>
+          </tr>
+          <tr>
+            <td><button id='split-video'>Split</button></td>
+          </tr>
+          <tr id="last-section">
+            <td><button id='fit-strech-video'>Copy</button></td>
+          </tr>
+          <tr>
+            <td><button>Delete</button></td>
+          </tr>
+        </table>
+      </div>
+      <div id="timeline-playback-bar"></div>
+      <p id="message" style="position: absolute;"></p>
+      <!--<video id="output-video" controls style="position: absolute; width: 300px; height: 100px; background-color: black;"></video>-->
+    </section>
+
+    <!-- <div class="container">
+      <div id="item1" class="item content1">content1</div>
+      <div id="item2" class="item content2">content2</div>
+      <div id="item3" class="item content3">content3</div>
+      <div id="item4" class="item content4">content4</div>
+      <div id="item5" class="item content5">content5</div>
+      <div id="item6" class="item content6">content6</div>
+      <div id="item7" class="item content7">content7</div>
+    </div> -->
+
+    <!-- <div class="container">
+      <div id="item6" class="item content1">content1</div>
+      <div id="item7" class="item content2">content2</div>
+      <div id="item8" class="item content3">content3</div>
+      <div id="item9" class="item content4">content4</div>
+    </div> -->
+  </body>
+</html>
