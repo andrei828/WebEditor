@@ -109,7 +109,7 @@ body {
 
 .preview-time {
     width: 100px;
-    text-align: r;
+    text-align: center;
 }
 
 
@@ -185,6 +185,8 @@ svg:hover {
 .preview-player {
     width: 90%;
     height: 70%;
+    margin-right: 20px;
+    margin-left: 20px;
     background-color: #000000;
 }
 
@@ -649,6 +651,7 @@ span.choose {
     padding-top: 10px;
     padding-left: 20px;
     padding-right: 20px;
+    cursor: pointer;
 }
 
 .ldBar path.mainline {

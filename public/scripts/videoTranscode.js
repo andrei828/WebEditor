@@ -2,7 +2,8 @@
 $(function() {
   const { createFFmpeg, fetchFile } = FFmpeg;
   const ffmpeg = createFFmpeg({ log: false });
-
+  let currentPart = 1
+  let totalParts = 0
   /*
    * type can be one of following:
    *
@@ -11,18 +12,17 @@ $(function() {
    * ffout: ffmpeg native stdout output
    */
   ffmpeg.setLogger(({ type, message }) => {
-    // logText.innerText = ''
-    // var logs = document.getElementById('load-logs')
-    // logText.innerText = message
-    // console.log(message)
+    logText.innerHTML = `<b>Part ${currentPart} out of ${totalParts}<b><br><br>`
+    var logs = document.getElementById('load-logs')
+    logText.innerHTML += message
+    console.log(message)
   });
 
   /*
    * ratio is a float number between 0 to 1.
    */
   ffmpeg.setProgress(({ ratio }) => {
-    console.log(ratio)
-    progressBar.set(ratio * 100);
+    progressBar.ldBar.set(ratio * 100);
   });
 
   const fileUpload = async ({ target: { files } }) => {
@@ -32,12 +32,8 @@ $(function() {
       renderResourceBlock(videoResource.videoCore)
       console.log(videoResource)
       window.resources[videoResource.videoCore.id] = videoResource
-      // console.log(videoResource)
     }
-    console.log(window.resources)
-    // console.log(window.resources)
   }
-
 
   const transcode = async (event) => {
     loadingWrapper.style.display = 'block !important'
@@ -48,8 +44,15 @@ $(function() {
     const inputPaths = [];
     
     
-
+    totalParts = 0
     let iterator = window.timeline
+    while (iterator) {
+      totalParts += 1
+      iterator = iterator.next
+    }
+    totalParts += 1
+
+    iterator = window.timeline
     while (iterator) {
         const fileBlob = iterator.data.videoCore.currentSrc
         const fileName = `${iterator.data.videoCore.id}-${iterator.data.metadata.title}`
@@ -74,7 +77,8 @@ $(function() {
               type: "video/mp4"
             })
           ))
-
+        
+        currentPart += 1 
         inputPaths.push(`file ${fileName}`);
 
         iterator = iterator.next
