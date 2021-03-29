@@ -577,3 +577,25 @@ function setCurrentlyPlaying(value) {
 
   renderCurrentPlaybackBar(window.currentVideoSelectedForPlayback)
 }
+
+
+/**
+ * Method that triggers the modal
+ */
+function donePreviewClicked(_) {
+  modalWrapper.classList.remove('modal-wrapper')
+  modalWrapper.classList.add('modal-wrapper-active')
+}
+
+
+/**
+ * Method that handles 
+ * closing the modal 
+ * @param ctx click context
+ */
+function closeModal(ctx) {
+  if (ctx.target === modalWrapper || ctx.target == closeModalBtn) {
+    modalWrapper.classList.add('modal-wrapper')
+    modalWrapper.classList.remove('modal-wrapper-active')
+  }
+}

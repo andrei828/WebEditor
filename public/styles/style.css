@@ -117,7 +117,7 @@ svg:hover {
     cursor: pointer;
 }
 
-#preview-start-rendering {
+#preview-done {
     padding-bottom: 5px;
     padding-top: 5px;
     padding-left: 10px;
@@ -129,6 +129,7 @@ svg:hover {
     top: 1.5%;
     right: 1%;
     color: #e4e4e4;
+    cursor: pointer;
 }
 
 .preview-controll-button {
@@ -602,4 +603,76 @@ span.choose {
 }
 .dropdown .dropdown-menu li:active {
 
+}
+
+.modal-wrapper-active {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    backdrop-filter: blur(5px);
+    z-index: 2;
+    animation: appear 0.5s;
+}
+
+.modal-wrapper {
+    animation: appear 0.5s;
+    transition: 1s;
+    background-color: blue;
+    display: none;
+}
+
+.modal {
+    position: relative;
+    width: 50%;
+    height: 50%;
+    background-color: #e4e4e4;
+    transform: translate(50%, 20%);
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+    border-radius: 10px;
+    color: #1a1a1a;
+}
+
+.close-modal {
+    padding: 15px;
+}
+
+#start-render {
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a1a1a;
+    border: none;
+    color:#e4e4e4;
+    padding-bottom: 10px;
+    padding-top: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.ldBar path.mainline {
+    stroke-width: 10;
+    stroke: #09f;
+    stroke-linecap: round;
+}
+
+.ldBar path.baseline {
+    stroke-width: 14;
+    stroke: #f1f2f3;
+    stroke-linecap: round;
+    filter:url(#custom-shadow);
+}
+
+.loading-wrapper {
+    /* display: none !important; */
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+#load-logs {
+
+    text-align: center;
 }

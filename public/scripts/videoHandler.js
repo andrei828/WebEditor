@@ -97,12 +97,22 @@ window.onload = () => {
      same action as hitting the space bar*/
   playButton.addEventListener('click', triggerPlayVideo)
   pauseButton.addEventListener('click', triggerPlayVideo)
-
+ 
   /* Video duration selectors */
   finalVideoDurationLabel = document.querySelector('#full-video-duration')
   currentVideoDurationLabel = document.querySelector('#current-video-duration')
   
+  modalWrapper = document.querySelector('.modal-wrapper')
+  donePreview = document.querySelector('#preview-done')
+  closeModalBtn = document.querySelector('.close-modal')
 
+  modalWrapper.addEventListener('click', closeModal)
+  closeModalBtn.addEventListener('click', closeModal)
+  donePreview.addEventListener('click' , donePreviewClicked)
+
+  logText = document.getElementById('load-logs')
+  progressBar = document.getElementById('progress-bar').ldBar
+  loadingWrapper = document.querySelector('.loading-wrapper')
   /**
    * Trying to override the scrolling mechanism for the timeline
    */
