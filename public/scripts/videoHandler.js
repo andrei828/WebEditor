@@ -62,6 +62,16 @@ window.onload = () => {
     $(contextMenu).hide()
   })
 
+  document.addEventListener('mousedown', (ctx) => {
+    if (window.currentlyTrimming) {
+      [video, trimElement, doneBtn] = window.currentlyTrimming
+      if (ctx.target !== video && ctx.target !== trimElement && ctx.target !== doneBtn) {
+        cancelTrimming()
+      }
+    }
+  })
+
+
   splitVideoBtn = document.querySelector('#split-video')
   splitVideoBtn.addEventListener('click', () => splitVideo(window.rightClickCtx))
 
@@ -155,38 +165,47 @@ function renderCurrentPlaybackBar(videoNode) {
 
 
 
+function cancelTrimming() {
+  modal = document.querySelector('#trim-modal')
+  modal.style.display = 'none'
 
+  modal.parentNode.replaceChild(modal.cloneNode(true), modal)
+  window.currentlyTrimming = undefined
+  trimDoneBtn = document.querySelector('#trim-modal-done')
+  trimDoneBtn.addEventListener('click', doneTrimming)
+}
 
-function doneTrimming(ctx) {
+function doneTrimming(_) {
   modal = document.querySelector('#trim-modal')
   modal.style.display = 'none'
   
   startTimeModal = document.querySelector('#trim-modal-start-time')
   endTimeModal = document.querySelector('#trim-modal-end-time')
-  window.timelineDuration -= window.references[window.currentlyTimming.id].data.metadata.duration - Number(endTimeModal.innerText) + Number(startTimeModal.innerText)
-  window.references[window.currentlyTimming.id].data.metadata.startTime = Number(startTimeModal.innerText)
-  window.references[window.currentlyTimming.id].data.metadata.endTime = Number(endTimeModal.innerText)
-  window.references[window.currentlyTimming.id].data.metadata.duration = Number(endTimeModal.innerText) - Number(startTimeModal.innerText)
-  // window.currentlyTimming.style.width = `${window.references[window.currentlyTimming.id].data.metadata.duration*10}px`
+  window.timelineDuration -= window.references[window.currentlyTrimming[0].id].data.metadata.duration - Number(endTimeModal.innerText) + Number(startTimeModal.innerText)
+  window.references[window.currentlyTrimming[0].id].data.metadata.startTime = Number(startTimeModal.innerText)
+  window.references[window.currentlyTrimming[0].id].data.metadata.endTime = Number(endTimeModal.innerText)
+  window.references[window.currentlyTrimming[0].id].data.metadata.duration = Number(endTimeModal.innerText) - Number(startTimeModal.innerText)
+  // window.currentlyTrimming.style.width = `${window.references[window.currentlyTrimming.id].data.metadata.duration*10}px`
 
   renderPreviousTimelineDimensions()
   // HREF
   finalVideoDurationLabel.innerText = formatTimeFromSeconds(window.timelineDuration.toFixed(2))
-  console.log(window.references[window.currentlyTimming.id])
   modal.parentNode.replaceChild(modal.cloneNode(true), modal)
-  window.currentlyTimming = undefined
+  window.currentlyTrimming = undefined
   trimDoneBtn = document.querySelector('#trim-modal-done')
   trimDoneBtn.addEventListener('click', doneTrimming)
 }
 
 function renderTrimBars(ctx) {
-  window.currentlyTimming = ctx.target
-
   modal = document.querySelector('#trim-modal')
   startTimeModal = document.querySelector('#trim-modal-start-time')
   endTimeModal = document.querySelector('#trim-modal-end-time')
+  trimDoneBtn = document.querySelector('#trim-modal-done')
   startTimeModal.innerText = '0.00'
   endTimeModal.innerText = window.references[ctx.target.id].data.metadata.duration.toFixed(2)
+
+  window.currentlyTrimming = [ctx.target, modal, trimDoneBtn]
+
   modal.style.display = 'block'
   modal.style.left = `${ctx.target.getBoundingClientRect().left}px`
   modal.style.top = `${ctx.target.getBoundingClientRect().top}px`
@@ -335,12 +354,18 @@ const dragObjectLogic = {
   scroll: false,
   
   start : function (event, helper) {
+    ignore = false
     if (2 * event.pageY > $(window).height()) {
-      timelinePlaceholder.style.flexGrow = event.target.style.flexGrow
-      event.target.style.width = event.target.getBoundingClientRect().width
-      document.querySelector('.dragging-item').style.top = `${helper.offset.top}px`
-      document.querySelector('.dragging-item').style.left = `${helper.offset.left}px`
-      $('.dragging-item').append(event.target)
+      try {
+        timelinePlaceholder.style.flexGrow = event.target.style.flexGrow
+        event.target.style.width = event.target.getBoundingClientRect().width
+        document.querySelector('.dragging-item').style.top = `${helper.offset.top}px`
+        document.querySelector('.dragging-item').style.left = `${helper.offset.left}px`
+        $('.dragging-item').append(event.target)
+      } catch (error) {
+        /* dragging started too soon */
+        // ignore = true
+      }
     }
     setCurrentlyPlaying(false)
     if (window.references[event.target.id]) {
@@ -366,7 +391,10 @@ const dragObjectLogic = {
 
   
   drag: function (event, helper) {
-    
+    if (ignore) {
+      return
+    }
+
     if (2 * event.pageY > $(window).height()) {
       timelinePlaceholder.style.display = 'block'
       childrenNodesTimeline = $('.timeline').children()
@@ -375,7 +403,6 @@ const dragObjectLogic = {
           $('.timeline').prepend(timelinePlaceholder)
         }
       } else {
-
         let refNode = null;
         for (child of childrenNodesTimeline) {
           if (child != event.target && child.offsetLeft + child.clientWidth / 2 > helper.offset.left) {
@@ -399,17 +426,19 @@ const dragObjectLogic = {
   
 
   stop : function (event, helper) {
+    
     timelinePlaceholder.style.display = 'none'
     event.target.style.position = 'relative'
     event.target.style.boxShadow = 'none'
     event.target.style.transform = 'scale(1)'
     
-    if (2 * event.pageY > $(window).height()) {
-      $(timelinePlaceholder).replaceWith(event.target)
-      event.target.classList.remove('item')
-      event.target.classList.add('timeline-item')
-      event.target.style.animation = 'fadein 0.5s'
-      event.target.style.transition = '0.5s'
+    if (ignore) {
+      event.target.style.left = '0'
+      event.target.style.top = '0'
+      return
+    }
+
+    if (2 * event.pageY > $(window).height()) { 
       if (window.references[event.target.id]) {
         event.target.style.width = 'unset'
         // event.target.style.width = `${window.references[event.target.id].data.metadata.duration*10}px`
@@ -417,11 +446,18 @@ const dragObjectLogic = {
         //event.target.style.flexGrow = timelinePlaceholder.style.flexGrow//window.timelineDuration / window.references[event.target.id].data.metadata.duration
         // event.target.style.flexGrow = `${10}`
       } else {
+        event.target.parentNode.remove()
         // event.target.style.width = `${event.target.duration*10}px`
         //event.target.style.flexGrow = timelinePlaceholder.style.flexGrow//window.timelineDuration / event.target.duration
         // event.target.style.flexGrow = `${10}`
       }
       
+      $(timelinePlaceholder).replaceWith(event.target)
+      event.target.classList.remove('item')
+      event.target.classList.add('timeline-item')
+      event.target.style.animation = 'fadein 0.5s'
+      event.target.style.transition = '0.5s'
+
       event.target.addEventListener('mousemove', (ctx) => {
         timelineMove(ctx)
       })

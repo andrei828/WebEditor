@@ -231,6 +231,16 @@ svg:hover {
     position: absolute;
 }
 
+.item-wrapper {
+    display: inline-grid;
+    padding: 5px;
+    padding-bottom: 10px;
+}
+
+.item-title {
+    text-align: center;
+}
+
 /*            item stylesheet              */
 
 .item {
@@ -641,6 +651,8 @@ span.choose {
 
 .close-modal {
     padding: 15px;
+    margin-top: 3%;
+    margin-left: 1%;
 }
 
 #start-render {
@@ -706,4 +718,5 @@ span.choose {
     left: 50%;
     transform: translateX(-50%);
     font-size: x-large;
+    width: max-content;
 }

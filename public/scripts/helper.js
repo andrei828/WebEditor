@@ -10,13 +10,24 @@
  */
  function renderResourcesBlock() {
   for (id in resources) {
+    const wrapper = document.createElement('div')
+    wrapper.classList.add('item-wrapper')
+    const title = document.createElement('span')
+    title.innerText = resources[id].metadata.title
+    title.classList.add('item-title')
+
+
+
     const elem = document.createElement('video')
     const source = document.createElement('source')
     source.src = resources[id].metadata.path
     elem.classList.add('item')
     elem.id = id
     elem.append(source)
-    $('.resources-list').append(elem)
+    wrapper.append(elem)
+    wrapper.append(title)
+    // wrapper.append('03:21')
+    $('.resources-list').append(wrapper)
     $(elem).draggable(dragObjectLogic)
   }
 }
@@ -27,9 +38,19 @@
  * @param videoFile uploaded .mp4 file
  */
 function renderResourceBlock(videoFile) {
+  const wrapper = document.createElement('div')
+  wrapper.classList.add('item-wrapper')
+  const title = document.createElement('span')
+  title.innerText = resources[id].metadata.title
+  title.classList.add('item-title')
+
   videoFile.classList.add('item')
-  $('.resources-list').append(videoFile)
   $(videoFile).draggable(dragObjectLogic)
+
+  wrapper.appendChild(videoFile)
+  wrapper.appendChild(title)
+  $('.resources-list').append(wrapper)
+  
 }
 
 
