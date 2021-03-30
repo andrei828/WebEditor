@@ -111,9 +111,10 @@ window.onload = () => {
   donePreview.addEventListener('click' , donePreviewClicked)
 
   logText = document.getElementById('load-logs')
-  progressBar = document.getElementById('progress-bar')//.ldBar
-  // console.log(progressBar.ldBar)
+  progressBar = document.getElementById('progress-bar')
   loadingWrapper = document.querySelector('.loading-wrapper')
+  defaultModalContent = document.querySelector('.default-modal-content')
+
   /**
    * Trying to override the scrolling mechanism for the timeline
    */

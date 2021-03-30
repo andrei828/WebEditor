@@ -17,6 +17,7 @@
     <script src="scripts/videoHandler.js"></script>
     <script src="scripts/script.js"></script>
     <script type="text/javascript" src="scripts/loading-bar.min.js"></script>
+
   </head>
   <body>
     <section class="edit-workspace">
@@ -176,6 +177,10 @@
             <line x1="5" y1="12" x2="11" y2="18" />
             <line x1="5" y1="12" x2="11" y2="6" />
           </svg>
+          <div class="default-modal-content">
+            <span id="modal-title">Ready to start rendering</span>
+            <img id="modal-placeholder-img" src="resources/beginRender2.png" />
+          </div>
           <div class="loading-wrapper">
             <div id="progress-bar" 
               class="ldBar label-center"
@@ -184,9 +189,9 @@
               data-value="0">
             </div>
             <p id="load-logs">
-              
             </p>
           </div>
+          
           <button id="start-render">Render</button>
         </div>
       </div>

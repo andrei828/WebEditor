@@ -2,6 +2,7 @@
 $(function() {
   const { createFFmpeg, fetchFile } = FFmpeg;
   const ffmpeg = createFFmpeg({ log: false });
+  ffmpeg.load();
   let currentPart = 1
   let totalParts = 0
   /*
@@ -13,9 +14,8 @@ $(function() {
    */
   ffmpeg.setLogger(({ type, message }) => {
     logText.innerHTML = `<b>Part ${currentPart} out of ${totalParts}<b><br><br>`
-    var logs = document.getElementById('load-logs')
+    // var logs = document.getElementById('load-logs')
     logText.innerHTML += message
-    console.log(message)
   });
 
   /*
@@ -36,11 +36,11 @@ $(function() {
   }
 
   const transcode = async (event) => {
-    loadingWrapper.style.display = 'block !important'
-    const message = document.getElementById("message");
-    message.innerHTML = "Loading ffmpeg-core.js";
-    await ffmpeg.load();
-    message.innerHTML = "Start Concating";
+
+    defaultModalContent.style.display = 'none'
+    loadingWrapper.classList.remove('loading-wrapper')
+    loadingWrapper.classList.add('loading-wrapper-active')
+    // await ffmpeg.load();
     const inputPaths = [];
     
     
@@ -71,6 +71,7 @@ $(function() {
         } else if (iterator.data.metadata.ratio === 'strech') {
           await ffmpeg.run('-i', fileName, '-vf', `scale=${wi}:${he}`, '-ss', `${startTime}`, '-to', `${endTime}`, 'tmp.mp4');
         }
+        console.log(fileName, startTime, endTime)
         const data = ffmpeg.FS('readFile', 'tmp.mp4')
         ffmpeg.FS('writeFile', fileName, await fetchFile(
             new Blob([data.buffer], {
@@ -101,7 +102,7 @@ $(function() {
     document.body.appendChild(tag);
     tag.click();
     document.body.removeChild(tag);
-
+    delete ffmpeg;
     // const data = ffmpeg.FS('readFile', 'output.mp4');
     // const video = document.getElementById("output-video");
     // video.src = URL.createObjectURL(

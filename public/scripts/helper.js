@@ -351,8 +351,8 @@ function forwardButtonTrigger() {
  * on the timeline canvas
  */
 function renderTimelineBlock(videoObject, id) {
-  elem = document.createElement('video')
-  source = document.createElement('source')
+  const elem = document.createElement('video')
+  const source = document.createElement('source')
   source.src = videoObject.data.metadata.path
   // elem.style.width = `${videoObject.data.metadata.duration*10}px`
   // HREF
@@ -360,7 +360,7 @@ function renderTimelineBlock(videoObject, id) {
   // elem.style.flexGrow = `${10}`
   elem.classList.add('timeline-item')
   elem.id = id
-  elem.append(source)
+  elem.appendChild(source)
   elem.currentTime = videoObject.data.metadata.startTime
   elem.style.left = '0';
   elem.style.top = '0';
