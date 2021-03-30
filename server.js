@@ -5,6 +5,11 @@ const path = require('path')
 const port = 80
 const app = express()
 
+app.use((_, res, next) => {
+  res.header('Cross-Origin-Opener-Policy', 'same-origin');
+  res.header('Cross-Origin-Embedder-Policy', 'require-corp');
+  next();
+});
 
 app.use('/static', express.static(path.join(__dirname, 'public')))
 
