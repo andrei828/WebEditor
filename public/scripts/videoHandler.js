@@ -354,7 +354,6 @@ const dragObjectLogic = {
   scroll: false,
   
   start : function (event, helper) {
-    ignore = false
     if (2 * event.pageY > $(window).height()) {
       try {
         timelinePlaceholder.style.flexGrow = event.target.style.flexGrow
@@ -362,9 +361,9 @@ const dragObjectLogic = {
         document.querySelector('.dragging-item').style.top = `${helper.offset.top}px`
         document.querySelector('.dragging-item').style.left = `${helper.offset.left}px`
         $('.dragging-item').append(event.target)
+        
       } catch (error) {
         /* dragging started too soon */
-        // ignore = true
       }
     }
     setCurrentlyPlaying(false)
@@ -391,10 +390,6 @@ const dragObjectLogic = {
 
   
   drag: function (event, helper) {
-    if (ignore) {
-      return
-    }
-
     if (2 * event.pageY > $(window).height()) {
       timelinePlaceholder.style.display = 'block'
       childrenNodesTimeline = $('.timeline').children()
@@ -405,7 +400,8 @@ const dragObjectLogic = {
       } else {
         let refNode = null;
         for (child of childrenNodesTimeline) {
-          if (child != event.target && child.offsetLeft + child.clientWidth / 2 > helper.offset.left) {
+          const childThreshold = child.offsetLeft + child.clientWidth / 2
+          if (child != event.target && childThreshold > event.pageX) {
             refNode = child
             break;
           }
@@ -428,16 +424,17 @@ const dragObjectLogic = {
   stop : function (event, helper) {
     
     timelinePlaceholder.style.display = 'none'
-    event.target.style.position = 'relative'
+    // event.target.style.position = 'relative'
     event.target.style.boxShadow = 'none'
     event.target.style.transform = 'scale(1)'
-    
-    if (ignore) {
-      event.target.style.left = '0'
-      event.target.style.top = '0'
-      return
-    }
 
+    const currentNode = window.references[event.target.id]
+    if (currentNode) {
+      replaceTimelinePlaceholder(event.target)
+      return 
+    }
+    
+    
     if (2 * event.pageY > $(window).height()) { 
       if (window.references[event.target.id]) {
         event.target.style.width = 'unset'

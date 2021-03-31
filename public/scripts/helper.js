@@ -430,6 +430,20 @@ function backAndForwardButtonLogic(backwardButton, forwardButton) {
 
 
 /**
+ * Handles the add operation for the timeline section
+ * @param target HTML element dropped on timeline
+ */
+function replaceTimelinePlaceholder(target) {
+  target.style.animation = 'popwidth 0.2s'
+  target.style.transition = '0.5s'
+  target.style.left = '0'
+  target.style.top = '0'
+  target.style.width = 'unset'
+  $(timelinePlaceholder).replaceWith(target)
+}
+
+
+/**
  * Logic for switching 
  * between the strech and fit ratio
  * @param ctx Timeline videoCore element
