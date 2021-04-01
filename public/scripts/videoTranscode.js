@@ -2,7 +2,7 @@
 $(function() {
   const { createFFmpeg, fetchFile } = FFmpeg;
   const ffmpeg = createFFmpeg({ log: false });
-  ffmpeg.load();
+  ffmpeg.load().then(console.log("loaded ffmpeg.wasm"));
   let currentPart = 1
   let totalParts = 0
   /*
@@ -13,8 +13,12 @@ $(function() {
    * ffout: ffmpeg native stdout output
    */
   ffmpeg.setLogger(({ type, message }) => {
+    
+    if (type == "fferr" && message.includes("Error")) {
+      return
+    }
+
     logText.innerHTML = `<b>Part ${currentPart} out of ${totalParts}<b><br><br>`
-    // var logs = document.getElementById('load-logs')
     logText.innerHTML += message
   });
 
@@ -22,6 +26,9 @@ $(function() {
    * ratio is a float number between 0 to 1.
    */
   ffmpeg.setProgress(({ ratio }) => {
+    if (currentPart === totalParts) {
+      console.log(ratio)
+    }
     progressBar.ldBar.set(ratio * 100);
   });
 
