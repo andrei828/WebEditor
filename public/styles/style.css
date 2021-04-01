@@ -631,6 +631,21 @@ span.choose {
     animation: appear 0.5s;
 }
 
+.modal-wrapper-active a {
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a1a1a;
+    border: none;
+    color:#e4e4e4;
+    padding-bottom: 10px;
+    padding-top: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    cursor: pointer;
+}
+
 .modal-wrapper {
     animation: appear 0.5s;
     transition: 1s;

@@ -1,10 +1,14 @@
 
 $(function() {
-  const { createFFmpeg, fetchFile } = FFmpeg;
-  const ffmpeg = createFFmpeg({ log: false });
-  ffmpeg.load().then(console.log("loaded ffmpeg.wasm"));
+  const { createFFmpeg, fetchFile } = FFmpeg
+  const ffmpeg = createFFmpeg({ log: false })
+  let abortController = new AbortController()
+  ffmpeg.load(abortController.signal).then(console.log("loaded ffmpeg.wasm"))
+  
   let currentPart = 1
   let totalParts = 0
+  
+
   /*
    * type can be one of following:
    *
@@ -20,24 +24,24 @@ $(function() {
 
     logText.innerHTML = `<b>Part ${currentPart} out of ${totalParts}<b><br><br>`
     logText.innerHTML += message
-  });
+  })
 
   /*
    * ratio is a float number between 0 to 1.
    */
-  ffmpeg.setProgress(({ ratio }) => {
-    if (currentPart === totalParts) {
-      console.log(ratio)
+  ffmpeg.setProgress(({ ratio, time, duration }) => {
+    if (currentPart === totalParts && time) {
+      progressBar.ldBar.set(time / window.timelineDuration * 100)
+    } else {
+      progressBar.ldBar.set(ratio * 100)
     }
-    progressBar.ldBar.set(ratio * 100);
-  });
+  })
 
   const fileUpload = async ({ target: { files } }) => {
     console.log(files)
     for (const file of files) {
       const videoResource = buildVideoResourceByFile(file, file.name)
       renderResourceBlock(videoResource.videoCore)
-      console.log(videoResource)
       window.resources[videoResource.videoCore.id] = videoResource
     }
   }
@@ -45,11 +49,24 @@ $(function() {
   const transcode = async (event) => {
 
     defaultModalContent.style.display = 'none'
+    elm.style.display = 'none'
     loadingWrapper.classList.remove('loading-wrapper')
     loadingWrapper.classList.add('loading-wrapper-active')
     // await ffmpeg.load();
     const inputPaths = [];
     
+    /** Creating the Cancel button */
+    const cancelBtn = document.createElement('a')
+    cancelBtn.id = 'download-button'
+    cancelBtn.innerText = 'Cancel remaining parts'
+    cancelBtn.addEventListener('click', () => {
+      abortController.abort()
+    })
+    
+    document
+      .querySelector('.loading-wrapper-active')
+      .appendChild(cancelBtn)
+
     
     totalParts = 0
     let iterator = window.timeline
@@ -71,14 +88,14 @@ $(function() {
 
         ffmpeg.FS('writeFile', fileName, await fetchFile(fileBlob))
         if (iterator.data.metadata.ratio === 'fit') {
-          await ffmpeg.run('-i', fileName, 
-            '-vf', `scale='min(${wi},iw)':min'(${he},ih)':force_original_aspect_ratio\=decrease,pad=${wi}:${he}:(ow-iw)/2:(oh-ih)/2`, 
+          await ffmpeg.run('-i', fileName, '-vf', 
+            `scale='min(${wi},iw)':min'(${he},ih)':force_original_aspect_ratio\=decrease,pad=${wi}:${he}:(ow-iw)/2:(oh-ih)/2`, 
             '-ss', `${startTime}`, '-to', `${endTime}`, 'tmp.mp4'
           )
         } else if (iterator.data.metadata.ratio === 'strech') {
           await ffmpeg.run('-i', fileName, '-vf', `scale=${wi}:${he}`, '-ss', `${startTime}`, '-to', `${endTime}`, 'tmp.mp4');
         }
-        console.log(fileName, startTime, endTime)
+        
         const data = ffmpeg.FS('readFile', 'tmp.mp4')
         ffmpeg.FS('writeFile', fileName, await fetchFile(
             new Blob([data.buffer], {
@@ -93,7 +110,9 @@ $(function() {
     }
     ffmpeg.FS('writeFile', 'concat_list.txt', inputPaths.join('\n'));
     await ffmpeg.run('-f', 'concat', '-safe', '0', '-i', 'concat_list.txt', 'output.mp4');
-
+    /* resetting the current part variable */
+    currentPart = 1
+    new AbortController()
     const data = ffmpeg.FS('readFile', 'output.mp4');
     var urlCreator = window.URL || window.webkitURL;
     var imageUrl = urlCreator.createObjectURL(
@@ -101,38 +120,20 @@ $(function() {
         type: "video/mp4"
       })
     );
-
-    var tag = document.createElement('a');
-    tag.href = imageUrl;
-    tag.target = '_blank';
-    tag.download = 'sample.mp4';
-    document.body.appendChild(tag);
-    tag.click();
-    document.body.removeChild(tag);
-    delete ffmpeg;
-    // const data = ffmpeg.FS('readFile', 'output.mp4');
-    // const video = document.getElementById("output-video");
-    // video.src = URL.createObjectURL(
-    //   new Blob([data.buffer], {
-    //     type: "video/mp4"
-    //   })
-    // );
     
-  //   for (const file of files) {
-  //     const { name } = file;
-  //     ffmpeg.FS('writeFile', name, await fetchFile(file));
-  //     inputPaths.push(`file ${name}`);
-  //   }
-    // ffmpeg.FS('writeFile', 'concat_list.txt', inputPaths.join('\n'));
-    // await ffmpeg.run('-f', 'concat', '-safe', '0', '-i', 'concat_list.txt', 'output.mp4');
-    // message.innerHTML = "Complete Concating";
-    // const data = ffmpeg.FS('readFile', 'output.mp4');
-    // const video = document.getElementById("output-video");
-    // video.src = URL.createObjectURL(
-    //   new Blob([data.buffer], {
-    //     type: "video/mp4"
-    //   })
-    // );
+    $(cancelBtn).remove()
+    const downloadHref = document.createElement('a')
+    downloadHref.href = imageUrl
+    downloadHref.target = '_blank'
+    downloadHref.download = 'sample.mp4'
+    downloadHref.innerText = 'Download'
+    downloadHref.id = 'download-button'
+    
+    document
+      .querySelector('.loading-wrapper-active')
+      .appendChild(downloadHref)
+    
+    delete ffmpeg;
   };
   const uploader = document.getElementById("uploader");
   uploader.addEventListener("change", fileUpload);
