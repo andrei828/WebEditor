@@ -48,25 +48,14 @@ $(function() {
 
   const transcode = async (event) => {
 
-    defaultModalContent.style.display = 'none'
     elm.style.display = 'none'
+    downloadHref.style.display = 'none'
+    defaultModalContent.style.display = 'none'
     loadingWrapper.classList.remove('loading-wrapper')
     loadingWrapper.classList.add('loading-wrapper-active')
+
     // await ffmpeg.load();
     const inputPaths = [];
-    
-    /** Creating the Cancel button */
-    const cancelBtn = document.createElement('a')
-    cancelBtn.id = 'download-button'
-    cancelBtn.innerText = 'Cancel remaining parts'
-    cancelBtn.addEventListener('click', () => {
-      abortController.abort()
-    })
-    
-    document
-      .querySelector('.loading-wrapper-active')
-      .appendChild(cancelBtn)
-
     
     totalParts = 0
     let iterator = window.timeline
@@ -75,7 +64,8 @@ $(function() {
       iterator = iterator.next
     }
     totalParts += 1
-
+    currentPart = 1
+    
     iterator = window.timeline
     while (iterator) {
         const fileBlob = iterator.data.videoCore.currentSrc
@@ -111,7 +101,7 @@ $(function() {
     ffmpeg.FS('writeFile', 'concat_list.txt', inputPaths.join('\n'));
     await ffmpeg.run('-f', 'concat', '-safe', '0', '-i', 'concat_list.txt', 'output.mp4');
     /* resetting the current part variable */
-    currentPart = 1
+    
     new AbortController()
     const data = ffmpeg.FS('readFile', 'output.mp4');
     var urlCreator = window.URL || window.webkitURL;
@@ -121,23 +111,20 @@ $(function() {
       })
     );
     
-    $(cancelBtn).remove()
-    const downloadHref = document.createElement('a')
+    elm.style.display = 'block'
+    elm.innerText = 'Render new'
+    downloadHref.style.display = 'block';
     downloadHref.href = imageUrl
-    downloadHref.target = '_blank'
     downloadHref.download = 'sample.mp4'
-    downloadHref.innerText = 'Download'
-    downloadHref.id = 'download-button'
-    
-    document
-      .querySelector('.loading-wrapper-active')
-      .appendChild(downloadHref)
     
     delete ffmpeg;
-  };
-  const uploader = document.getElementById("uploader");
-  uploader.addEventListener("change", fileUpload);
+  }
 
-  const elm = document.getElementById("start-render");
-  elm.addEventListener("click", transcode);
+  const downloadHref = document.getElementById('download-button')
+
+  const uploader = document.getElementById("uploader")
+  uploader.addEventListener("change", fileUpload)
+
+  const elm = document.getElementById("start-render")
+  elm.addEventListener("click", transcode)
 })

@@ -44,7 +44,7 @@ $(function() {
       .height
 
     if (maxHeight * 0.7)  
-    canvas.style.width = canvas.getBoundingClientRect().height * window.RATIO
+      canvas.style.width = canvas.getBoundingClientRect().height * window.RATIO
   }); 
 
   buttonSwitchLogic()

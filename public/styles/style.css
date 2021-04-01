@@ -631,11 +631,7 @@ span.choose {
     animation: appear 0.5s;
 }
 
-.modal-wrapper-active a {
-    position: absolute;
-    bottom: 5%;
-    left: 50%;
-    transform: translateX(-50%);
+.loading-wrapper-active a {
     background: #1a1a1a;
     border: none;
     color:#e4e4e4;
@@ -644,7 +640,14 @@ span.choose {
     padding-left: 20px;
     padding-right: 20px;
     cursor: pointer;
+    width: max-content;
+    font-weight: bolder;
+    text-decoration: none;
+    margin-left: auto;
+    margin-right: auto;
+    display: none;
 }
+
 
 .modal-wrapper {
     animation: appear 0.5s;
@@ -712,7 +715,6 @@ span.choose {
 
 
 #load-logs {
-
     text-align: center;
 }
 
