@@ -401,9 +401,17 @@ const dragObjectLogic = {
         let refNode = null;
         for (child of childrenNodesTimeline) {
           const childThreshold = child.offsetLeft + child.clientWidth / 2
-          if (child != event.target && childThreshold > event.pageX) {
-            refNode = child
-            break;
+          const targetThreshold = event.target.getBoundingClientRect().width / 2
+          if (targetThreshold > 800) {
+            if (child != event.target && childThreshold > helper.offset.left + targetThreshold) {
+              refNode = child
+              break;
+            }
+          } else {
+            if (child != event.target && childThreshold > event.pageX) {
+              refNode = child
+              break;
+            }
           }
         }
 
