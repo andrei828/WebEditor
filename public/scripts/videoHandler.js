@@ -439,6 +439,7 @@ const dragObjectLogic = {
     const currentNode = window.references[event.target.id]
     if (currentNode) {
       replaceTimelinePlaceholder(event.target)
+      arrangeWindowTimeline()
       return 
     }
     
@@ -478,52 +479,9 @@ const dragObjectLogic = {
         rightClickMenu(ctx)
       }, false);
 
-      childrenNodesTimeline = $('.timeline').children()
 
       // TODO: optimize linked list creation (IMPORTANT!)
-      let iterator = null;
-      window.timeline = null;
-      window.timelineDuration = 0
-      childrenNodesTimeline = $('.timeline').children()
-      for (child of childrenNodesTimeline) {
-        if (child !== timelinePlaceholder) {
-          if (window.references[child.id]) {
-            if (!window.timeline) {
-              window.timeline = window.references[child.id]
-              iterator = window.timeline
-            } else {
-              iterator.next = window.references[child.id]
-              iterator.next.prev = iterator
-              iterator = iterator.next
-            }
-          } else {
-            resource = buildVideoResource(child, window.resources[child.id] ? window.resources[child.id].metadata.title : "***")
-            if (!window.timeline) {
-              window.timeline = new TimelineNode(resource)
-              iterator = window.timeline
-            } else {
-              iterator.next = new TimelineNode(resource)
-              iterator.next.prev = iterator
-              iterator = iterator.next
-            }
-            window.references[iterator.data.videoCore.id] = iterator
-          }
-          if (iterator.prev) {
-            iterator.data.metadata.baseDuration = iterator.prev.data.metadata.baseDuration + iterator.prev.data.metadata.duration
-          }
-          
-          window.timelineDuration += iterator.data.metadata.duration
-          /* Removing previous links if necessary */
-          iterator.next = null
-        }
-      }
-      finalVideoDurationLabel.innerText = formatTimeFromSeconds(window.timelineDuration.toFixed(2))
-      // event.target.style.width = event.target.getBoundingClientRect().width
-
-      window.currentVideoSelectedForPlayback = window.timeline
-      window.currentVideoSelectedForPlayback.data.videoCore.currentTime = window.currentVideoSelectedForPlayback.data.metadata.startTime
-      setTimeout(() => 
-        renderCurrentPlaybackBar(window.currentVideoSelectedForPlayback), 50)
+      arrangeWindowTimeline()
     } else {
       event.target.style.transition = '0.5s'  
     }

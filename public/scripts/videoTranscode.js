@@ -78,31 +78,49 @@ $(function() {
 
         ffmpeg.FS('writeFile', fileName, await fetchFile(fileBlob))
         if (iterator.data.metadata.ratio === 'fit') {
+          // await ffmpeg.run('-i', fileName, '-f', 'lavfi', '-i', 'anullsrc', '-shortest', '-map', '0:v', '-map', '0:a?', '-map', '1:a', '-vf', 
+          //   `scale='min(${wi},iw)':min'(${he},ih)':force_original_aspect_ratio\=decrease,pad=${wi}:${he}:(ow-iw)/2:(oh-ih)/2`,
+          //   '-ss', `${startTime}`, '-to', `${endTime}`, 'tmp.mp4'
+          // )
           await ffmpeg.run('-i', fileName, '-vf', 
-            `scale='min(${wi},iw)':min'(${he},ih)':force_original_aspect_ratio\=decrease,pad=${wi}:${he}:(ow-iw)/2:(oh-ih)/2`, 
-            '-ss', `${startTime}`, '-to', `${endTime}`, 'tmp.mp4'
+            `scale='min(${wi},iw)':min'(${he},ih)':force_original_aspect_ratio\=decrease,pad=${wi}:${he}:(ow-iw)/2:(oh-ih)/2`,
+            '-ss', `${startTime}`, '-to', `${endTime}`, `tmp${currentPart}.mpg`
           )
         } else if (iterator.data.metadata.ratio === 'strech') {
-          await ffmpeg.run('-i', fileName, '-vf', `scale=${wi}:${he}`, '-ss', `${startTime}`, '-to', `${endTime}`, 'tmp.mp4');
+          // await ffmpeg.run('-i', fileName, '-f', 'lavfi', '-i', 'anullsrc', '-shortest', '-map', '0:v', '-map', '0:a?', '-map', '1:a',
+          //   '-vf', `scale=${wi}:${he}`,
+          //   '-ss', `${startTime}`, '-to', `${endTime}`, `tmp${currentPart}.mpg`
+          // )
+
+          await ffmpeg.run('-i', fileName, 
+            '-vf', `scale=${wi}:${he}`,
+            '-ss', `${startTime}`, '-to', `${endTime}`, `tmp${currentPart}.mpg`
+          )
+          
         }
         
-        const data = ffmpeg.FS('readFile', 'tmp.mp4')
-        ffmpeg.FS('writeFile', fileName, await fetchFile(
-            new Blob([data.buffer], {
-              type: "video/mp4"
-            })
-          ))
-        
+        // const data = ffmpeg.FS('readFile', 'tmp.mp4')
+        // ffmpeg.FS('writeFile', fileName, await fetchFile(
+        //     new Blob([data.buffer], {
+        //       type: "video/mp4"
+        //     })
+        //   ))
+        inputPaths.push(`tmp${currentPart}.mpg`);
         currentPart += 1 
-        inputPaths.push(`file ${fileName}`);
+        // inputPaths.push(`file ${fileName}`);
+        
 
         iterator = iterator.next
     }
-    ffmpeg.FS('writeFile', 'concat_list.txt', inputPaths.join('\n'));
-    await ffmpeg.run('-f', 'concat', '-safe', '0', '-i', 'concat_list.txt', 'output.mp4');
+    console.log(inputPaths)
+    // ffmpeg.FS('writeFile', 'concat_list.txt', inputPaths.join('\n'));
+    // await ffmpeg.run('-f', 'concat', '-safe', '0', '-i', 'concat_list.txt', 'output.mp4');
+    console.log(`concat:${inputPaths.join('|')}`)
+    await ffmpeg.run('-i', `concat:${inputPaths.join('|')}`, '-c', 'copy', 'intermediate_all.mpg');
+    await ffmpeg.run('-i', 'intermediate_all.mpg', '-qscale:v', '2', 'output.mp4');
     /* resetting the current part variable */
-    
-    new AbortController()
+    // ffmpeg -i concat:"intermediate1.mpg|intermediate2.mpg" -c copy intermediate_all.mpg && \
+    // ffmpeg -i intermediate_all.mpg -qscale:v 2 output.mp4
     const data = ffmpeg.FS('readFile', 'output.mp4');
     var urlCreator = window.URL || window.webkitURL;
     var imageUrl = urlCreator.createObjectURL(
