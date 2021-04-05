@@ -2,18 +2,18 @@
 $(function() {
   
   $('.dropdown').click(function () {
-        $(this).attr('tabindex', 1).focus();
-        $(this).toggleClass('active');
-        $(this).find('.dropdown-menu').slideToggle(300);
-    });
-    $('.dropdown').focusout(function () {
-        $(this).removeClass('active');
-        $(this).find('.dropdown-menu').slideUp(300);
-    });
-    $('.dropdown .dropdown-menu li').click(function () {
-        $(this).parents('.dropdown').find('span').text($(this).text());
-        $(this).parents('.dropdown').find('input').attr('value', $(this).attr('id'));
-    });
+    $(this).attr('tabindex', 1).focus();
+    $(this).toggleClass('active');
+    $(this).find('.dropdown-menu').slideToggle(300);
+  });
+  $('.dropdown').focusout(function () {
+    $(this).removeClass('active');
+    $(this).find('.dropdown-menu').slideUp(300);
+  });
+  $('.dropdown .dropdown-menu li').click(function () {
+    $(this).parents('.dropdown').find('span').text($(this).text());
+    $(this).parents('.dropdown').find('input').attr('value', $(this).attr('id'));
+  });
 /*End Dropdown Menu*/
   
 
@@ -116,6 +116,8 @@ $(function() {
     }
   }
 
+  
+
   // playerControls = document.querySelector('.preview-player-controls-wrapper')
   // playerCanvas = document.querySelector('.preview-player')
   // playerContext = playerCanvas.getContext('2d')
@@ -137,21 +139,13 @@ function buttonSwitchLogic() {
     node.classList[action](className);
   }
   
-  function handleTogglingLayer(togglingLayer) {
-    const cords = this.getBoundingClientRect();
-    const { width, height } = cords;
-    const offsetFromLeft = this.offsetLeft;
   
-    togglingLayer.style.width = width + "px";
-    togglingLayer.style.height = height + "px";
-    togglingLayer.style.left = offsetFromLeft + "px";
-  }
   
   const toggleButtons = document.querySelectorAll(".btn-toggle-js");
   
   toggleButtons.forEach((toggleBtn) => {
     const toggleTriggeringElements = toggleBtn.querySelectorAll("span");
-    const togglingLayer = toggleBtn.querySelector(".toggling-layer");
+    const togglingLayer = toggleBtn.querySelector('.toggling-layer');
   
     const initiallyActiveElm =
       toggleBtn.querySelector(".toggle-active") || toggleTriggeringElements[0];
@@ -169,7 +163,7 @@ function buttonSwitchLogic() {
       );
   
       handleClass(el, "toggle-active");
-      handleTogglingLayer.call(el, togglingLayer);
+      window.handleTogglingLayer.call(el, togglingLayer);
   
       // your different required action for the elements here
       
@@ -191,9 +185,9 @@ function buttonSwitchLogic() {
       
     
     }
-  
+
     //    when initially loading
-    setTimeout(() => handleAction(initiallyActiveElm), 50)
+    // setTimeout(() => handleAction(initiallyActiveElm), 500)
     
   });
 }

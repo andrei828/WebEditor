@@ -23,9 +23,9 @@
     source.src = resources[id].metadata.path
     elem.classList.add('item')
     elem.id = id
-    elem.append(source)
-    wrapper.append(elem)
-    wrapper.append(title)
+    elem.appendChild(source)
+    wrapper.appendChild(elem)
+    wrapper.appendChild(title)
     // wrapper.append('03:21')
     $('.resources-list').append(wrapper)
     $(elem).draggable(dragObjectLogic)
@@ -96,7 +96,7 @@ function renderResourceBlock(videoFile) {
   const wrapper = document.createElement('div')
   wrapper.classList.add('item-wrapper')
   const title = document.createElement('span')
-  title.innerText = resources[id].metadata.title
+  title.innerText = resources[videoFile.id].metadata.title
   title.classList.add('item-title')
 
   videoFile.classList.add('item')
@@ -373,6 +373,22 @@ function renderUIAfterFrameChange(videoNode) {
 
 
 /**
+ * Method that handles the UI ratio switch
+ * @param togglingLayer HTML element
+ */
+function handleTogglingLayer(togglingLayer) {
+    
+  const cords = this.getBoundingClientRect();
+  const { width, height } = cords;
+  const offsetFromLeft = this.offsetLeft;
+
+  togglingLayer.style.width = width + "px";
+  togglingLayer.style.height = height + "px";
+  togglingLayer.style.left = offsetFromLeft + "px";
+}
+
+
+/**
  * Method that handles the back button
  * event and moves the video 1 second
  */
@@ -420,6 +436,20 @@ function forwardButtonTrigger() {
       window.currentVideoSelectedForPlayback.data.videoCore.currentTime = currentVideoEnd
     }
     renderUIAfterFrameChange(window.currentVideoSelectedForPlayback)
+  }
+}
+
+
+/**
+ * Method that handles new video uploads
+ * @param files the uploaded video files 
+ */
+async function fileUpload({ target: { files } }) {
+  console.log(files)
+  for (const file of files) {
+    const videoResource = buildVideoResourceByFile(file, file.name)
+    window.resources[videoResource.videoCore.id] = videoResource
+    renderResourceBlock(videoResource.videoCore)
   }
 }
 

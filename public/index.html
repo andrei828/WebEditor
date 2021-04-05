@@ -5,23 +5,24 @@
     <meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp" /> -->
 
     <!-- <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.9.7/dist/ffmpeg.min.js"></script> -->
-    <script src="scripts/jquery-1.12.4.min.js"></script>
-    <script src="scripts/jquery-ui.min.js"></script>
-    <script src="scripts/jquery.ui.touch-punch.min.js"></script>
+    
     
     <link rel="shortcut icon" href="resources/favicon.ico">
-    <link rel="stylesheet" type="text/css" href="styles/loading-bar.min.css"/>
+    <link defer rel="stylesheet" type="text/css" href="styles/loading-bar.min.css"/>
     <link rel="stylesheet" type="text/css" href="styles/style.css">
     
-    <script src="scripts/ffmpeg.min.js"></script>
-    <script src="scripts/helper.js"></script>
-    <script src="scripts/videoTranscode.js"></script>
-    <script src="scripts/videoHandler.js"></script>
-    <script src="scripts/script.js"></script>
-    <script type="text/javascript" src="scripts/loading-bar.min.js"></script>
+    
 
   </head>
   <body>
+    <div class="startup-wrapper">
+      <div class="startup-modal skeleton">
+        <h1>getting things ready...</h1>
+        <p class="line"></p>
+        <p class="line"></p>
+        <p class="line"></p>
+      </div>
+    </div>
     <section class="edit-workspace">
       <div class="top-view">
         <div class="resources-list">
@@ -199,5 +200,16 @@
         </div>
       </div>
     </section>
+    <script src="scripts/jquery-1.12.4.min.js"></script>
+    <script src="scripts/jquery-ui.min.js"></script>
+    <script defer src="scripts/jquery.ui.touch-punch.min.js"></script>
+
+    <script async src="scripts/helper.js"></script>
+    <script async src="scripts/videoHandler.js"></script>
+    <script async src="scripts/script.js"></script>
+    
+    <script defer src="scripts/ffmpeg.min.js"></script>
+    <script defer src="scripts/videoTranscode.js"></script>
+    <script defer type="text/javascript" src="scripts/loading-bar.min.js"></script>
   </body>
 </html>

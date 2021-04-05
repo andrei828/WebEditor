@@ -124,7 +124,25 @@ window.onload = () => {
   progressBar = document.getElementById('progress-bar')
   loadingWrapper = document.querySelector('.loading-wrapper')
   defaultModalContent = document.querySelector('.default-modal-content')
+  
+  const uploader = document.getElementById("uploader")
+  uploader.addEventListener("change", fileUpload)
 
+  const startupWrapper = document.querySelector('.startup-wrapper')
+  const workspace = document.querySelector('.edit-workspace')
+  
+  setTimeout(() => {
+    workspace.style.display = 'flex'
+    startupWrapper.children[0].style.animation = 'disappear 0.5s'
+    startupWrapper.style.animation = 'unblur 0.4s'
+    setTimeout(() => {
+      startupWrapper.style.display = 'none'
+    }, 400)
+    const toggleActive = document.querySelector('.toggle-active')
+    const toggleSetting = document.querySelector('.toggling-layer')
+    handleTogglingLayer.call(toggleActive, toggleSetting)
+  }, 500)
+  
   /**
    * Trying to override the scrolling mechanism for the timeline
    */
