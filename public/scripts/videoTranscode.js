@@ -1,21 +1,24 @@
 
 $(document).ready(() => {
-  console.log('ready')
-  testing()
+  render()
 })
 
 
 
-async function testing() {
+async function render() {
   const { createFFmpeg, fetchFile } = FFmpeg
   const ffmpeg = createFFmpeg({ log: false })
-  // let abortController = new AbortController()
-  // ffmpeg.load(abortController.signal).then(console.log("loaded ffmpeg.wasm"))
   
-  ffmpeg.load((message) => {
+  ffmpeg.load((_) => {
     let currentPart = 1
     let totalParts = 0
     
+    const downloadHref = document.getElementById('download-button')
+    $('.default-modal-content-before-download').remove()
+    const elm = document.getElementById("start-render")
+    elm.style.cursor = 'pointer'
+    elm.style.backgroundColor = '#1a1a1a'
+    defaultModalContent.style.display = 'grid'
 
     /*
     * type can be one of following:
@@ -49,6 +52,10 @@ async function testing() {
     })
 
     const transcode = async (event) => {
+
+      if (!window.timeline) {
+        return
+      }
 
       elm.style.display = 'none'
       downloadHref.style.display = 'none'
@@ -140,10 +147,8 @@ async function testing() {
       delete ffmpeg;
     }
 
-    const downloadHref = document.getElementById('download-button')
-
-    const elm = document.getElementById("start-render")
     elm.addEventListener("click", transcode)
+    
   })
   
 }

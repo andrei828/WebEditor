@@ -134,7 +134,7 @@ window.onload = () => {
   setTimeout(() => {
     workspace.style.display = 'flex'
     startupWrapper.children[0].style.animation = 'disappear 0.5s'
-    startupWrapper.style.animation = 'unblur 0.4s'
+    startupWrapper.style.animation = 'unblur 0.5s'
     setTimeout(() => {
       startupWrapper.style.display = 'none'
     }, 400)

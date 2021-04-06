@@ -180,9 +180,15 @@
             <line x1="5" y1="12" x2="11" y2="18" />
             <line x1="5" y1="12" x2="11" y2="6" />
           </svg>
-          <div class="default-modal-content">
+          <div class="default-modal-content-before-download">
+            <span id="modal-title">ffmpeg is still loading</span>
+            <p>Start editing your video and come back in a few seconds to export</p>
+            <img class="modal-placeholder-img" src="resources/loadingFFmpeg.png" />
+          </div>
+          <div class="default-modal-content" style="display: none">
             <span id="modal-title">Ready to start rendering</span>
-            <img id="modal-placeholder-img" src="resources/beginRender2.png" />
+            <p>Have at least one video dragged on the timeline</p>
+            <img class="modal-placeholder-img" src="resources/beginRender2.png" />
           </div>
           <div class="loading-wrapper">
             <div id="progress-bar" 

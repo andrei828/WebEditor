@@ -54,7 +54,11 @@ $(function() {
 	})
 
   $(window).resize(function() {
-    buttonSwitchLogic()
+    // buttonSwitchLogic()
+    const toggleActive = document.querySelector('.toggle-active')
+    const toggleSetting = document.querySelector('.toggling-layer')
+    handleTogglingLayer.call(toggleActive, toggleSetting)
+    
     const canvas =document.querySelector('.preview-player')
     canvas.style.width = canvas.getBoundingClientRect().height * RATIO
   });

@@ -674,6 +674,16 @@ video::-webkit-media-controls {
     left: 0;
 }
 
+.default-modal-content-before-download {
+    display: grid;
+    place-items: center;
+}
+
+.default-modal-content {
+    display: grid;
+    place-items: center;
+    animation: appear 0.5s;
+}
 
 /*span.msg,
 span.choose {
@@ -820,14 +830,16 @@ span.choose {
     bottom: 5%;
     left: 50%;
     transform: translateX(-50%);
-    background: #1a1a1a;
+    background: #044343;
     border: none;
     color:#e4e4e4;
     padding-bottom: 10px;
     padding-top: 10px;
     padding-left: 20px;
     padding-right: 20px;
-    cursor: pointer;
+    cursor: not-allowed;
+    transition: 0.5s;
+
 }
 
 .ldBar path.mainline {
@@ -860,7 +872,7 @@ span.choose {
     text-align: center;
 }
 
-#modal-placeholder-img {
+.modal-placeholder-img {
     /* width: 70%; */
     height: 50%;
 
