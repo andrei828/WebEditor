@@ -1,17 +1,9 @@
 <html>
   <head>
     <title>Web Editor</title>
-    <!-- <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin" />
-    <meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp" /> -->
-
-    <!-- <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.9.7/dist/ffmpeg.min.js"></script> -->
-    
-    
-    <link rel="shortcut icon" href="resources/favicon.ico">
-    <link defer rel="stylesheet" type="text/css" href="styles/loading-bar.min.css"/>
-    <link rel="stylesheet" type="text/css" href="styles/style.css">
-    
-    
+    <link rel="shortcut icon" href="static/resources/favicon.ico">
+    <link defer rel="stylesheet" type="text/css" href="static/styles/loading-bar.min.css"/>
+    <link rel="stylesheet" type="text/css" href="static/styles/style.css">    
 
   </head>
   <body>
@@ -30,15 +22,15 @@
             <div class="resources-title">Resources</div>
             <div class="upload-controls">
               <label>
-                <input type="file" id="uploader" style="display: none;" multiple />
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-upload" width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" stroke="#222222" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <input type="file" id="uploader" accept=".gif,.mp4,.mov" style="display: none;" multiple />
+                <svg width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" stroke="#222222" fill="none" stroke-linecap="round" stroke-linejoin="round">
                   <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                   <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" />
                   <polyline points="7 9 12 4 17 9" />
                   <line x1="12" y1="4" x2="12" y2="16" />
                 </svg>
               </label>
-              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-share" width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" stroke="#222222" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <svg width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" stroke="#222222" fill="none" stroke-linecap="round" stroke-linejoin="round">
                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                 <circle cx="6" cy="12" r="3" />
                 <circle cx="18" cy="6" r="3" />
@@ -46,7 +38,7 @@
                 <line x1="8.7" y1="10.7" x2="15.3" y2="7.3" />
                 <line x1="8.7" y1="13.3" x2="15.3" y2="16.7" />
               </svg>
-              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-info-circle" width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" stroke="#222222" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <svg width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" stroke="#222222" fill="none" stroke-linecap="round" stroke-linejoin="round">
                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                 <circle cx="12" cy="12" r="9" />
                 <line x1="12" y1="8" x2="12.01" y2="8" />
@@ -54,7 +46,7 @@
               </svg>
               </div>
           </div>
-          <!-- <div>
+          <div class="resources-placeholder">
             <p>You have no resources currently, add them by using the 
               <svg class="icon icon-tabler icon-tabler-upload" width="15" height="15" viewBox="0 0 24 24" stroke-width="1.5" stroke="#222222" fill="none" stroke-linecap="round" stroke-linejoin="round">
                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -64,7 +56,7 @@
               </svg>
               icon from the top right corner of the resources panel.
             </p>
-          </div> -->
+          </div>
           <br/>
         </div>
         <div class="preview-player-wrapper">
@@ -78,10 +70,15 @@
                 </div>
                 <input type="hidden" name="gender">
                 <ul class="dropdown-menu">
-                  <li id="1920x1080">1920x1080</li>
-                  <li id="800x400">800x400</li>
-                  <li id="400x800">400x800</li>
-                  <li id="Custom">Custom</li>
+                  <li id="1920x1080">1920x1080 (1080p)</li>
+                  <li id="1280x720">1280x720 (720p)</li>
+                  <li id="854x480">854x480 (480p)</li>
+                  <li id="640x360">640x360 (360p)</li>
+                  
+                  <li id="1080x1920">1080x1920 (1080p)</li>
+                  <li id="720x1280">720x1280 (720p)</li>
+                  <li id="480x854">480x854 (480p)</li>
+                  <li id="360x640">360x640 (360p)</li>
                 </ul>
               </div>
             </div>
@@ -98,10 +95,9 @@
             <div class="preview-player-controls">
               <!-- move back 10 seconds -->
               <button class="preview-controll-button preview-back">
-                <svg xmlns="http://www.w3.org/2000/svg" 
-                    class="icon icon-tabler icon-tabler-player-skip-back" 
-                    width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" 
-                    stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="icon-tabler-player-skip-back" 
+                     width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" 
+                     stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
                   <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                   <path d="M20 5v14l-12 -7z" />
                   <line x1="4" y1="5" x2="4" y2="19" />
@@ -110,10 +106,9 @@
 
               <!-- play the video -->
               <button class="preview-controll-button preview-play">
-                <svg xmlns="http://www.w3.org/2000/svg" 
-                    class="icon icon-tabler icon-tabler-player-play" 
-                    width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" 
-                    stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="icon-tabler-player-play" 
+                     width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" 
+                     stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
                   <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                   <path d="M7 4v16l13 -8z" />
                 </svg>
@@ -121,10 +116,9 @@
 
               <!-- pause the video -->
               <button class="preview-controll-button preview-pause">
-                <svg xmlns="http://www.w3.org/2000/svg" 
-                    class="icon icon-tabler icon-tabler-player-pause" 
-                    width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" 
-                    stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="icon-tabler-player-pause" 
+                     width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" 
+                     stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
                   <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                   <rect x="6" y="5" width="4" height="14" rx="1" />
                   <rect x="14" y="5" width="4" height="14" rx="1" />
@@ -133,10 +127,9 @@
 
               <!-- move forward 10 seconds -->
               <button class="preview-controll-button preview-forward">
-                <svg xmlns="http://www.w3.org/2000/svg" 
-                    class="icon icon-tabler icon-tabler-player-skip-forward" 
-                    width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" 
-                    stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="icon-tabler-player-skip-forward" 
+                     width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" 
+                     stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
                   <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                   <path d="M4 5v14l12 -7z" />
                   <line x1="20" y1="5" x2="20" y2="19" />
@@ -150,8 +143,8 @@
         </div>
       </div>
       <div class="bottom-view">
-        <div style="position: absolute; left: 50%; top: 75%; transform: translate(-50%, -50%);">
-          <svg class="icon icon-tabler icon-tabler-drag-drop" width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" stroke="#e4e4e4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <div class="timeline-placeholder-text">
+          <svg width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" stroke="#e4e4e4" fill="none" stroke-linecap="round" stroke-linejoin="round">
             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
             <path d="M19 11v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2" />
             <path d="M13 13l9 3l-4 2l-2 4l-3 -9" />
@@ -163,7 +156,9 @@
             <line x1="3" y1="11" x2="3" y2="11.01" />
             <line x1="3" y1="15" x2="3" y2="15.01" />
           </svg>
-        <span style='vertical-align: super;font-style: italic;'>Drop the items here</span>
+          <span style="vertical-align: super; font-style: italic;">
+            Drop the items here
+          </span>
         </div>
         <div class=tooltip-duration></div>
         <div class="bottom-scrollable">
@@ -209,12 +204,12 @@
           <div class="default-modal-content-before-download">
             <span id="modal-title">ffmpeg is still loading</span>
             <p>Start editing your video and come back in a few seconds to export</p>
-            <img class="modal-placeholder-img" src="resources/loadingFFmpeg.png" />
+            <img class="modal-placeholder-img" src="static/resources/loadingFFmpeg.png" />
           </div>
           <div class="default-modal-content" style="display: none">
             <span id="modal-title">Ready to start rendering</span>
             <p>Have at least one video dragged on the timeline</p>
-            <img class="modal-placeholder-img" src="resources/beginRender2.png" />
+            <img class="modal-placeholder-img" src="static/resources/beginRender2.png" />
           </div>
           <div class="loading-wrapper">
             <div id="progress-bar" 
@@ -232,16 +227,16 @@
         </div>
       </div>
     </section>
-    <script src="scripts/jquery-1.12.4.min.js"></script>
-    <script src="scripts/jquery-ui.min.js"></script>
-    <script defer src="scripts/jquery.ui.touch-punch.min.js"></script>
+    <script src="static/scripts/jquery-1.12.4.min.js"></script>
+    <script src="static/scripts/jquery-ui.min.js"></script>
+    <script defer src="static/scripts/jquery.ui.touch-punch.min.js"></script>
 
-    <script async src="scripts/helper.js"></script>
-    <script async src="scripts/videoHandler.js"></script>
-    <script async src="scripts/script.js"></script>
+    <script async src="static/scripts/helper.js"></script>
+    <script async src="static/scripts/videoHandler.js"></script>
+    <script async src="static/scripts/script.js"></script>
     
-    <script defer src="scripts/ffmpeg.min.js"></script>
-    <script defer src="scripts/videoTranscode.js"></script>
-    <script defer type="text/javascript" src="scripts/loading-bar.min.js"></script>
+    <script defer src="static/scripts/ffmpeg.min.js"></script>
+    <script defer src="static/scripts/videoTranscode.js"></script>
+    <script defer type="text/javascript" src="static/scripts/loading-bar.min.js"></script>
   </body>
 </html>

@@ -451,6 +451,8 @@ async function fileUpload({ target: { files } }) {
     window.resources[videoResource.videoCore.id] = videoResource
     renderResourceBlock(videoResource.videoCore)
   }
+  
+  resourcesPlaceholder.style.display = 'none'
 }
 
 

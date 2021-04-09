@@ -11,29 +11,49 @@ $(function() {
     $(this).find('.dropdown-menu').slideUp(300);
   });
   $('.dropdown .dropdown-menu li').click(function () {
-    $(this).parents('.dropdown').find('span').text($(this).text());
+    $(this).parents('.dropdown').find('span').text($(this).text().split(' ')[0]);
     $(this).parents('.dropdown').find('input').attr('value', $(this).attr('id'));
   });
 /*End Dropdown Menu*/
   
 
-  
 
   $('.dropdown-menu li').click(function () {
-    const resolution = $(this).parents('.dropdown').find('input').val()
+    const resolution = $(this).parents('.dropdown').find('input').val().split(' ')[0]
     console.log(resolution)
+    
     if (resolution === '1920x1080') {
       RATIO = 1.77
       window.FFMPEG_RESOLUTION_WIDTH = 1920
       window.FFMPEG_RESOLUTION_HEIGHT = 1080
-    } else if (resolution === '800x400') {
-      RATIO = 2
-      window.FFMPEG_RESOLUTION_WIDTH = 800
-      window.FFMPEG_RESOLUTION_HEIGHT = 400
-    } else if (resolution === '400x800') {
-      RATIO = 0.5
-      window.FFMPEG_RESOLUTION_WIDTH = 400
-      window.FFMPEG_RESOLUTION_HEIGHT = 800
+    } else if (resolution === '1280x720') {
+      RATIO = 1.77
+      window.FFMPEG_RESOLUTION_WIDTH = 1280
+      window.FFMPEG_RESOLUTION_HEIGHT = 720
+    } else if (resolution === '854x480') {
+      RATIO = 1.77
+      window.FFMPEG_RESOLUTION_WIDTH = 854
+      window.FFMPEG_RESOLUTION_HEIGHT = 480
+    } else if (resolution === '640x360') {
+      RATIO = 1.77
+      window.FFMPEG_RESOLUTION_WIDTH = 640
+      window.FFMPEG_RESOLUTION_HEIGHT = 360
+    } else if (resolution === '1080x1920') {
+      RATIO = 0.56
+      window.FFMPEG_RESOLUTION_WIDTH = 1080
+      window.FFMPEG_RESOLUTION_HEIGHT = 1920
+    } else if (resolution === '720x1280') {
+      RATIO = 0.56
+      window.FFMPEG_RESOLUTION_WIDTH = 720
+      window.FFMPEG_RESOLUTION_HEIGHT = 1280
+    } else if (resolution === '480x854') {
+      RATIO = 0.56
+      window.FFMPEG_RESOLUTION_WIDTH = 480
+      window.FFMPEG_RESOLUTION_HEIGHT = 854
+    } else if (resolution === '360x640') {
+      RATIO = 0.56
+      window.FFMPEG_RESOLUTION_WIDTH = 360
+      window.FFMPEG_RESOLUTION_HEIGHT = 640
     }
 
     const canvas = document.querySelector('.preview-player')

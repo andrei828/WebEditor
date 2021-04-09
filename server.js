@@ -11,10 +11,10 @@ app.use((_, res, next) => {
   next();
 });
 
-app.use('/static', express.static(path.join(__dirname, 'public')))
+app.use('/static', express.static(path.join(__dirname, 'public/')))
 
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.sendFile(__dirname + '/public/index.html')
 })
 
 app.listen(port, '0.0.0.0', () => {

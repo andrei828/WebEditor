@@ -20,15 +20,25 @@ window.onload = () => {
   RATIO = 1.77 // 4:3=1.33 1:2=0.5
   window.FFMPEG_RESOLUTION_WIDTH = 1920
   window.FFMPEG_RESOLUTION_HEIGHT = 1080
+
+  // const canvas = document.querySelector('.preview-player')
+  // const currentHeight = canvas.getBoundingClientRect().height
+  // const maxHeight = document
+  //   .querySelector('.preview-player-wrapper')
+  //   .getBoundingClientRect()
+  //   .height
+
+  // if (maxHeight * 0.7)  
+  //   canvas.style.width = canvas.getBoundingClientRect().height * window.RATIO
   
   this.resources = {}
   /* Currently hardcoding the default video items */
-  this.resources[getUniqueID()] = buildVideoResourceByPath('./resources/GrahamScan.mov', 'GrahamScan.mov')
-  this.resources[getUniqueID()] = buildVideoResourceByPath('./resources/PostItDemo.mp4', 'PostItDemo.mp4')
-  this.resources[getUniqueID()] = buildVideoResourceByPath('./resources/bunny.mp4', 'bunny.mp4')
-  this.resources[getUniqueID()] = buildVideoResourceByPath('./resources/bunny2.mp4', 'bunny2.mp4')
-  this.resources[getUniqueID()] = buildVideoResourceByPath('./resources/portait.mp4', 'portait.mp4')
-  this.resources[getUniqueID()] = buildVideoResourceByPath('./resources/bunny10sec.mp4', 'bunny10sec.mp4')
+  // this.resources[getUniqueID()] = buildVideoResourceByPath('./resources/GrahamScan.mov', 'GrahamScan.mov')
+  // this.resources[getUniqueID()] = buildVideoResourceByPath('./resources/PostItDemo.mp4', 'PostItDemo.mp4')
+  // this.resources[getUniqueID()] = buildVideoResourceByPath('./resources/bunny.mp4', 'bunny.mp4')
+  // this.resources[getUniqueID()] = buildVideoResourceByPath('./resources/bunny2.mp4', 'bunny2.mp4')
+  // this.resources[getUniqueID()] = buildVideoResourceByPath('./resources/portait.mp4', 'portait.mp4')
+  // this.resources[getUniqueID()] = buildVideoResourceByPath('./resources/bunny10sec.mp4', 'bunny10sec.mp4')
 
   document.body.onkeyup = keyUpEvent
   document.body.onkeydown = keyDownEvent
@@ -125,6 +135,9 @@ window.onload = () => {
   loadingWrapper = document.querySelector('.loading-wrapper')
   defaultModalContent = document.querySelector('.default-modal-content')
   
+  timelinePlaceholderText = document.querySelector('.timeline-placeholder-text')
+  resourcesPlaceholder = document.querySelector('.resources-placeholder')
+
   const uploader = document.getElementById("uploader")
   uploader.addEventListener("change", fileUpload)
 
@@ -449,6 +462,7 @@ const dragObjectLogic = {
 
   stop : function (event, helper) {
     
+    timelinePlaceholderText.remove()
     timelinePlaceholder.style.display = 'none'
     // event.target.style.position = 'relative'
     event.target.style.boxShadow = 'none'

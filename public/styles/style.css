@@ -674,6 +674,17 @@ video::-webkit-media-controls {
     left: 0;
 }
 
+.timeline-placeholder-text {
+    position: absolute;
+    left: 50%;
+    top: 75%;
+    transform: translate(-50%, -50%);
+}
+
+.resources-placeholder {
+
+}
+
 .default-modal-content-before-download {
     display: grid;
     place-items: center;
@@ -685,19 +696,9 @@ video::-webkit-media-controls {
     animation: appear 0.5s;
 }
 
-/*span.msg,
-span.choose {
-  color: #555;
-  padding: 5px 0 10px;
-  display: inherit
-}*/
-.container {
- /* width: 500px;
-  margin: 50px auto 0;
-  text-align: center*/
-}
 
-/*Styling Selectbox*/
+
+/* Styling Selectbox */
 .dropdown {
     border-radius: 10px !important;
     width: 85px;
@@ -750,10 +751,18 @@ span.choose {
     overflow: hidden;
     display: none;
     border: 1px solid white;
-    max-height: 144px;
+    /* max-height: 144px; */
     overflow-y: auto;
-    z-index: 9
+    z-index: 9;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
 }
+
+.dropdown .dropdown-menu::-webkit-scrollbar {
+    display: none;
+}
+
+
 .dropdown .dropdown-menu li {
     padding: 10px;
     transition: all .2s ease-in-out;
