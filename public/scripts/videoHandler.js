@@ -34,11 +34,11 @@ window.onload = () => {
   this.resources = {}
   /* Currently hardcoding the default video items */
   // this.resources[getUniqueID()] = buildVideoResourceByPath('./static/resources/GrahamScan.mov', 'GrahamScan.mov')
-  this.resources[getUniqueID()] = buildVideoResourceByPath('./static/resources/PostItDemo.mp4', 'PostItDemo.mp4')
-  this.resources[getUniqueID()] = buildVideoResourceByPath('./static/resources/bunny.mp4', 'bunny.mp4')
-  this.resources[getUniqueID()] = buildVideoResourceByPath('./static/resources/bunny2.mp4', 'bunny2.mp4')
-  this.resources[getUniqueID()] = buildVideoResourceByPath('./static/resources/portait.mp4', 'portait.mp4')
-  this.resources[getUniqueID()] = buildVideoResourceByPath('./static/resources/bunny10sec.mp4', 'bunny10sec.mp4')
+  // this.resources[getUniqueID()] = buildVideoResourceByPath('./static/resources/PostItDemo.mp4', 'PostItDemo.mp4')
+  // this.resources[getUniqueID()] = buildVideoResourceByPath('./static/resources/bunny.mp4', 'bunny.mp4')
+  // this.resources[getUniqueID()] = buildVideoResourceByPath('./static/resources/bunny2.mp4', 'bunny2.mp4')
+  // this.resources[getUniqueID()] = buildVideoResourceByPath('./static/resources/portait.mp4', 'portait.mp4')
+  // this.resources[getUniqueID()] = buildVideoResourceByPath('./static/resources/bunny10sec.mp4', 'bunny10sec.mp4')
 
   document.body.onkeyup = keyUpEvent
   document.body.onkeydown = keyDownEvent
