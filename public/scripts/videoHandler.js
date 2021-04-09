@@ -33,12 +33,12 @@ window.onload = () => {
   
   this.resources = {}
   /* Currently hardcoding the default video items */
-  // this.resources[getUniqueID()] = buildVideoResourceByPath('./resources/GrahamScan.mov', 'GrahamScan.mov')
-  // this.resources[getUniqueID()] = buildVideoResourceByPath('./resources/PostItDemo.mp4', 'PostItDemo.mp4')
-  // this.resources[getUniqueID()] = buildVideoResourceByPath('./resources/bunny.mp4', 'bunny.mp4')
-  // this.resources[getUniqueID()] = buildVideoResourceByPath('./resources/bunny2.mp4', 'bunny2.mp4')
-  // this.resources[getUniqueID()] = buildVideoResourceByPath('./resources/portait.mp4', 'portait.mp4')
-  // this.resources[getUniqueID()] = buildVideoResourceByPath('./resources/bunny10sec.mp4', 'bunny10sec.mp4')
+  // this.resources[getUniqueID()] = buildVideoResourceByPath('./static/resources/GrahamScan.mov', 'GrahamScan.mov')
+  this.resources[getUniqueID()] = buildVideoResourceByPath('./static/resources/PostItDemo.mp4', 'PostItDemo.mp4')
+  this.resources[getUniqueID()] = buildVideoResourceByPath('./static/resources/bunny.mp4', 'bunny.mp4')
+  this.resources[getUniqueID()] = buildVideoResourceByPath('./static/resources/bunny2.mp4', 'bunny2.mp4')
+  this.resources[getUniqueID()] = buildVideoResourceByPath('./static/resources/portait.mp4', 'portait.mp4')
+  this.resources[getUniqueID()] = buildVideoResourceByPath('./static/resources/bunny10sec.mp4', 'bunny10sec.mp4')
 
   document.body.onkeyup = keyUpEvent
   document.body.onkeydown = keyDownEvent
@@ -218,6 +218,14 @@ function doneTrimming(_) {
   window.references[window.currentlyTrimming[0].id].data.metadata.duration = Number(endTimeModal.innerText) - Number(startTimeModal.innerText)
   // window.currentlyTrimming.style.width = `${window.references[window.currentlyTrimming.id].data.metadata.duration*10}px`
 
+  /* Update the baseDuration for every item to the right */
+  let iterator = window.references[window.currentlyTrimming[0].id].next
+  while (iterator) {
+    iterator.data.metadata.baseDuration = 
+      iterator.prev.data.metadata.baseDuration + 
+      iterator.prev.data.metadata.duration
+    iterator = iterator.next
+  }
   renderPreviousTimelineDimensions()
   // HREF
   finalVideoDurationLabel.innerText = formatTimeFromSeconds(window.timelineDuration.toFixed(2))
@@ -225,6 +233,9 @@ function doneTrimming(_) {
   window.currentlyTrimming = undefined
   trimDoneBtn = document.querySelector('#trim-modal-done')
   trimDoneBtn.addEventListener('click', doneTrimming)
+
+  window.timeline.data.videoCore.currentTime = window.timeline.data.metadata.startTime
+  renderUIAfterFrameChange(window.timeline)
 }
 
 function renderTrimBars(ctx) {

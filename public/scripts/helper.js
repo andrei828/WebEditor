@@ -34,60 +34,6 @@
 
 
 /**
- * Method that handles the order of
- * items in the window.timeline variable
- */
-function arrangeWindowTimeline() {
-  let iterator = null;
-  window.timeline = null;
-  window.timelineDuration = 0
-  childrenNodesTimeline = $('.timeline').children()
-  for (child of childrenNodesTimeline) {
-    if (child !== timelinePlaceholder) {
-      if (window.references[child.id]) {
-        if (!window.timeline) {
-          window.timeline = window.references[child.id]
-          window.timeline.prev = null
-          iterator = window.timeline
-        } else {
-          iterator.next = window.references[child.id]
-          iterator.next.prev = iterator
-          iterator = iterator.next
-        }
-      } else {
-        resource = buildVideoResource(child, window.resources[child.id] ? window.resources[child.id].metadata.title : "***")
-        if (!window.timeline) {
-          window.timeline = new TimelineNode(resource)
-          iterator = window.timeline
-        } else {
-          iterator.next = new TimelineNode(resource)
-          iterator.next.prev = iterator
-          iterator = iterator.next
-        }
-        window.references[iterator.data.videoCore.id] = iterator
-      }
-      if (iterator.prev) {
-        iterator.data.metadata.baseDuration = iterator.prev.data.metadata.baseDuration + iterator.prev.data.metadata.duration
-      } else {
-        iterator.data.metadata.baseDuration = 0
-      }
-      
-      window.timelineDuration += iterator.data.metadata.duration
-      /* Removing previous links if necessary */
-      iterator.next = null
-    }
-  }
-  finalVideoDurationLabel.innerText = formatTimeFromSeconds(window.timelineDuration.toFixed(2))
-  // event.target.style.width = event.target.getBoundingClientRect().width
-
-  window.currentVideoSelectedForPlayback = window.timeline
-  window.currentVideoSelectedForPlayback.data.videoCore.currentTime = window.currentVideoSelectedForPlayback.data.metadata.startTime
-  setTimeout(() => 
-    renderCurrentPlaybackBar(window.currentVideoSelectedForPlayback), 50)
-}
-
-
-/**
  * Renders given item
  * to the resources list
  * @param videoFile uploaded .mp4 file
@@ -96,7 +42,9 @@ function renderResourceBlock(videoFile) {
   const wrapper = document.createElement('div')
   wrapper.classList.add('item-wrapper')
   const title = document.createElement('span')
-  title.innerText = resources[videoFile.id].metadata.title
+  const titleValue = resources[videoFile.id].metadata.title
+  title.innerText = (titleValue.length > 15) ?
+    titleValue.slice(0, 15) + '...' : titleValue
   title.classList.add('item-title')
 
   videoFile.classList.add('item')
@@ -118,7 +66,7 @@ function renderResourceBlock(videoFile) {
  * from the previous video in the timeline
  */
 function buildVideoResourceByPath(path, title, baseDuration = 0) {
-  video = document.createElement('video')
+  const video = document.createElement('video')
   video.id = getUniqueID()
   video.src = path
   
@@ -147,10 +95,10 @@ function buildVideoResourceByPath(path, title, baseDuration = 0) {
  * from the previous video in the timeline
  */
  function buildVideoResourceByFile(file, title, baseDuration = 0) {
-  video = document.createElement('video')
+  const video = document.createElement('video')
   video.src = URL.createObjectURL(file)
   video.id = getUniqueID()
-  
+  console.log(video)
   return {
     id: video.classList,
     videoCore: video,
@@ -622,6 +570,60 @@ function setCurrentlyPlaying(value) {
 
 
 /**
+ * Method that handles the order of
+ * items in the window.timeline variable
+ */
+ function arrangeWindowTimeline() {
+  let iterator = null;
+  window.timeline = null;
+  window.timelineDuration = 0
+  childrenNodesTimeline = $('.timeline').children()
+  for (child of childrenNodesTimeline) {
+    if (child !== timelinePlaceholder) {
+      if (window.references[child.id]) {
+        if (!window.timeline) {
+          window.timeline = window.references[child.id]
+          window.timeline.prev = null
+          iterator = window.timeline
+        } else {
+          iterator.next = window.references[child.id]
+          iterator.next.prev = iterator
+          iterator = iterator.next
+        }
+      } else {
+        resource = buildVideoResource(child, window.resources[child.id] ? window.resources[child.id].metadata.title : "***")
+        if (!window.timeline) {
+          window.timeline = new TimelineNode(resource)
+          iterator = window.timeline
+        } else {
+          iterator.next = new TimelineNode(resource)
+          iterator.next.prev = iterator
+          iterator = iterator.next
+        }
+        window.references[iterator.data.videoCore.id] = iterator
+      }
+      if (iterator.prev) {
+        iterator.data.metadata.baseDuration = iterator.prev.data.metadata.baseDuration + iterator.prev.data.metadata.duration
+      } else {
+        iterator.data.metadata.baseDuration = 0
+      }
+      
+      window.timelineDuration += iterator.data.metadata.duration
+      /* Removing previous links if necessary */
+      iterator.next = null
+    }
+  }
+  finalVideoDurationLabel.innerText = formatTimeFromSeconds(window.timelineDuration.toFixed(2))
+  // event.target.style.width = event.target.getBoundingClientRect().width
+
+  window.currentVideoSelectedForPlayback = window.timeline
+  window.currentVideoSelectedForPlayback.data.videoCore.currentTime = window.currentVideoSelectedForPlayback.data.metadata.startTime
+  setTimeout(() => 
+    renderCurrentPlaybackBar(window.currentVideoSelectedForPlayback), 50)
+}
+
+
+/**
  * Splits the selected video with relative sizes
  * @param ctx context for the right click menu
  */
@@ -665,7 +667,7 @@ function setCurrentlyPlaying(value) {
   /* Updating the refereneces hashmap */
   window.references[firstHalfId] = firstHalfNode
   window.references[secondHalfId] = secondHalfNode
-
+  
   /* Appending the new elements to DOM */
   $(ctx.target).after(firstHalfElement)
   $(firstHalfElement).after(secondHalfElement)
