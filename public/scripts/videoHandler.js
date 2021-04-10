@@ -525,6 +525,10 @@ const dragObjectLogic = {
 
       // TODO: optimize linked list creation (IMPORTANT!)
       arrangeWindowTimeline()
+      if (document.querySelector('.item-wrapper') === null) {
+         // no pending items are left
+        resourcesPlaceholder.style.display = 'block'
+      }
     } else {
       event.target.style.transition = '0.5s'  
     }
