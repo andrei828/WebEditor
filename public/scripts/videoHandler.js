@@ -16,10 +16,24 @@ class TimelineNode {
 }
 
 window.onload = () => {
-
   RATIO = 1.77 // 4:3=1.33 1:2=0.5
   window.FFMPEG_RESOLUTION_WIDTH = 1920
   window.FFMPEG_RESOLUTION_HEIGHT = 1080
+
+  const win = $(window)
+  if (win.height() < 602 || win.width() < 815) {
+    
+    document.querySelector('.edit-workspace').style.display = 'none'
+    document.querySelector('.startup-wrapper').style.display = 'none'
+    if (win.height() < 602)
+      document.querySelector('#small-screen-placeholder-message').innerHTML = 
+        "You need to use a <b>bigger screen size</b> to use the editor. Increase the <b>height</b> of the window and hit <b>refresh</b>"
+    else {
+      document.querySelector('#small-screen-placeholder-message').innerHTML = 
+        "You need to use a <b>bigger screen size</b> to use the editor. Increase the <b>width</b> of the window and hit <b>refresh</b>"
+    }
+        document.querySelector('#small-screen-placeholder-wrapper').style.display = 'grid'
+  }
 
   // const canvas = document.querySelector('.preview-player')
   // const currentHeight = canvas.getBoundingClientRect().height

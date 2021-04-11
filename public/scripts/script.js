@@ -74,7 +74,23 @@ $(function() {
 	})
 
   $(window).resize(function() {
-    // buttonSwitchLogic()
+    const win = $(window)
+    if (win.height() < 602 || win.width() < 815) {
+      if (win.height() < 602)
+        document.querySelector('#small-screen-placeholder-message').innerHTML = 
+          "You need to use a <b>bigger screen size</b> to use the editor. Increase the <b>height</b> of the window and hit <b>refresh</b>"
+      else {
+        document.querySelector('#small-screen-placeholder-message').innerHTML = 
+          "You need to use a <b>bigger screen size</b> to use the editor. Increase the <b>width</b> of the window and hit <b>refresh</b>"
+      }
+      
+      document.querySelector('.edit-workspace').style.display = 'none'
+      document.querySelector('#small-screen-placeholder-wrapper').style.display = 'grid'
+    } else {
+      document.querySelector('.edit-workspace').style.display = 'flex'
+      document.querySelector('#small-screen-placeholder-wrapper').style.display = 'none'
+    }
+
     const toggleActive = document.querySelector('.toggle-active')
     const toggleSetting = document.querySelector('.toggling-layer')
     handleTogglingLayer.call(toggleActive, toggleSetting)

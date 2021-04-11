@@ -5,7 +5,7 @@ $(document).ready(() => {
 
 
 
-async function render() {
+function render() {
   const { createFFmpeg, fetchFile } = FFmpeg
   const ffmpeg = createFFmpeg({ log: false })
   
@@ -18,7 +18,11 @@ async function render() {
     const elm = document.getElementById("start-render")
     elm.style.cursor = 'pointer'
     elm.style.backgroundColor = '#1a1a1a'
-    defaultModalContent.style.display = 'grid'
+    try {
+      defaultModalContent.style.display = 'grid'
+    } catch (_) {
+      /* default modal is not defined yet */
+    }
 
     /*
     * type can be one of following:

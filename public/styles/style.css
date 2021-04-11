@@ -11,6 +11,32 @@ body {
     color: white;
     overflow: hidden !important;
 }
+
+#small-screen-placeholder-wrapper {
+    position: absolute;
+    display: grid;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+#small-screen-placeholder {
+    color: black;
+    text-align: center;
+}
+
+
+#small-screen-placeholder-message {
+    text-align: center;
+    padding-left: 10%;
+    padding-right: 10%;
+    font-style: italic;
+}
+
+#small-screen-placeholder-image {
+    max-width: min(50vw, 50vh);
+}
+
 /* Loadin modal */
 
 .startup-wrapper {
