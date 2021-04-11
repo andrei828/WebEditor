@@ -98,7 +98,7 @@ function buildVideoResourceByPath(path, title, baseDuration = 0) {
   const video = document.createElement('video')
   video.src = URL.createObjectURL(file)
   video.id = getUniqueID()
-  console.log(video)
+  
   return {
     id: video.classList,
     videoCore: video,
@@ -624,10 +624,49 @@ function setCurrentlyPlaying(value) {
 
 
 /**
+ * Deletes the selected video and recalculates
+ * the flexGrow variable for the remaining items
+ * @param ctx context for the right click menu
+ */
+function deleteVideo(ctx) {
+  /* Current window.timeline item */
+  const targetNode = window.references[ctx.target.id]
+
+  /* Linking the previous node */
+  if (targetNode.prev) {
+    targetNode.prev.next = targetNode.next
+  }
+
+  /* Linking the next node */
+  if (targetNode.next) {
+    targetNode.next.prev = targetNode.prev
+  }
+
+  /* Edge case when the deleted item is the head */
+  if (window.timeline === targetNode) {
+    window.timeline = targetNode.next
+  }
+
+  /* Updating the overall video duration */
+  window.timelineDuration -= targetNode.data.metadata.duration
+  
+  /* Forcing the memory cleanup */
+  delete targetNode
+  
+  /* UI removing animation */
+  ctx.target.style.animation = 'disappear 0.5s'
+  setTimeout(() => {
+    $(ctx.target).remove()
+    renderPreviousTimelineDimensions()
+  }, 400)
+}
+
+
+/**
  * Splits the selected video with relative sizes
  * @param ctx context for the right click menu
  */
- function splitVideo(ctx) {
+function splitVideo(ctx) {
   /* Generating the unique ids for the elements */
   const firstHalfId = getUniqueID()
   const secondHalfId = getUniqueID()

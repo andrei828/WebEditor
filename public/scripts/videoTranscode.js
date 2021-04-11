@@ -7,7 +7,7 @@ $(document).ready(() => {
 
 async function render() {
   const { createFFmpeg, fetchFile } = FFmpeg
-  const ffmpeg = createFFmpeg({ log: true })
+  const ffmpeg = createFFmpeg({ log: false })
   
   ffmpeg.load((_) => {
     let currentPart = 1

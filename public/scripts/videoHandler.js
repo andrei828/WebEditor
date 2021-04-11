@@ -85,6 +85,9 @@ window.onload = () => {
   splitVideoBtn = document.querySelector('#split-video')
   splitVideoBtn.addEventListener('click', () => splitVideo(window.rightClickCtx))
 
+  deleteVideoBtn = document.querySelector('#delete-video')
+  deleteVideoBtn.addEventListener('click', () => deleteVideo(window.rightClickCtx))
+
   trimVideoBtn = document.querySelector('#trim-video')
   trimVideoBtn.addEventListener('click', () => renderTrimBars(window.rightClickCtx))
 
