@@ -393,8 +393,22 @@ function forwardButtonTrigger() {
  * @param files the uploaded video files 
  */
 async function fileUpload({ target: { files } }) {
+  console.log('-------')
   console.log(files)
   for (const file of files) {
+    const videoResource = buildVideoResourceByFile(file, file.name)
+    window.resources[videoResource.videoCore.id] = videoResource
+    renderResourceBlock(videoResource.videoCore)
+  }
+  
+  resourcesPlaceholder.style.display = 'none'
+}
+
+function dropUpload(files) {
+  console.log('-------')
+  console.log(files[0].name)
+  for (const file of files) {
+    console.log(file)
     const videoResource = buildVideoResourceByFile(file, file.name)
     window.resources[videoResource.videoCore.id] = videoResource
     renderResourceBlock(videoResource.videoCore)

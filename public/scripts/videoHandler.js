@@ -158,6 +158,29 @@ window.onload = () => {
   const uploader = document.getElementById("uploader")
   uploader.addEventListener("change", fileUpload)
 
+  const resourcesList = document.querySelector('.resources-list')
+  resourcesList.addEventListener('dragenter', (e) => {
+    // e.preventDefault()
+    let dt = e.dataTransfer
+    let files = dt.files
+    console.log(files)
+    // console.log(e)
+    // console.log(dt)
+    dropUpload(files)
+    // fileUpload({target: { files } })
+
+  }, false)
+  resourcesList.addEventListener('drop', (e) => {
+    e.preventDefault()
+    console.log('here')
+    let dt = e.dataTransfer
+    let files = dt.files
+    // console.log(files)
+    // console.log(dt)
+    fileUpload({target: { files } })
+  }, false)
+
+
   const startupWrapper = document.querySelector('.startup-wrapper')
   const workspace = document.querySelector('.edit-workspace')
   

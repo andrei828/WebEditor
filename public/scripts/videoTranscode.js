@@ -12,7 +12,8 @@ function render() {
   ffmpeg.load((_) => {
     let currentPart = 1
     let totalParts = 0
-    
+    let fractionPart = 0
+
     const downloadHref = document.getElementById('download-button')
     $('.default-modal-content-before-download').remove()
     const elm = document.getElementById("start-render")
@@ -38,7 +39,7 @@ function render() {
       }
       try {
         logText.innerHTML = `<b>Part ${currentPart} out of ${totalParts}<b><br><br>`
-        logText.innerHTML += message
+        logText.innerHTML += message.slice(0, 150)
       } catch (_) {
         /* logText is not defined */
       }
@@ -48,11 +49,17 @@ function render() {
     * ratio is a float number between 0 to 1.
     */
     ffmpeg.setProgress(({ ratio, time, duration }) => {
-      if (currentPart === totalParts && time) {
-        progressBar.ldBar.set(time / window.timelineDuration * 100)
-      } else {
-        progressBar.ldBar.set(ratio * 100)
-      }
+      // if (currentPart === totalParts && time) {
+        // progressBar.ldBar.set(time / window.timelineDuration * 100)
+        // progressBar.ldBar.set(Math.min(100, fractionPart * (currentPart - 1) + fracionPart / time * window.timelineDuration / 100))
+      // } else {
+        if (isNaN(ratio) || ratio < 0) {
+          ratio = 1
+        }
+        console.log(fractionPart, currentPart, ratio, Math.min(fractionPart * (currentPart - 2) + Math.min(fractionPart, fractionPart * ratio)))
+        progressBar.ldBar.set(Math.min(fractionPart * (currentPart - 2) + Math.min(fractionPart, fractionPart * ratio / 100)))
+        // console.log(fractionPart * currentPart + fractionPart / ratio * 100)
+      // }
     })
 
     const transcode = async (event) => {
@@ -68,8 +75,9 @@ function render() {
       loadingWrapper.classList.add('loading-wrapper-active')
 
       // await ffmpeg.load();
-      const inputPaths = [];
-      
+      const inputPaths = []
+      const videoAudioStreams = []
+
       totalParts = 0
       let iterator = window.timeline
       while (iterator) {
@@ -78,7 +86,7 @@ function render() {
       }
       totalParts += 1
       currentPart = 1
-      
+      fractionPart = 100 / (totalParts - 1)
       iterator = window.timeline
       while (iterator) {
           const fileBlob = iterator.data.videoCore.currentSrc
@@ -87,17 +95,30 @@ function render() {
           const endTime = iterator.data.metadata.endTime
 
           const wi = window.FFMPEG_RESOLUTION_WIDTH
-          const he = FFMPEG_RESOLUTION_HEIGHT
+          const he = window.FFMPEG_RESOLUTION_HEIGHT
 
           ffmpeg.FS('writeFile', fileName, await fetchFile(fileBlob))
+          const currentItemNumber = currentPart - 1
           if (iterator.data.metadata.ratio === 'fit') {
             // await ffmpeg.run('-i', fileName, '-f', 'lavfi', '-i', 'anullsrc', '-shortest', '-map', '0:v', '-map', '0:a?', '-map', '1:a', '-vf', 
             //   `scale='min(${wi},iw)':min'(${he},ih)':force_original_aspect_ratio\=decrease,pad=${wi}:${he}:(ow-iw)/2:(oh-ih)/2`,
             //   '-ss', `${startTime}`, '-to', `${endTime}`, 'tmp.mp4'
             // )
-            await ffmpeg.run('-i', fileName, '-vf', 
-              `scale='min(${wi},iw)':min'(${he},ih)':force_original_aspect_ratio\=decrease,pad=${wi}:${he}:(ow-iw)/2:(oh-ih)/2`,
-              '-ss', `${startTime}`, '-to', `${endTime}`, `tmp${currentPart}.mpg`
+            // await ffmpeg.run('-i', fileName, '-f', 'lavfi', '-i', 'anullsrc', '-shortest', '-filter:v', 'fps=30', '-vf', 
+            //   `scale='min(${wi},iw)':min'(${he},ih)':force_original_aspect_ratio\=decrease,pad=${wi}:${he}:(ow-iw)/2:(oh-ih)/2`,
+            //   '-ss', `${startTime}`, '-to', `${endTime}`, 
+            //   '-f', 'lavfi', '-i', 'anullsrc=channel_layout=stereo:sample_rate=44100', '-c:v', 'copy', '-c:a', 'aac', '-shortest',
+            //   `tmp${currentItemNumber}.mp4`
+            // )
+
+            await ffmpeg.run(
+              '-f', 'lavfi', '-i', 'anullsrc',
+              '-i', fileName,
+              '-ar', '44100',
+              '-vf', `[1:v]scale='min(${wi},iw)':min'(${he},ih)':force_original_aspect_ratio\=decrease,pad=${wi}:${he}:(ow-iw)/2:(oh-ih)/2,fps=30`,
+              '-ss', `${startTime}`, '-to', `${endTime}`,
+              '-map', '1:v', '-map', '1:a?', '-map', '0:a', '-c:a', 'aac', '-shortest',
+              `tmp${currentItemNumber}.mp4`,
             )
           } else if (iterator.data.metadata.ratio === 'strech') {
             // await ffmpeg.run('-i', fileName, '-f', 'lavfi', '-i', 'anullsrc', '-shortest', '-map', '0:v', '-map', '0:a?', '-map', '1:a',
@@ -105,11 +126,27 @@ function render() {
             //   '-ss', `${startTime}`, '-to', `${endTime}`, `tmp${currentPart}.mpg`
             // )
 
-            await ffmpeg.run('-i', fileName, 
-              '-vf', `scale=${wi}:${he}`,
-              '-ss', `${startTime}`, '-to', `${endTime}`, `tmp${currentPart}.mpg`
-            )
+            // await ffmpeg.run('-f', 'lavfi', '-i', 'anullsrc',
+            //   '-i', fileName,
+            //   '-filter:v', 'fps=30',
+            //   '-vf', `scale=${wi}:${he},setdar=1:1`,
+            //   '-ss', `${startTime}`, '-to', `${endTime}`,
+            //   '-map', '0', '-map', '1:a', '-c:v', 'copy', '-shortest',
+            //   `tmp${currentItemNumber}.mp4`
+            // )
             
+            await ffmpeg.run(
+              '-f', 'lavfi', '-i', 'anullsrc',
+              '-i', fileName,
+              '-ar', '44100',
+              // '-filter:v', '[1:v]fps=30',
+              '-vf', `[1:v]scale=${wi}:${he},setdar=ratio=16/9:max=1000,fps=30`,
+              '-ss', `${startTime}`, '-to', `${endTime}`,
+              '-map', '1:v', '-map', '1:a?', '-map', '0:a', '-c:a', 'aac', '-shortest',
+              `tmp${currentItemNumber}.mp4`,
+            )
+
+            // '-map', '0:a?', '-c:a', 'aac',
           }
           
           // const data = ffmpeg.FS('readFile', 'tmp.mp4')
@@ -118,7 +155,9 @@ function render() {
           //       type: "video/mp4"
           //     })
           //   ))
-          inputPaths.push(`tmp${currentPart}.mpg`);
+          inputPaths.push('-i')
+          inputPaths.push(`tmp${currentItemNumber}.mp4`)
+          videoAudioStreams.push(`[${currentItemNumber}:v:0][${currentItemNumber}:a:0]`)
           currentPart += 1 
           // inputPaths.push(`file ${fileName}`);
           
@@ -126,11 +165,25 @@ function render() {
           iterator = iterator.next
       }
       console.log(inputPaths)
+      console.log('ffmpeg ')
       // ffmpeg.FS('writeFile', 'concat_list.txt', inputPaths.join('\n'));
       // await ffmpeg.run('-f', 'concat', '-safe', '0', '-i', 'concat_list.txt', 'output.mp4');
       console.log(`concat:${inputPaths.join('|')}`)
-      await ffmpeg.run('-i', `concat:${inputPaths.join('|')}`, '-c', 'copy', 'intermediate_all.mpg');
-      await ffmpeg.run('-i', 'intermediate_all.mpg', '-qscale:v', '2', 'output.mp4');
+
+      
+      // `${inputPaths.join(' -i ')}`
+      await ffmpeg.run(...inputPaths, '-filter_complex', `${videoAudioStreams.join('')}concat=n=${currentPart - 1}:v=1:a=1[outv][outa]`,
+                       '-map', `[outv]`, '-map', `[outa]`, 'output.mp4');
+
+      // await ffmpeg.run('-i', 'tmp0.mp4', '-i', 'tmp1.mp4', '-filter_complex', '[0:v][0:a][1:v][1:a]concat=n=2:v=1:a=1[outv][outa]',
+      //                  '-map', `[outv]`, '-map', `[outa]`, 'output.mp4');
+
+//         ffmpeg -i input1.mp4 -i input2.webm -i input3.mov \
+//            -filter_complex "[0:v:0][0:a:0][1:v:0][1:a:0][2:v:0][2:a:0]concat=n=3:v=1:a=1[outv][outa]" \
+//            -map "[outv]" -map "[outa]" output.mkv
+
+      // await ffmpeg.run('-i', `concat:${inputPaths.join('|')}`, '-c', 'copy', 'intermediate_all.mpg');
+      // await ffmpeg.run('-i', 'intermediate_all.mpg', '-qscale:v', '2', 'output.mp4');
       /* resetting the current part variable */
       // ffmpeg -i concat:"intermediate1.mpg|intermediate2.mpg" -c copy intermediate_all.mpg && \
       // ffmpeg -i intermediate_all.mpg -qscale:v 2 output.mp4
