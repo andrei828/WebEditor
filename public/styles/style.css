@@ -129,7 +129,7 @@ body {
     flex: 1.8;
     display: inline-block;
     position: relative;
-    transition: all 0.2s;
+    transition: 0.2s;
     color: #222222;
 }
 
@@ -711,6 +711,7 @@ video::-webkit-media-controls {
     position: absolute;
     width: 100%;
     height: 100%;
+    transition: 0.5s;
 }
 
 .resources-placeholder-container {

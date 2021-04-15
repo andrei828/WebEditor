@@ -56,8 +56,8 @@ function render() {
         if (isNaN(ratio) || ratio < 0) {
           ratio = 1
         }
-        console.log(fractionPart, currentPart, ratio, Math.min(fractionPart * (currentPart - 2) + Math.min(fractionPart, fractionPart * ratio)))
-        progressBar.ldBar.set(Math.min(fractionPart * (currentPart - 2) + Math.min(fractionPart, fractionPart * ratio / 100)))
+        // console.log(fractionPart, currentPart, ratio, fractionPart * (currentPart - 1) + Math.min(fractionPart, fractionPart * ratio / 100))
+        progressBar.ldBar.set(fractionPart * (currentPart - 2) + Math.min(fractionPart, fractionPart * ratio / 100))
         // console.log(fractionPart * currentPart + fractionPart / ratio * 100)
       // }
     })
@@ -195,6 +195,7 @@ function render() {
         })
       );
       
+      progressBar.ldBar.set(100)
       elm.style.display = 'block'
       elm.innerText = 'Render new'
       downloadHref.style.display = 'block';

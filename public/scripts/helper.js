@@ -3,12 +3,14 @@
   editting UI and parsing data for transcoding.
 */
 
+/* Compatible video types (will support more in the future) */
+acceptedVideoTypes = new Set(['video/mp4', 'video/quicktime'])
 
 /**
  * Renders the items 
  * to the resources list
  */
- function renderResourcesBlock() {
+function renderResourcesBlock() {
   for (id in resources) {
     const wrapper = document.createElement('div')
     wrapper.classList.add('item-wrapper')
@@ -393,8 +395,6 @@ function forwardButtonTrigger() {
  * @param files the uploaded video files 
  */
 async function fileUpload({ target: { files } }) {
-  console.log('-------')
-  console.log(files)
   for (const file of files) {
     const videoResource = buildVideoResourceByFile(file, file.name)
     window.resources[videoResource.videoCore.id] = videoResource
@@ -404,14 +404,19 @@ async function fileUpload({ target: { files } }) {
   resourcesPlaceholder.style.display = 'none'
 }
 
+
+/**
+ * Method that handles new video 
+ * uploads by the drag and drop API
+ * @param files the uploaded video files 
+ */
 function dropUpload(files) {
-  console.log('-------')
-  console.log(files[0].name)
-  for (const file of files) {
-    console.log(file)
-    const videoResource = buildVideoResourceByFile(file, file.name)
-    window.resources[videoResource.videoCore.id] = videoResource
-    renderResourceBlock(videoResource.videoCore)
+  for (let i = 0; i < files.length; i++) {
+    if (acceptedVideoTypes.has(files[i].type)) {
+      const videoResource = buildVideoResourceByFile(files[i], files[i].name)
+      window.resources[videoResource.videoCore.id] = videoResource
+      renderResourceBlock(videoResource.videoCore)
+    }
   }
   
   resourcesPlaceholder.style.display = 'none'

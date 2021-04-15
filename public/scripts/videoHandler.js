@@ -158,32 +158,29 @@ window.onload = () => {
   const uploader = document.getElementById("uploader")
   uploader.addEventListener("change", fileUpload)
 
-  const resourcesList = document.querySelector('.resources-list')
-  resourcesList.addEventListener('dragenter', (e) => {
-    // e.preventDefault()
-    let dt = e.dataTransfer
-    let files = dt.files
-    console.log(files)
-    // console.log(e)
-    // console.log(dt)
-    dropUpload(files)
-    // fileUpload({target: { files } })
-
-  }, false)
-  resourcesList.addEventListener('drop', (e) => {
-    e.preventDefault()
-    console.log('here')
-    let dt = e.dataTransfer
-    let files = dt.files
-    // console.log(files)
-    // console.log(dt)
-    fileUpload({target: { files } })
-  }, false)
-
-
   const startupWrapper = document.querySelector('.startup-wrapper')
   const workspace = document.querySelector('.edit-workspace')
-  
+
+  workspace.addEventListener('dragover', function(e) {
+    e.preventDefault()
+    e.stopPropagation()
+    resourcesPlaceholder.style.transform = 'scale(0.8)'
+  }, false)
+  workspace.addEventListener('dragenter', function(e)  {
+    e.preventDefault()
+    e.stopPropagation()
+  }, false)
+  workspace.addEventListener('dragleave', function(e)  {
+    e.preventDefault()
+    e.stopPropagation()
+    resourcesPlaceholder.style.transform = 'none'
+  }, false)
+  workspace.addEventListener('drop', (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    dropUpload(e.dataTransfer.files)
+  }, false)
+
   setTimeout(() => {
     workspace.style.display = 'flex'
     startupWrapper.children[0].style.animation = 'disappear 0.5s'
