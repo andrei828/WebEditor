@@ -295,11 +295,6 @@ function renderUIAfterFrameChange(videoNode) {
   canvasRatio = canvas.width / canvas.height
   videoRatio = video.videoWidth / video.videoHeight
 
-  // console.log(alpha1, Math.abs(alpha2))
-  // console.log(canvas.width, canvas.height, canvas.width / canvas.height)
-  // console.log(video.videoWidth, video.videoHeight, video.videoWidth / video.videoHeight)
-  // console.log((video.videoHeight - canvas.height) / 2)
-  // console.log('-------------')
   currentVideoDurationLabel.innerText = formatTimeFromSeconds((
     videoNode.data.metadata.baseDuration - videoNode.data.metadata.startTime + video.currentTime
   ).toFixed(2))

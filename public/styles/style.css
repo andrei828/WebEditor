@@ -299,7 +299,23 @@ svg:hover {
     touch-action: none;
 }
 
+.timeline-list {
+    height: 100%;
+    flex-direction: row;
+    overflow-y: scroll;
+}
+
+.timeline-tmp {
+    flex: 1;
+    transform: translateY(-20%);
+    position: relative;
+    top: 50%;
+    width: 100%;
+    display: inline-flex;
+}
+
 .timeline {
+    flex:  1;
     transform: translateY(-50%);
     position: relative;
     top: 50%;
