@@ -7,7 +7,7 @@ $(document).ready(() => {
 
 function render() {
   const { createFFmpeg, fetchFile } = FFmpeg
-  const ffmpeg = createFFmpeg({ log: false })
+  const ffmpeg = createFFmpeg({ log: false, corePath: 'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js', })
   
   ffmpeg.load((_) => {
     let currentPart = 1
@@ -115,7 +115,8 @@ function render() {
               '-f', 'lavfi', '-i', 'anullsrc',
               '-i', fileName,
               '-ar', '44100',
-              '-vf', `[1:v]scale='min(${wi},iw)':min'(${he},ih)':force_original_aspect_ratio\=decrease,pad=${wi}:${he}:(ow-iw)/2:(oh-ih)/2,fps=30`,
+              // '-vf', `[1:v]scale='min(${wi},iw)':min'(${he},ih)':force_original_aspect_ratio\=decrease,pad=${wi}:${he}:(ow-iw)/2:(oh-ih)/2,fps=30`,
+              '-vf', `[1:v]scale=w=${wi}:h=${he}:force_original_aspect_ratio=1,pad=${wi}:${he}:(ow-iw)/2:(oh-ih)/2,fps=30`,
               '-ss', `${startTime}`, '-to', `${endTime}`,
               '-map', '1:v', '-map', '1:a?', '-map', '0:a', '-c:a', 'aac', '-shortest',
               `tmp${currentItemNumber}.mp4`,
@@ -200,7 +201,7 @@ function render() {
       elm.innerText = 'Render new'
       downloadHref.style.display = 'block';
       downloadHref.href = imageUrl
-      downloadHref.download = 'sample.mp4'
+      downloadHref.download = document.querySelector('.preview-input-title').value
       
       delete ffmpeg;
     }
