@@ -272,6 +272,7 @@ function doneTrimming(_) {
   trimDoneBtn.addEventListener('click', doneTrimming)
 
   window.timeline.data.videoCore.currentTime = window.timeline.data.metadata.startTime
+  window.currentVideoSelectedForPlayback = window.timeline
   renderUIAfterFrameChange(window.timeline)
 }
 
